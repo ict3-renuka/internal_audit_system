@@ -3,6 +3,7 @@ import 'package:project_one/data/services/api_services/audit_request_api.dart';
 import 'package:project_one/data/services/api_services/center_api.dart';
 import 'package:project_one/ui/views/audit_request/audit_request_view.dart';
 import 'package:project_one/ui/views/audit_request/audit_request_view_model.dart';
+import 'package:project_one/ui/views/audit_request/search_audit_request_view.dart';
 import 'package:project_one/ui/views/master/add_center/add_center_view.dart';
 import 'package:project_one/ui/views/master/add_center/add_center_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
           "/add-company": (_) => const AddCompanyView(),
           "/add-center": (_) => const AddCenterView(),
           "/new-audit-request": (_) => const AuditRequestView(),
+          "/search-audit-request": (_) => const SearchAuditRequestView(),
         },
       ),
     );

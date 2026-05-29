@@ -10,4 +10,22 @@ class CompanyApi {
       const Duration(seconds: 1),
     );
   }
+
+  Future<List<CompanyModel>> getCompanyList() async {
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    return [
+      CompanyModel(
+        sectorId: 1,
+        companyId: 1,
+        companyName: "ABC Company",
+      ),
+      CompanyModel(
+        sectorId: 2,
+        companyId: 2,
+        companyName: "XYZ Company",
+      ),
+    ];
+  }
 }

@@ -9,6 +9,14 @@ class CompanyModel {
     required this.companyName,
   });
 
+  factory CompanyModel.fromJson(Map<String, dynamic> json) {
+    return CompanyModel(
+      sectorId: json["sector_id"],
+      companyId: json["company_id"],
+      companyName: json["company_name"],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       "sector_id": sectorId,

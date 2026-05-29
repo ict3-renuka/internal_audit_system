@@ -8,17 +8,26 @@ class AddCompanyViewmodel extends ChangeNotifier {
 
   AddCompanyViewmodel(this.companyApi);
 
-  final TextEditingController companyController =
-  TextEditingController();
-
+  final TextEditingController companyController = TextEditingController();
   String? selectedSector;
-
   bool isLoading = false;
+
+  List<CompanyModel> companyList = [];
 
   final List<String> sectors = [
     "Agri",
     "FMCG",
   ];
+
+  Future<void> loadCompanies() async {
+
+    isLoading = true;
+    notifyListeners();
+
+    companyList = await companyApi.getCompanyList();
+    isLoading = false;
+    notifyListeners();
+  }
 
   void setSector(String? value) {
     selectedSector = value;
@@ -50,5 +59,17 @@ class AddCompanyViewmodel extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+  }
+
+  String getSectorName(int sectorId) {
+
+    switch (sectorId) {
+      case 1:
+        return "Agri";
+      case 2:
+        return "FMCG";
+      default:
+        return "Unknown";
+    }
   }
 }

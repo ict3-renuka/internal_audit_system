@@ -9,6 +9,22 @@ class LoginViewmodel extends ChangeNotifier{
   bool isLoading = false;
   String? errorMsg;
 
+  bool _obscurePassword = true;
+
+  bool get obscurePassword => _obscurePassword;
+
+  void togglePasswordVisibility() {
+    _obscurePassword = !_obscurePassword;
+    notifyListeners();
+  }
+
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
   Future<bool> login(String email, String password) async{
     try{
       isLoading = true;

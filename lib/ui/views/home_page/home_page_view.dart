@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:project_one/core/theme/app_colors.dart';
+import 'package:project_one/ui/widget/nav_bar_widget.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -9,7 +11,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  String selectedMenu = "Home";
 
   final PageController _pageController = PageController();
   int _currentPage = 0;
@@ -50,163 +51,111 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppNavBar(),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            height: width * 0.05,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.green, Colors.blue],
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Expanded(
+            child: Stack(
               children: [
-                const Text(
-                  "Internal Audit System",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                SizedBox(
+                  width: double.infinity,
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: images.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentPage = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return Image.asset(
+                        images[index],
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
-
-                Row(
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.6),
+                        Colors.black.withValues(alpha: 0.2),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 80),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Welcome to the \nInternal Audit System",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 52,
+                          fontWeight: FontWeight.bold,
+                          height: 1.1,
+                        ),
+                      ),
+                      SizedBox(height: 24),
+                      SizedBox(
+                        width: width * 0.3,
+                        child: Text(
+                          "Manage audits, draft observations, reports and compliance efficiently across the organization with centralized institutional oversight.",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: 40,
+            ),
+            color: AppColors.background,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildDropdownMenu("Master",[
-                      "Add Company",
-                      "Add Center"
-                    ]),
-                    _buildDropdownMenu("Audit Requests", [
-                      "New",
-                      "Search",
-                    ]),
-                    _buildMenu("Draft Observation"),
+                    Text(
+                      "Renuka Group Internal Audit",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "© 2026 Renuka Group. All rights reserved.",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
-
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFE8F5E9), Color(0xFFE3F2FD)],
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: width * 0.2,
-                    width: width * 0.4,
-                    child: PageView.builder(
-                      controller: _pageController,
-                      itemCount: images.length,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentPage = index;
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 500),
-                          margin: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: NetworkImage(images[index]),
-                              fit: BoxFit.cover,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 10,
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    "Welcome to Internal Audit System",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const Text(
-                    "Manage audits, reports and compliance efficiently",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.blueGrey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildMenu(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: InkWell(
-        onTap: () {
-          Navigator.pushNamed(context, "/add-company");
-        },
-        child: Text(
-          title,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDropdownMenu(String title, List<String> items) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: PopupMenuButton<String>(
-        offset: const Offset(0, 40),
-        color: Colors.white,
-        child: Row(
-          children: [
-            Text(title,
-                style: const TextStyle(color: Colors.white, fontSize: 16)),
-            const Icon(Icons.arrow_drop_down, color: Colors.white),
-          ],
-        ),
-        onSelected: (value) {
-          if (value == "Add Company") {
-            Navigator.pushNamed(context, "/add-company");
-          }
-          if (value == "Add Center") {
-            Navigator.pushNamed(context, "/add-center");
-          }
-          if (value == "New") {
-            Navigator.pushNamed(context, "/new-audit-request");
-          }
-        },
-        itemBuilder: (context) {
-          return items
-              .map((e) => PopupMenuItem(value: e, child: Text(e)))
-              .toList();
-        },
       ),
     );
   }

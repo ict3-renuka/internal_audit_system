@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../data/models/audit_request_model.dart';
 import 'audit_request_view_model.dart';
 
 class AuditRequestView extends StatelessWidget {
-  const AuditRequestView({super.key});
+  final AuditRequestModel? auditRequest;
+  const AuditRequestView({super.key,this.auditRequest,});
 
   @override
   Widget build(BuildContext context) {
     final vModel = Provider.of<AuditRequestViewmodel>(context);
     double width = MediaQuery.of(context).size.width;
 
+    if (auditRequest != null) {
+
+      vModel.loadAuditRequest(
+        auditRequest!,
+      );
+    }
     return Scaffold(
       backgroundColor: const Color(0xFFF4F9F9),
       appBar: AppBar(

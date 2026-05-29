@@ -1,5 +1,6 @@
 class AuditRequestModel {
 
+  final int id;
   final String meetingDate;
   final String description;
   final String preliminaryStartDate;
@@ -7,6 +8,7 @@ class AuditRequestModel {
   final String auditFirmPersonName;
 
   AuditRequestModel({
+    required this.id,
     required this.meetingDate,
     required this.description,
     required this.preliminaryStartDate,
@@ -16,6 +18,7 @@ class AuditRequestModel {
 
   Map<String, dynamic> toJson() {
     return {
+      "id":id,
       "meeting_date": meetingDate,
       "description": description,
       "preliminary_start_date": preliminaryStartDate,
