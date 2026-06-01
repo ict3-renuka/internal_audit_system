@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/data/services/api_services/audit_request_api.dart';
 import 'package:project_one/data/services/api_services/center_api.dart';
+import 'package:project_one/data/services/api_services/draft_observation_api.dart';
 import 'package:project_one/ui/views/audit_request/audit_request_view.dart';
 import 'package:project_one/ui/views/audit_request/audit_request_view_model.dart';
-import 'package:project_one/ui/views/audit_request/search_audit_request_view.dart';
+import 'package:project_one/ui/views/audit_request/edit_audit_request_view.dart';
+import 'package:project_one/ui/views/draft_observation/draft_observation_view.dart';
+import 'package:project_one/ui/views/draft_observation/draft_observation_view_model.dart';
+import 'package:project_one/ui/views/draft_observation/edit_draft_observation_view.dart';
 import 'package:project_one/ui/views/master/add_center/add_center_view.dart';
 import 'package:project_one/ui/views/master/add_center/add_center_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +34,7 @@ class MyApp extends StatelessWidget {
   final CompanyApi companyApi = CompanyApi();
   final CenterApi centerApi = CenterApi();
   final AuditRequestApi auditRequestApi = AuditRequestApi();
+  final DraftObservationApi draftObservationApi = DraftObservationApi();
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +44,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AddCompanyViewmodel(companyApi)),
         ChangeNotifierProvider(create: (_) => AddCenterViewmodel(centerApi)),
         ChangeNotifierProvider(create: (_) => AuditRequestViewmodel(auditRequestApi)),
+        ChangeNotifierProvider(create: (_) => DraftObservationViewmodel(draftObservationApi)),
       ],
 
       child: MaterialApp(
@@ -50,7 +56,9 @@ class MyApp extends StatelessWidget {
           "/add-company": (_) => const AddCompanyView(),
           "/add-center": (_) => const AddCenterView(),
           "/new-audit-request": (_) => const AuditRequestView(),
-          "/search-audit-request": (_) => const SearchAuditRequestView(),
+          "/edit-audit-request": (_) => const EditAuditRequestView(),
+          "/new-draft-observation": (_) => const DraftObservationView(),
+          "/edit-draft-observation": (_) => const EditDraftObservationView(),
         },
       ),
     );

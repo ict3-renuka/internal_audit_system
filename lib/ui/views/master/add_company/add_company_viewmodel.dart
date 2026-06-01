@@ -14,10 +14,12 @@ class AddCompanyViewmodel extends ChangeNotifier {
 
   List<CompanyModel> companyList = [];
 
-  final List<String> sectors = [
-    "Agri",
-    "FMCG",
-  ];
+  final List<String> sectors = ["Agri", "FMCG",];
+
+  final Map<String, int> sectorMap = {
+    "Agri": 1,
+    "FMCG": 2,
+  };
 
   Future<void> loadCompanies() async {
 
@@ -44,11 +46,17 @@ class AddCompanyViewmodel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    int sectorId = selectedSector == "Agri" ? 1 : 2;
+    final sectorId = sectorMap[selectedSector!];
+
+    if (sectorId == null) {
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
 
     CompanyModel company = CompanyModel(
       sectorId: sectorId,
-      companyId: 0,
+      sectorName: selectedSector!,
       companyName: companyController.text.trim(),
     );
 
@@ -59,17 +67,5 @@ class AddCompanyViewmodel extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
-  }
-
-  String getSectorName(int sectorId) {
-
-    switch (sectorId) {
-      case 1:
-        return "Agri";
-      case 2:
-        return "FMCG";
-      default:
-        return "Unknown";
-    }
   }
 }

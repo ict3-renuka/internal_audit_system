@@ -18,11 +18,13 @@ class CompanyApi {
     return [
       CompanyModel(
         sectorId: 1,
+        sectorName: "Agri",
         companyId: 1,
         companyName: "ABC Company",
       ),
       CompanyModel(
         sectorId: 2,
+        sectorName: "FMCG",
         companyId: 2,
         companyName: "XYZ Company",
       ),

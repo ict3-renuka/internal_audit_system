@@ -46,7 +46,7 @@ class LoginView extends StatelessWidget {
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
-                  hintText: "e.g. user@company.com",
+                  hintText: "e.g. user@gmail.com",
                   border: const OutlineInputBorder(),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,

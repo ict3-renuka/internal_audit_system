@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/core/theme/app_colors.dart';
+import 'package:project_one/data/models/draft_observation_model.dart';
 import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../../data/models/audit_request_model.dart';
-import 'audit_request_view_model.dart';
+import 'draft_observation_view_model.dart';
 
-class AuditRequestView extends StatefulWidget {
-  final AuditRequestModel? auditRequest;
-  const AuditRequestView({super.key,this.auditRequest,});
+class DraftObservationView extends StatefulWidget {
+  final DraftObservationModel? draftObservation;
+  const DraftObservationView({super.key,this.draftObservation,});
 
   @override
-  State<AuditRequestView> createState() => _AuditRequestViewState();
+  State<DraftObservationView> createState() => _DraftObservationViewState();
 }
 
-class _AuditRequestViewState extends State<AuditRequestView> {
+class _DraftObservationViewState extends State<DraftObservationView> {
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() {
-      if (widget.auditRequest != null) {
-        Provider.of<AuditRequestViewmodel>(
+      if (widget.draftObservation != null) {
+        Provider.of<DraftObservationViewmodel>(
           context,
           listen: false,
-        ).loadAuditRequest(
-          widget.auditRequest!,
+        ).loadDraftObservation(
+          widget.draftObservation!,
         );
       }
     });
   }
   @override
   Widget build(BuildContext context) {
-    final vModel = Provider.of<AuditRequestViewmodel>(context);
+    final vModel = Provider.of<DraftObservationViewmodel>(context);
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -47,7 +47,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "New Audit Request",
+              "New Draft Observation",
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -110,36 +110,14 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                             _buildDateField(
                               context: context,
                               label: "Meeting Date",
-                              value: vModel.meetingDate,
-                              onSelect: vModel.setMeetingDate,
+                              value: vModel.remarkedDate,
+                              onSelect: vModel.setRemarkedDate,
                               disableFutureDates: true,
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 24),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Preliminary Start Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            _buildDateField(
-                              context: context,
-                              label: "Preliminary Start Date",
-                              value: vModel.preliminaryStartDate,
-                              onSelect:
-                              vModel.setPreliminaryStartDate,
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -151,7 +129,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                   ),
                   const SizedBox(height: 8),
                   TextField(
-                    controller: vModel.descriptionController,
+                    controller: vModel.detailsController,
                     maxLines: 5,
                     decoration: InputDecoration(
                       hintText:
@@ -220,7 +198,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                             const SizedBox(height: 8),
                             TextField(
                               controller:
-                              vModel.personIdController,
+                              vModel.responsibleUserIdController,
                               keyboardType:
                               TextInputType.number,
                               decoration: InputDecoration(
@@ -252,7 +230,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                             const SizedBox(height: 8),
                             TextField(
                               controller:
-                              vModel.personNameController,
+                              vModel.riskAndRootCauseController,
                               decoration: InputDecoration(
                                 hintText:
                                 "Full Legal Name",
@@ -276,7 +254,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                       onPressed: vModel.isLoading
                           ? null
                           : () async {
-                        await vModel.addAuditRequest();
+                        await vModel.addDraftObservation();
 
                         ScaffoldMessenger.of(
                           context,

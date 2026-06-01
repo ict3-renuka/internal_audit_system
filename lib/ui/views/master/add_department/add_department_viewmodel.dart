@@ -4,11 +4,11 @@ import 'package:project_one/data/services/api_services/center_api.dart';
 
 import '../../../../data/models/company_model.dart';
 
-class AddCenterViewmodel extends ChangeNotifier {
+class AddDepartmentViewmodel extends ChangeNotifier {
 
   final CenterApi centerApi;
 
-  AddCenterViewmodel(this.centerApi);
+  AddDepartmentViewmodel(this.centerApi);
 
   final TextEditingController centerController = TextEditingController();
 
@@ -51,7 +51,8 @@ class AddCenterViewmodel extends ChangeNotifier {
           sectorName: "",
           companyName: ""
       ),
-    ).companyName;
+    )
+        .companyName;
   }
 
   Future<void> addCenter() async {

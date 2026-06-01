@@ -28,14 +28,18 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           _buildDropdownMenu(context, "Master", [
             "Add Company",
             "Add Center",
+            "Add Department"
           ]),
 
           _buildDropdownMenu(context, "Audit Requests", [
-            "New",
-            "Search",
+            "New Audit Request",
+            "Edit Audit Request",
           ]),
 
-          _buildMenu(context, "Draft Observation"),
+          _buildDropdownMenu(context, "Draft Observation", [
+            "New Draft Observation",
+            "Edit Draft Observation",
+          ]),
 
           const Spacer(),
           const Icon(
@@ -83,11 +87,17 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           if (value == "Add Center") {
             Navigator.pushNamed(context, "/add-center");
           }
-          if (value == "New") {
+          if (value == "New Audit Request") {
             Navigator.pushNamed(context, "/new-audit-request");
           }
-          if (value == "Search") {
-            Navigator.pushNamed(context, "/search-audit-request");
+          if (value == "Edit Audit Request") {
+            Navigator.pushNamed(context, "/edit-audit-request");
+          }
+          if (value == "New Draft Observation") {
+            Navigator.pushNamed(context, "/new-draft-observation");
+          }
+          if (value == "Edit Draft Observation") {
+            Navigator.pushNamed(context, "/edit-draft-observation");
           }
         },
         itemBuilder: (context) {

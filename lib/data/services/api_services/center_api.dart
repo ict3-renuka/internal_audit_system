@@ -28,8 +28,8 @@ class CenterApi {
     await Future.delayed(const Duration(seconds: 1));
 
     return [
-      CompanyModel(companyId: 1, sectorId: 1, companyName: "RDL"),
-      CompanyModel(companyId: 2, sectorId: 2, companyName: "SWCL"),
+      CompanyModel(companyId: 1, sectorName: "Agri", sectorId: 1, companyName: "RDL"),
+      CompanyModel(companyId: 2, sectorName: "FMCG", sectorId: 2, companyName: "SWCL"),
     ];
   }
 }

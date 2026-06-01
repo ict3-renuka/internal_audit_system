@@ -113,6 +113,7 @@ class _AddCompanyViewState extends State<AddCompanyView> {
                                       ? null
                                       : () async {
                                     await vModel.addCompany();
+                                    if (!context.mounted) return;
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text("Company Added Successfully"),
@@ -187,7 +188,6 @@ class _AddCompanyViewState extends State<AddCompanyView> {
                                   ),
                                   child: const Row(
                                     children: [
-                                      Expanded(child: Text("Company ID")),
                                       Expanded(child: Text("Sector Name")),
                                       Expanded(child: Text("Company Name")),
                                     ],
@@ -214,12 +214,7 @@ class _AddCompanyViewState extends State<AddCompanyView> {
                                       child: Row(
                                         children: [
                                           Expanded(
-                                            child: Text(e.companyId.toString()),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              e.sectorId == 1 ? "Agri" : "FMCG",
-                                            ),
+                                            child: Text(e.sectorName.toString(),),
                                           ),
                                           Expanded(
                                             child: Text(e.companyName),

@@ -97,16 +97,13 @@ class AuditRequestViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void loadAuditRequest(AuditRequestModel request,) {
-
-    if (isEditLoaded) return;
-
+  void loadAuditRequest(AuditRequestModel request) {
     descriptionController.text = request.description;
     personIdController.text = request.auditFirmPersonId.toString();
     personNameController.text = request.auditFirmPersonName;
     meetingDate = DateTime.parse(request.meetingDate);
     preliminaryStartDate = DateTime.parse(request.preliminaryStartDate);
-    isEditLoaded = true;
+
     notifyListeners();
   }
 }

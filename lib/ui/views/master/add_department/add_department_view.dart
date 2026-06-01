@@ -3,22 +3,22 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../widget/nav_bar_widget.dart';
-import 'add_center_viewmodel.dart';
+import 'add_department_viewmodel.dart';
 
-class AddCenterView extends StatefulWidget {
-  const AddCenterView({super.key});
+class AddDepartmentView extends StatefulWidget {
+  const AddDepartmentView({super.key});
 
   @override
-  State<AddCenterView> createState() => _AddCenterViewState();
+  State<AddDepartmentView> createState() => _AddDepartmentViewState();
 }
 
-class _AddCenterViewState extends State<AddCenterView> {
+class _AddDepartmentViewState extends State<AddDepartmentView> {
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() {
-      Provider.of<AddCenterViewmodel>(
+      Provider.of<AddDepartmentViewmodel>(
         context,
         listen: false,
       ).loadData();
@@ -30,7 +30,7 @@ class _AddCenterViewState extends State<AddCenterView> {
     return Scaffold(
       backgroundColor: AppColors.secondBackground,
       appBar: AppNavBar(),
-      body: Consumer<AddCenterViewmodel>(
+      body: Consumer<AddDepartmentViewmodel>(
         builder: (context, vModel, child) {
           return Padding(
             padding: const EdgeInsets.all(40),
@@ -227,10 +227,16 @@ class _AddCenterViewState extends State<AddCenterView> {
                                   child: const Row(
                                     children: [
                                       Expanded(
-                                        child: Text("Company Name"),
+                                        child:
+                                        Text("Center ID"),
                                       ),
                                       Expanded(
-                                        child: Text("Center Name"),
+                                        child: Text(
+                                            "Company Name"),
+                                      ),
+                                      Expanded(
+                                        child:
+                                        Text("Center Name"),
                                       ),
                                     ],
                                   ),
@@ -270,6 +276,12 @@ class _AddCenterViewState extends State<AddCenterView> {
                                       ),
                                       child: Row(
                                         children: [
+                                          Expanded(
+                                            child: Text(
+                                              e.centerId
+                                                  .toString(),
+                                            ),
+                                          ),
                                           Expanded(
                                             child: Text(
                                               vModel.getCompanyName(
