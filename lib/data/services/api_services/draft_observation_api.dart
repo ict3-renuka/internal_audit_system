@@ -14,12 +14,14 @@ class DraftObservationApi {
 
     return [
       DraftObservationModel(
-        id: 1,
+        observationId: 1,
         area: "Inventory",
         subject: "Inventory Audit",
         details: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         riskAndRootCause: "aaaaaaaaaaaaaaaaaaaaaaaa",
         recommendation: "ssssssssssssssssssssssssssssss",
+        department: "production",
+        internalDepartment: "Department one",
         manageResponse: "cccccccccccccccccccccccccccc",
         correctiveActionPlan: "hhhhhhhhhhhhhhhhhhhhhh",
         actionTimeLine: 14,
@@ -30,12 +32,14 @@ class DraftObservationApi {
       ),
 
       DraftObservationModel(
-        id: 2,
+        observationId: 2,
         area: "Financial",
         subject: "Financial Audit",
         details: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         riskAndRootCause: "aaaaaaaaaaaaaaaaaaaaaaaa",
         recommendation: "ssssssssssssssssssssssssssssss",
+        department: "finance",
+        internalDepartment: "department two",
         manageResponse: "cccccccccccccccccccccccccccc",
         correctiveActionPlan: "hhhhhhhhhhhhhhhhhhhhhh",
         actionTimeLine: 7,

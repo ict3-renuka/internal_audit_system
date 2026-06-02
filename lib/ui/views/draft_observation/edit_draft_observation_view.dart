@@ -106,47 +106,65 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                         : SizedBox(
                       width: double.infinity,
                       child: SingleChildScrollView(
-                        child: DataTable(
-                          showCheckboxColumn: false,
-                          headingRowColor: WidgetStateProperty.all(AppColors.thirdBackground),
-                          columnSpacing: 16,
-                          horizontalMargin: 16,
-                          columns: const [
-                            DataColumn(label: _HeaderLabel('MEETING DATE')),
-                            DataColumn(label: _HeaderLabel('DESCRIPTION')),
-                            DataColumn(label: _HeaderLabel('PRELIMINARY START')),
-                            DataColumn(label: _HeaderLabel('PERSON ID')),
-                            DataColumn(label: _HeaderLabel('PERSON NAME')),
-                          ],
-                          rows: vModel.filteredList.map((e) {
-                            return DataRow(
-                              onSelectChanged: (_) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => DraftObservationView(
-                                      draftObservation: e,
+                        scrollDirection: Axis.vertical,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            showCheckboxColumn: false,
+                            headingRowColor: WidgetStateProperty.all(AppColors.thirdBackground),
+                            columnSpacing: 16,
+                            horizontalMargin: 16,
+                            columns: const [
+                              DataColumn(label: _HeaderLabel('Area')),
+                              DataColumn(label: _HeaderLabel('Subject')),
+                              DataColumn(label: _HeaderLabel('Details')),
+                              DataColumn(label: _HeaderLabel('Risk and Root Cause')),
+                              DataColumn(label: _HeaderLabel('Recommendation')),
+                              DataColumn(label: _HeaderLabel('Management Response')),
+                              DataColumn(label: _HeaderLabel('Action Plan')),
+                              DataColumn(label: _HeaderLabel('Action Timeline')),
+                              DataColumn(label: _HeaderLabel('Responsible User')),
+                              DataColumn(label: _HeaderLabel('status')),
+                              DataColumn(label: _HeaderLabel('Remark')),
+                              DataColumn(label: _HeaderLabel('Remarked Date')),
+                            ],
+                            rows: vModel.filteredList.map((e) {
+                              return DataRow(
+                                onSelectChanged: (_) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DraftObservationView(
+                                        draftObservation: e,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                cells: [
+                                  DataCell(Text(e.area)),
+                                  DataCell(Text(e.subject)),
+                                  DataCell(
+                                    SizedBox(
+                                      width: 200,
+                                      child: Text(
+                                        e.details,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ),
-                                );
-                              },
-                              cells: [
-                                DataCell(Text(e.remarkedDate)),
-                                DataCell(
-                                  SizedBox(
-                                    width: 200,
-                                    child: Text(
-                                      e.details,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(Text(e.remarkedDate)),
-                                DataCell(Text(e.responsibleUserId.toString())),
-                                DataCell(Text(e.remark)),
-                              ],
-                            );
-                          }).toList(),
+                                  DataCell(Text(e.riskAndRootCause)),
+                                  DataCell(Text(e.recommendation)),
+                                  DataCell(Text(e.manageResponse!)),
+                                  DataCell(Text(e.correctiveActionPlan!)),
+                                  DataCell(Text(e.actionTimeLine!.toString())),
+                                  DataCell(Text(e.responsibleUserId.toString())),
+                                  DataCell(Text(e.status!)),
+                                  DataCell(Text(e.remark!)),
+                                  DataCell(Text(e.remarkedDate!)),
+                                ],
+                              );
+                            }).toList(),
+                          ),
                         ),
                       ),
                     ),

@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/data/models/center_model.dart';
+import 'package:project_one/data/models/department_model.dart';
 import 'package:project_one/data/services/api_services/center_api.dart';
+import 'package:project_one/data/services/api_services/company_api.dart';
+import 'package:project_one/data/services/api_services/department_api.dart';
 
 import '../../../../data/models/company_model.dart';
 
 class AddDepartmentViewmodel extends ChangeNotifier {
 
-  final CenterApi centerApi;
+  final CompanyApi companyApi;
+  final DepartmentApi departmentApi;
 
-  AddDepartmentViewmodel(this.centerApi);
+  AddDepartmentViewmodel(this.companyApi, this.departmentApi);
 
-  final TextEditingController centerController = TextEditingController();
+  final TextEditingController auditDepartmentController = TextEditingController();
+  final TextEditingController internalDepartmentController = TextEditingController();
 
   String? selectedCompany;
 
   bool isLoading = false;
 
-  List<CenterModel> centerList = [];
   List<CompanyModel> companyList = [];
-
-  final List<String> sectors = [
-    "RDL",
-    "SWCL",
-  ];
+  List<DepartmentModel> departmentList = [];
 
   void setCompany(String? value) {
     selectedCompany = value;
@@ -34,8 +34,8 @@ class AddDepartmentViewmodel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    centerList = await centerApi.getCenters();
-    companyList = await centerApi.getCompanies();
+    companyList = await companyApi.getCompanyList();
+    departmentList = await departmentApi.getDepartment();
 
     isLoading = false;
     notifyListeners();
@@ -55,10 +55,11 @@ class AddDepartmentViewmodel extends ChangeNotifier {
         .companyName;
   }
 
-  Future<void> addCenter() async {
+  Future<void> addDepartment() async {
 
     if (selectedCompany == null ||
-        centerController.text.trim().isEmpty) {
+        auditDepartmentController.text.trim().isEmpty ||
+        internalDepartmentController.text.trim().isEmpty) {
       return;
     }
 
@@ -67,16 +68,17 @@ class AddDepartmentViewmodel extends ChangeNotifier {
 
     int companyId = selectedCompany == "RDL" ? 1 : 2;
 
-    CenterModel center = CenterModel(
+    DepartmentModel department = DepartmentModel(
       companyId: companyId,
-      centerId: 0,
-      centerName: centerController.text.trim(),
+      auditDepartmentName: auditDepartmentController.text,
+      internalDepartmentName: internalDepartmentController.text,
     );
 
-    await centerApi.addCenter(center);
-    centerList = await centerApi.getCenters();
+    await departmentApi.addDepartment(department);
+    departmentList = await departmentApi.getDepartment();
 
-    centerController.clear();
+    auditDepartmentController.clear();
+    internalDepartmentController.clear();
     selectedCompany = null;
 
     isLoading = false;

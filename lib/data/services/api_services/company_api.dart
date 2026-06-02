@@ -20,13 +20,13 @@ class CompanyApi {
         sectorId: 1,
         sectorName: "Agri",
         companyId: 1,
-        companyName: "ABC Company",
+        companyName: "RDL",
       ),
       CompanyModel(
         sectorId: 2,
         sectorName: "FMCG",
         companyId: 2,
-        companyName: "XYZ Company",
+        companyName: "SWCL",
       ),
     ];
   }

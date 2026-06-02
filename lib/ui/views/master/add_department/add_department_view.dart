@@ -60,7 +60,7 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                       Expanded(
                         flex: 1,
                         child: Container(
-                          padding: const EdgeInsets.all(32),
+                          padding: const EdgeInsets.all(25),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             border: Border.all(
@@ -74,14 +74,14 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Add Center",
+                                "Add Department",
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.primary,
                                 ),
                               ),
-                              const SizedBox(height: 30),
+                              const SizedBox(height: 20),
                               const Text("Select Company"),
                               const SizedBox(height: 8),
                               DropdownButtonFormField<String>(
@@ -102,14 +102,30 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                 onChanged: vModel.setCompany,
                               ),
                               const SizedBox(height: 20),
-                              const Text("Center Name"),
+                              const Text("Audit Department Name"),
                               const SizedBox(height: 8),
                               TextField(
                                 controller:
-                                vModel.centerController,
+                                vModel.auditDepartmentController,
                                 decoration: InputDecoration(
                                   hintText:
-                                  "Enter Center Name",
+                                  "Enter Audit Department Name",
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              const SizedBox(height: 20),
+                              const Text("Internal Department Name"),
+                              const SizedBox(height: 8),
+                              TextField(
+                                controller:
+                                vModel.internalDepartmentController,
+                                decoration: InputDecoration(
+                                  hintText:
+                                  "Enter Internal Department Name",
                                   border: OutlineInputBorder(
                                     borderRadius:
                                     BorderRadius.circular(4),
@@ -123,10 +139,10 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                   onPressed: vModel.isLoading
                                       ? null
                                       : () async {
-                                    await vModel.addCenter();
+                                    await vModel.addDepartment();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text("Center Added Successfully"),
+                                        content: Text("Department Added Successfully"),
                                       ),
                                     );
                                   },
@@ -170,7 +186,7 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                         ),
                                       )
                                           : const Text(
-                                        "Add Center",
+                                        "Add Department",
                                         style: TextStyle(
                                           color:
                                           Colors.white,
@@ -204,7 +220,7 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                 padding:
                                 const EdgeInsets.all(24),
                                 child: Text(
-                                  "Center List",
+                                  "Department List",
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight:
@@ -227,16 +243,16 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                   child: const Row(
                                     children: [
                                       Expanded(
-                                        child:
-                                        Text("Center ID"),
-                                      ),
-                                      Expanded(
                                         child: Text(
                                             "Company Name"),
                                       ),
                                       Expanded(
                                         child:
-                                        Text("Center Name"),
+                                        Text("Audit Department Name"),
+                                      ),
+                                      Expanded(
+                                        child:
+                                        Text("Internal Department Name"),
                                       ),
                                     ],
                                   ),
@@ -250,12 +266,12 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                 )
                                     : ListView.builder(
                                   itemCount:
-                                  vModel.centerList
+                                  vModel.departmentList
                                       .length,
                                   itemBuilder:
                                       (context, index) {
                                     final e = vModel
-                                        .centerList[index];
+                                        .departmentList[index];
                                     return Container(
                                       padding:
                                       const EdgeInsets
@@ -278,12 +294,6 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              e.centerId
-                                                  .toString(),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
                                               vModel.getCompanyName(
                                                 e.companyId,
                                               ),
@@ -291,7 +301,12 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                           ),
                                           Expanded(
                                             child: Text(
-                                              e.centerName,
+                                              e.auditDepartmentName,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              e.internalDepartmentName,
                                             ),
                                           ),
                                         ],

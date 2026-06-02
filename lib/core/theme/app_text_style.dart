@@ -18,4 +18,15 @@ class AppTextStyles {
     fontSize: 13,
     color: AppColors.textLight,
   );
+
+  static const paragraph = TextStyle(
+    color: Colors.black54,
+    fontSize: 16,
+  );
+
+  static const subTitle = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: AppColors.primary,
+  );
 }

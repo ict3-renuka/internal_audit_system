@@ -22,30 +22,33 @@ class AuditRequestApi {
     return [
 
       AuditRequestModel(
-        id: 1,
+        requestId: 1,
         meetingDate: "2026-05-01",
         description: "Financial Audit",
         preliminaryStartDate: "2026-05-10",
-        auditFirmPersonId: 100,
+        auditFirmPersonId: "100",
         auditFirmPersonName: "John",
+        auditDepartment: "Production"
       ),
 
       AuditRequestModel(
-        id: 2,
+        requestId: 2,
         meetingDate: "2026-05-02",
         description: "Inventory Audit",
         preliminaryStartDate: "2026-05-15",
-        auditFirmPersonId: 101,
+        auditFirmPersonId: "101",
         auditFirmPersonName: "David",
+        auditDepartment: "Finance"
       ),
 
       AuditRequestModel(
-        id: 2,
+        requestId: 2,
         meetingDate: "2026-05-20",
         description: "Inventory Audit",
         preliminaryStartDate: "2026-05-25",
-        auditFirmPersonId: 102,
+        auditFirmPersonId: "102",
         auditFirmPersonName: "Krish",
+        auditDepartment: "Production"
       ),
     ];
   }

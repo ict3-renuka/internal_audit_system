@@ -22,6 +22,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
   final TextEditingController responsibleUserIdController = TextEditingController();
   final TextEditingController statusController = TextEditingController();
   final TextEditingController remarkController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
+  final TextEditingController internalDepartmentController = TextEditingController();
 
   final TextEditingController searchController = TextEditingController();
 
@@ -60,12 +62,13 @@ class DraftObservationViewmodel extends ChangeNotifier {
     notifyListeners();
 
     DraftObservationModel observation = DraftObservationModel(
-      id: 1,
       area: areaController.text.trim(),
       subject: subjectController.toString(),
       details: detailsController.toString(),
       riskAndRootCause: riskAndRootCauseController.toString(),
       recommendation: recommendationController.toString(),
+      department: departmentController.toString(),
+      internalDepartment: internalDepartmentController.toString(),
       manageResponse: manageResponseController.toString(),
       correctiveActionPlan: correctiveActionPlanController.toString(),
       actionTimeLine: int.parse(actionTimeLineController.text),
@@ -125,13 +128,13 @@ class DraftObservationViewmodel extends ChangeNotifier {
     detailsController.text = observation.details;
     riskAndRootCauseController.text = observation.riskAndRootCause;
     recommendationController.text = observation.recommendation;
-    manageResponseController.text = observation.manageResponse;
-    correctiveActionPlanController.text = observation.correctiveActionPlan;
-    actionTimeLineController.text = observation.actionTimeLine as String;
-    responsibleUserIdController.text = observation.responsibleUserId;
-    statusController.text = observation.status;
-    remarkController.text = observation.remark;
-    remarkedDate = DateTime.parse(observation.remarkedDate);
+    manageResponseController.text = observation.manageResponse!;
+    correctiveActionPlanController.text = observation.correctiveActionPlan!;
+    actionTimeLineController.text = observation.actionTimeLine.toString();
+    responsibleUserIdController.text = observation.responsibleUserId!;
+    statusController.text = observation.status!;
+    remarkController.text = observation.remark!;
+    remarkedDate = DateTime.parse(observation.remarkedDate!);
 
     notifyListeners();
   }

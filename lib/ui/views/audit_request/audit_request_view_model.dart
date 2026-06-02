@@ -9,6 +9,7 @@ class AuditRequestViewmodel extends ChangeNotifier {
 
   AuditRequestViewmodel(this.auditRequestApi);
 
+  final TextEditingController departmentController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController personIdController = TextEditingController();
   final TextEditingController personNameController = TextEditingController();
@@ -16,6 +17,15 @@ class AuditRequestViewmodel extends ChangeNotifier {
 
   DateTime? meetingDate;
   DateTime? preliminaryStartDate;
+  DateTime? infoReqDate;
+  DateTime? infoSubmitDate;
+  DateTime? fieldWorkStartDate;
+  DateTime? fieldWorkEndDate;
+  DateTime? exitMeetingDate;
+  DateTime? managementDiscussionDate;
+  DateTime? reportIssuedDate;
+  DateTime? sharedToBoardDate;
+  DateTime? auditCommitteeTableDate;
 
   bool isLoading = false;
   bool isEditLoaded = false;
@@ -33,13 +43,59 @@ class AuditRequestViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setInfoReqDate(DateTime date) {
+    infoReqDate = date;
+    notifyListeners();
+  }
+
+  void setInfoSubmitDate(DateTime date) {
+    infoSubmitDate = date;
+    notifyListeners();
+  }
+
+  void setFieldWorkStartDate(DateTime date) {
+    fieldWorkStartDate = date;
+    notifyListeners();
+  }
+
+  void setFieldWorkEndDate(DateTime date) {
+    fieldWorkEndDate = date;
+    notifyListeners();
+  }
+
+  void setExitMeetingDate(DateTime date) {
+    exitMeetingDate = date;
+    notifyListeners();
+  }
+
+  void setManagementDiscussionDate(DateTime date) {
+    managementDiscussionDate = date;
+    notifyListeners();
+  }
+
+  void setReportIssuedDate(DateTime date) {
+    reportIssuedDate = date;
+    notifyListeners();
+  }
+
+  void setSharedToBoardDate(DateTime date) {
+    sharedToBoardDate = date;
+    notifyListeners();
+  }
+
+  void setAuditCommitteeTableDate(DateTime date) {
+    auditCommitteeTableDate = date;
+    notifyListeners();
+  }
+
   Future<void> addAuditRequest() async {
 
     if (meetingDate == null ||
         preliminaryStartDate == null ||
         descriptionController.text.trim().isEmpty ||
         personIdController.text.trim().isEmpty ||
-        personNameController.text.trim().isEmpty) {
+        personNameController.text.trim().isEmpty ||
+        departmentController.text.trim().isEmpty) {
 
       return;
     }
@@ -48,16 +104,12 @@ class AuditRequestViewmodel extends ChangeNotifier {
     notifyListeners();
 
     AuditRequestModel request = AuditRequestModel(
-
-      id: 1,
       meetingDate: meetingDate.toString(),
-      description: descriptionController.text.trim(),
-      preliminaryStartDate:
-      preliminaryStartDate.toString(),
-      auditFirmPersonId:
-      int.parse(personIdController.text),
-      auditFirmPersonName:
-      personNameController.text.trim(),
+      description: descriptionController.text,
+      preliminaryStartDate: preliminaryStartDate.toString(),
+      auditFirmPersonId: personIdController.text,
+      auditFirmPersonName: personNameController.text,
+      auditDepartment: departmentController.text
     );
 
     await auditRequestApi.addAuditRequest(request);
@@ -73,6 +125,14 @@ class AuditRequestViewmodel extends ChangeNotifier {
     personNameController.clear();
     meetingDate = null;
     preliminaryStartDate = null;
+    infoReqDate = null;
+    infoSubmitDate = null;
+    fieldWorkStartDate = null;
+    exitMeetingDate = null;
+    managementDiscussionDate = null;
+    reportIssuedDate = null;
+    sharedToBoardDate = null;
+    auditCommitteeTableDate = null;
   }
 
   Future<void> loadAuditRequests() async {
@@ -103,6 +163,7 @@ class AuditRequestViewmodel extends ChangeNotifier {
     personNameController.text = request.auditFirmPersonName;
     meetingDate = DateTime.parse(request.meetingDate);
     preliminaryStartDate = DateTime.parse(request.preliminaryStartDate);
+    departmentController.text = request.auditDepartment;
 
     notifyListeners();
   }

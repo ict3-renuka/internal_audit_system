@@ -87,6 +87,9 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           if (value == "Add Center") {
             Navigator.pushNamed(context, "/add-center");
           }
+          if (value == "Add Department") {
+            Navigator.pushNamed(context, "/add-department");
+          }
           if (value == "New Audit Request") {
             Navigator.pushNamed(context, "/new-audit-request");
           }

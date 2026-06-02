@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/core/theme/app_colors.dart';
+import 'package:project_one/core/theme/app_text_style.dart';
+import 'package:project_one/ui/widget/build_date_field_widget.dart';
 import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -39,32 +41,25 @@ class _AuditRequestViewState extends State<AuditRequestView> {
       backgroundColor: AppColors.secondBackground,
       appBar: AppNavBar(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 100,
-          vertical: 40,
+        padding: EdgeInsets.symmetric(
+          horizontal: width * 0.05,
+          vertical: width * 0.02,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "New Audit Request",
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
+              style: AppTextStyles.title,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "Initialize a new audit engagement by providing meeting details and firm contact information.",
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 16,
-              ),
+              style: AppTextStyles.paragraph
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: width * 0.02 ),
             Container(
-              padding: const EdgeInsets.all(40),
+              padding: EdgeInsets.all(width * 0.02),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -84,11 +79,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                       SizedBox(width: 12),
                       Text(
                         "Meeting Details",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
+                        style: AppTextStyles.subTitle
                       ),
                     ],
                   ),
@@ -107,7 +98,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            _buildDateField(
+                            buildDateField(
                               context: context,
                               label: "Meeting Date",
                               value: vModel.meetingDate,
@@ -117,7 +108,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 24),
+                      SizedBox(width: width * 0.01),
                       Expanded(
                         child: Column(
                           crossAxisAlignment:
@@ -130,7 +121,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            _buildDateField(
+                            buildDateField(
                               context: context,
                               label: "Preliminary Start Date",
                               value: vModel.preliminaryStartDate,
@@ -140,9 +131,49 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           ],
                         ),
                       ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Audit Department",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.departmentController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Department",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: width * 0.01),
                   const Text(
                     "Description",
                     style: TextStyle(
@@ -152,10 +183,12 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: vModel.descriptionController,
-                    maxLines: 5,
+                    maxLines: 2,
+                    maxLength: 300,
                     decoration: InputDecoration(
                       hintText:
                       "Enter detailed scope and context for this audit request...",
+                      hintStyle: AppTextStyles.hint,
                       border: OutlineInputBorder(
                         borderRadius:
                         BorderRadius.circular(4),
@@ -163,46 +196,13 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius:
                         BorderRadius.circular(4),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD8DADC),
+                        borderSide: BorderSide(
+                          color: AppColors.border,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-            Container(
-              padding: const EdgeInsets.all(40),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: AppColors.border,
-                ),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.business_center_outlined,
-                        color: AppColors.primary,
-                      ),
-                      SizedBox(width: 12),
-                      Text(
-                        "Audit Firm Contact",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: width * 0.005),
                   Row(
                     children: [
                       Expanded(
@@ -222,14 +222,22 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                               controller:
                               vModel.personIdController,
                               keyboardType:
-                              TextInputType.number,
+                              TextInputType.text,
                               decoration: InputDecoration(
-                                hintText: "ID-0000-X",
+                                hintText: "Enter Person ID",
+                                hintStyle: AppTextStyles.hint,
                                 border:
                                 OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(
                                       4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
                                 ),
                               ),
                             ),
@@ -255,14 +263,328 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                               vModel.personNameController,
                               decoration: InputDecoration(
                                 hintText:
-                                "Full Legal Name",
+                                "Enter Name",
+                                hintStyle: AppTextStyles.hint,
                                 border:
                                 OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(
                                       4),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: width * 0.02),
+            Container(
+              padding: EdgeInsets.all(width * 0.02),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: AppColors.border,
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        color: AppColors.primary,
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                          "Audit Schedule Details",
+                          style: AppTextStyles.subTitle
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: width * 0.02),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Information Request Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Information Request Date",
+                              value: vModel.infoReqDate,
+                              onSelect: vModel.setInfoReqDate,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Information Submit Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Information Submit Date",
+                              value: vModel.infoSubmitDate,
+                              onSelect:
+                              vModel.setInfoSubmitDate,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: width * 0.01),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Field Work Start Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Information Request Date",
+                              value: vModel.fieldWorkStartDate,
+                              onSelect: vModel.setFieldWorkStartDate,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Field Work End Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Field Work End Date",
+                              value: vModel.fieldWorkEndDate,
+                              onSelect:
+                              vModel.setFieldWorkEndDate,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Exit Meeting Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Exit Meeting Date",
+                              value: vModel.exitMeetingDate,
+                              onSelect:
+                              vModel.setExitMeetingDate,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: width * 0.02),
+            Container(
+              padding: EdgeInsets.all(width * 0.02),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: AppColors.border,
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        color: AppColors.primary,
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                          "Management Discussion Details",
+                          style: AppTextStyles.subTitle
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: width * 0.02),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Management Discussion Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Management Discussion Date",
+                              value: vModel.managementDiscussionDate,
+                              onSelect: vModel.setManagementDiscussionDate,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: width * 0.02),
+            Container(
+              padding: EdgeInsets.all(width * 0.02),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: AppColors.border,
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        color: AppColors.primary,
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                          "Management Report Details",
+                          style: AppTextStyles.subTitle
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: width * 0.02),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Report Issued Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Report Issued Date",
+                              value: vModel.reportIssuedDate,
+                              onSelect: vModel.setReportIssuedDate,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Shared to Board Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Shared to Board Date",
+                              value: vModel.sharedToBoardDate,
+                              onSelect:
+                              vModel.setSharedToBoardDate,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Audit Committee Table Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Audit Committee Table Date",
+                              value: vModel.auditCommitteeTableDate,
+                              onSelect:
+                              vModel.setAuditCommitteeTableDate,
                             ),
                           ],
                         ),
@@ -289,9 +611,9 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         );
                       },
                       icon: vModel.isLoading
-                          ? const SizedBox(
-                        width: 18,
-                        height: 18,
+                          ? SizedBox(
+                        width: width * 0.01,
+                        height: width * 0.01,
                         child:
                         CircularProgressIndicator(
                           strokeWidth: 2,
@@ -313,12 +635,11 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                       ),
                       style:
                       ElevatedButton.styleFrom(
-                        backgroundColor:
-                        const Color(0xFF002D62),
+                        backgroundColor: AppColors.primary,
                         padding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 24,
+                        EdgeInsets.symmetric(
+                          horizontal: width * 0.02,
+                          vertical: width * 0.012,
                         ),
                         shape:
                         RoundedRectangleBorder(
@@ -332,62 +653,6 @@ class _AuditRequestViewState extends State<AuditRequestView> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateField({
-    required BuildContext context,
-    required String label,
-    required DateTime? value,
-    required Function(DateTime) onSelect,
-    bool disableFutureDates = false,
-  }) {
-    return InkWell(
-      onTap: () async {
-        DateTime now = DateTime.now();
-
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: value ?? now,
-          firstDate: DateTime(2000),
-          lastDate: disableFutureDates
-              ? now
-              : DateTime(2100),
-        );
-
-        if (pickedDate != null) {
-          onSelect(pickedDate);
-        }
-      },
-      child: InputDecorator(
-        decoration: InputDecoration(
-          hintText: "Select Date",
-          suffixIcon: const Icon(
-            Icons.calendar_month_outlined,
-          ),
-          border: OutlineInputBorder(
-            borderRadius:
-            BorderRadius.circular(4),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius:
-            BorderRadius.circular(4),
-            borderSide: const BorderSide(
-              color: Color(0xFFD8DADC),
-            ),
-          ),
-        ),
-        child: Text(
-          value == null
-              ? "Select Date"
-              : value.toString().split(" ")[0],
-          style: TextStyle(
-            color: value == null
-                ? Colors.black45
-                : Colors.black87,
-          ),
         ),
       ),
     );

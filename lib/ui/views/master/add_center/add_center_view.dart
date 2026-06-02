@@ -124,6 +124,7 @@ class _AddCenterViewState extends State<AddCenterView> {
                                       ? null
                                       : () async {
                                     await vModel.addCenter();
+                                    if (!context.mounted) return;
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text("Center Added Successfully"),

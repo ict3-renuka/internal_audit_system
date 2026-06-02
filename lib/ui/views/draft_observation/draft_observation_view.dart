@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/core/theme/app_colors.dart';
 import 'package:project_one/data/models/draft_observation_model.dart';
+import 'package:project_one/ui/widget/build_date_field_widget.dart';
 import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/theme/app_text_style.dart';
 import 'draft_observation_view_model.dart';
 
 class DraftObservationView extends StatefulWidget {
@@ -39,32 +41,25 @@ class _DraftObservationViewState extends State<DraftObservationView> {
       backgroundColor: AppColors.secondBackground,
       appBar: AppNavBar(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 100,
-          vertical: 40,
+        padding: EdgeInsets.symmetric(
+          horizontal: width * 0.05,
+          vertical: width * 0.02,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "New Draft Observation",
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
+              "Draft Observation",
+              style: AppTextStyles.title,
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Initialize a new audit engagement by providing meeting details and firm contact information.",
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 16,
-              ),
+            Text(
+                "Initialize a new audit engagement by providing meeting details and firm contact information.",
+                style: AppTextStyles.paragraph
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: width * 0.02 ),
             Container(
-              padding: const EdgeInsets.all(40),
+              padding: EdgeInsets.all(width * 0.02),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -78,16 +73,96 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                   Row(
                     children: [
                       Icon(
-                        Icons.calendar_today_outlined,
+                        Icons.note_alt_outlined,
                         color: AppColors.primary,
                       ),
                       SizedBox(width: 12),
                       Text(
-                        "Meeting Details",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
+                          "Observation Details",
+                          style: AppTextStyles.subTitle
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Area",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.areaController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Area",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Subject",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.subjectController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Subject",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -101,28 +176,84 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                           CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Meeting Date",
+                              "Department",
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                                fontWeight:
+                                FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            _buildDateField(
-                              context: context,
-                              label: "Meeting Date",
-                              value: vModel.remarkedDate,
-                              onSelect: vModel.setRemarkedDate,
-                              disableFutureDates: true,
+                            TextField(
+                              controller:
+                              vModel.departmentController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Department",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 24),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Internal Department",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.internalDepartmentController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Internal Department",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: width * 0.01),
                   const Text(
-                    "Description",
+                    "Details",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -130,10 +261,12 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: vModel.detailsController,
-                    maxLines: 5,
+                    maxLines: 2,
+                    maxLength: 300,
                     decoration: InputDecoration(
                       hintText:
-                      "Enter detailed scope and context for this audit request...",
+                      "Enter detailed scope and context for this observation...",
+                      hintStyle: AppTextStyles.hint,
                       border: OutlineInputBorder(
                         borderRadius:
                         BorderRadius.circular(4),
@@ -141,18 +274,102 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius:
                         BorderRadius.circular(4),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD8DADC),
+                        borderSide: BorderSide(
+                          color: AppColors.border,
                         ),
                       ),
                     ),
                   ),
+                  SizedBox(height: width * 0.005),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Risk And Root Cause",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.riskAndRootCauseController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Risk And Root Cause",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Recommendation",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.recommendationController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Recommendation",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: width * 0.02),
             Container(
-              padding: const EdgeInsets.all(40),
+              padding: EdgeInsets.all(width * 0.02),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -166,17 +383,13 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                   Row(
                     children: [
                       Icon(
-                        Icons.business_center_outlined,
+                        Icons.note_alt_outlined,
                         color: AppColors.primary,
                       ),
                       SizedBox(width: 12),
                       Text(
-                        "Audit Firm Contact",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
+                          "Response Details",
+                          style: AppTextStyles.subTitle
                       ),
                     ],
                   ),
@@ -189,7 +402,47 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                           CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Audit Firm Person ID",
+                              "Management Response",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.manageResponseController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Response",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Responsible user",
                               style: TextStyle(
                                 fontWeight:
                                 FontWeight.bold,
@@ -200,28 +453,36 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                               controller:
                               vModel.responsibleUserIdController,
                               keyboardType:
-                              TextInputType.number,
+                              TextInputType.text,
                               decoration: InputDecoration(
-                                hintText: "ID-0000-X",
+                                hintText: "Enter Responsible User",
+                                hintStyle: AppTextStyles.hint,
                                 border:
                                 OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(
                                       4),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 24),
+                      SizedBox(width: width * 0.01),
                       Expanded(
                         child: Column(
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Audit Firm Person Name",
+                              "Action Timeline",
                               style: TextStyle(
                                 fontWeight:
                                 FontWeight.bold,
@@ -230,17 +491,191 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                             const SizedBox(height: 8),
                             TextField(
                               controller:
-                              vModel.riskAndRootCauseController,
+                              vModel.actionTimeLineController,
+                              keyboardType:
+                              TextInputType.text,
                               decoration: InputDecoration(
-                                hintText:
-                                "Full Legal Name",
+                                hintText: "Enter Action TimeLine (In Days)",
+                                hintStyle: AppTextStyles.hint,
                                 border:
                                 OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(
                                       4),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: width * 0.01),
+                  const Text(
+                    "Corrective Action Plan",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: vModel.correctiveActionPlanController,
+                    maxLines: 2,
+                    maxLength: 300,
+                    decoration: InputDecoration(
+                      hintText:
+                      "Enter Action Plan",
+                      hintStyle: AppTextStyles.hint,
+                      border: OutlineInputBorder(
+                        borderRadius:
+                        BorderRadius.circular(4),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius:
+                        BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                          color: AppColors.border,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: width * 0.02),
+            Container(
+              padding: EdgeInsets.all(width * 0.02),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: AppColors.border,
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.note_alt_outlined,
+                        color: AppColors.primary,
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                          "Follow Up Details",
+                          style: AppTextStyles.subTitle
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Status",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.statusController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Status",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Remark",
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller:
+                              vModel.remarkController,
+                              keyboardType:
+                              TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: "Enter Remark",
+                                hintStyle: AppTextStyles.hint,
+                                border:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Remarked Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildDateField(
+                              context: context,
+                              label: "Remarked Date",
+                              value: vModel.remarkedDate,
+                              onSelect: vModel.setRemarkedDate,
+                              disableFutureDates: true,
                             ),
                           ],
                         ),
@@ -261,15 +696,15 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         ).showSnackBar(
                           const SnackBar(
                             content: Text(
-                              "Audit Request Added Successfully",
+                              "Draft Observation Added Successfully",
                             ),
                           ),
                         );
                       },
                       icon: vModel.isLoading
-                          ? const SizedBox(
-                        width: 18,
-                        height: 18,
+                          ? SizedBox(
+                        width: width * 0.01,
+                        height: width * 0.01,
                         child:
                         CircularProgressIndicator(
                           strokeWidth: 2,
@@ -282,7 +717,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         size: 18,
                       ),
                       label: const Text(
-                        "Add Audit Request",
+                        "Add Draft Observation",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight:
@@ -291,12 +726,11 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                       ),
                       style:
                       ElevatedButton.styleFrom(
-                        backgroundColor:
-                        const Color(0xFF002D62),
+                        backgroundColor: AppColors.primary,
                         padding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 24,
+                        EdgeInsets.symmetric(
+                          horizontal: width * 0.02,
+                          vertical: width * 0.012,
                         ),
                         shape:
                         RoundedRectangleBorder(
@@ -310,62 +744,6 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateField({
-    required BuildContext context,
-    required String label,
-    required DateTime? value,
-    required Function(DateTime) onSelect,
-    bool disableFutureDates = false,
-  }) {
-    return InkWell(
-      onTap: () async {
-        DateTime now = DateTime.now();
-
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: value ?? now,
-          firstDate: DateTime(2000),
-          lastDate: disableFutureDates
-              ? now
-              : DateTime(2100),
-        );
-
-        if (pickedDate != null) {
-          onSelect(pickedDate);
-        }
-      },
-      child: InputDecorator(
-        decoration: InputDecoration(
-          hintText: "Select Date",
-          suffixIcon: const Icon(
-            Icons.calendar_month_outlined,
-          ),
-          border: OutlineInputBorder(
-            borderRadius:
-            BorderRadius.circular(4),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius:
-            BorderRadius.circular(4),
-            borderSide: const BorderSide(
-              color: Color(0xFFD8DADC),
-            ),
-          ),
-        ),
-        child: Text(
-          value == null
-              ? "Select Date"
-              : value.toString().split(" ")[0],
-          style: TextStyle(
-            color: value == null
-                ? Colors.black45
-                : Colors.black87,
-          ),
         ),
       ),
     );

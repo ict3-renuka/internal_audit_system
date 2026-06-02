@@ -1,11 +1,11 @@
 class DepartmentModel {
-  final int internalDepartmentId;
+  final int? internalDepartmentId;
   final int companyId;
   final String auditDepartmentName;
   final String internalDepartmentName;
 
   DepartmentModel({
-    required this.internalDepartmentId,
+    this.internalDepartmentId,
     required this.companyId,
     required this.auditDepartmentName,
     required this.internalDepartmentName,
