@@ -14,19 +14,14 @@ class AddCenterViewmodel extends ChangeNotifier {
 
   final TextEditingController centerController = TextEditingController();
 
-  String? selectedCompany;
+  CompanyModel? selectedCompany;
 
   bool isLoading = false;
 
   List<CenterModel> centerList = [];
   List<CompanyModel> companyList = [];
 
-  final List<String> sectors = [
-    "RDL",
-    "SWCL",
-  ];
-
-  void setCompany(String? value) {
+  void setCompany(CompanyModel? value) {
     selectedCompany = value;
     notifyListeners();
   }
@@ -36,7 +31,7 @@ class AddCenterViewmodel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    centerList = await centerApi.getCenters();
+    centerList = await centerApi.getCenterList();
     companyList = await companyApi.getCompanyList();
 
     isLoading = false;
@@ -56,30 +51,35 @@ class AddCenterViewmodel extends ChangeNotifier {
     ).companyName;
   }
 
-  Future<void> addCenter() async {
-
+  Future<bool> addCenter() async {
     if (selectedCompany == null ||
         centerController.text.trim().isEmpty) {
-      return;
+      return false;
     }
 
-    isLoading = true;
-    notifyListeners();
+    try {
+      isLoading = true;
+      notifyListeners();
 
-    int companyId = selectedCompany == "RDL" ? 1 : 2;
+      CenterModel center = CenterModel(
+        companyId: selectedCompany!.companyId!,
+        centerName: centerController.text.trim(),
+      );
 
-    CenterModel center = CenterModel(
-      companyId: companyId,
-      centerName: centerController.text.trim(),
-    );
+      await centerApi.addCenter(center);
 
-    await centerApi.addCenter(center);
-    centerList = await centerApi.getCenters();
+      centerController.clear();
+      selectedCompany = null;
 
-    centerController.clear();
-    selectedCompany = null;
+      await loadData();
 
-    isLoading = false;
-    notifyListeners();
+      return true;
+    } catch (e) {
+      print("ViewModel Error: $e");
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

@@ -36,36 +36,42 @@ class AddCompanyViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addCompany() async {
-
+  Future<bool> addCompany() async {
     if (selectedSector == null ||
         companyController.text.trim().isEmpty) {
-      return;
+      return false;
     }
 
     isLoading = true;
     notifyListeners();
 
-    final sectorId = sectorMap[selectedSector!];
+    try {
+      final sectorId = sectorMap[selectedSector!];
 
-    if (sectorId == null) {
+      if (sectorId == null) return false;
+
+      CompanyModel company = CompanyModel(
+        sectorId: sectorId,
+        sectorName: selectedSector!,
+        companyName: companyController.text.trim(),
+      );
+
+      await companyApi.addCompany(company);
+
+      companyController.clear();
+      selectedSector = null;
+
+      await loadCompanies();
+
+      return true;
+
+    } catch (e) {
+      print("ViewModel Error: $e");
+      return false;
+
+    } finally {
       isLoading = false;
       notifyListeners();
-      return;
     }
-
-    CompanyModel company = CompanyModel(
-      sectorId: sectorId,
-      sectorName: selectedSector!,
-      companyName: companyController.text.trim(),
-    );
-
-    await companyApi.addCompany(company);
-
-    companyController.clear();
-    selectedSector = null;
-
-    isLoading = false;
-    notifyListeners();
   }
 }

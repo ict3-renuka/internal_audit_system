@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_one/data/models/company_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -84,8 +85,8 @@ class _AddCenterViewState extends State<AddCenterView> {
                               const SizedBox(height: 30),
                               const Text("Select Company"),
                               const SizedBox(height: 8),
-                              DropdownButtonFormField<String>(
-                                initialValue: vModel.selectedCompany,
+                              DropdownButtonFormField<CompanyModel>(
+                                value: vModel.selectedCompany,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                     borderRadius:
@@ -94,7 +95,7 @@ class _AddCenterViewState extends State<AddCenterView> {
                                 ),
                                 items: vModel.companyList.map((company) {
                                   return DropdownMenuItem(
-                                    value: company.companyName,
+                                    value: company,
                                     child:
                                     Text(company.companyName),
                                   );
@@ -123,33 +124,38 @@ class _AddCenterViewState extends State<AddCenterView> {
                                   onPressed: vModel.isLoading
                                       ? null
                                       : () async {
-                                    await vModel.addCenter();
+                                    if (vModel.selectedCompany == null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("Please select a company.")),
+                                      );
+                                      return;
+                                    }
+                                    if (vModel.centerController.text.trim().isEmpty) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("Center name is required.")),
+                                      );
+                                      return;
+                                    }
+                                    bool success = await vModel.addCenter();
                                     if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("Center Added Successfully"),
-                                      ),
-                                    );
+                                    if (success) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("Center Added Successfully.")),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("Failed to add center.")),
+                                      );
+                                    }
                                   },
-                                  style:
-                                  ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                    AppColors.primary,
-                                    foregroundColor:
-                                    Colors.white,
-                                    disabledBackgroundColor:
-                                    AppColors.primary,
-                                    disabledForegroundColor:
-                                    Colors.white,
-                                    padding:
-                                    const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    shape:
-                                    RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(
-                                          4),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    foregroundColor: Colors.white,
+                                    disabledBackgroundColor: AppColors.primary,
+                                    disabledForegroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
                                   ),
                                   child: SizedBox(
@@ -160,22 +166,16 @@ class _AddCenterViewState extends State<AddCenterView> {
                                           ? const SizedBox(
                                         width: 18,
                                         height: 18,
-                                        child:
-                                        CircularProgressIndicator(
+                                        child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          valueColor:
-                                          AlwaysStoppedAnimation<
-                                              Color>(
+                                          valueColor: AlwaysStoppedAnimation<Color>(
                                             Colors.white,
                                           ),
                                         ),
                                       )
                                           : const Text(
                                         "Add Center",
-                                        style: TextStyle(
-                                          color:
-                                          Colors.white,
-                                        ),
+                                        style: TextStyle(color: Colors.white),
                                       ),
                                     ),
                                   ),

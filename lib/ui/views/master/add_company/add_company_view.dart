@@ -112,13 +112,36 @@ class _AddCompanyViewState extends State<AddCompanyView> {
                                   onPressed: vModel.isLoading
                                       ? null
                                       : () async {
-                                    await vModel.addCompany();
+                                    if (vModel.selectedSector == null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("Please select a sector.")),
+                                      );
+                                      return;
+                                    }
+
+                                    if (vModel.companyController.text.trim().isEmpty) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("Company name is required.")),
+                                      );
+                                      return;
+                                    }
+                                    bool success = await vModel.addCompany();
+
                                     if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("Company Added Successfully"),
-                                      ),
-                                    );
+
+                                    if (success) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("Company Added Successfully."),
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("Failed to add company."),
+                                        ),
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
