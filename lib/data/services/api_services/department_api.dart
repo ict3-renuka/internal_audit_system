@@ -16,8 +16,8 @@ class DepartmentApi {
     await Future.delayed(const Duration(seconds: 1));
 
     return [
-      DepartmentModel(internalDepartmentId: 1, companyId: 1, auditDepartmentName: "Production", internalDepartmentName: "Department One"),
-      DepartmentModel(internalDepartmentId: 1, companyId: 1, auditDepartmentName: "Production", internalDepartmentName: "Department Two"),
+      DepartmentModel(departmentId: 1,companyId: 1, departmentName: "Production"),
+      DepartmentModel(departmentId: 2, companyId: 1, departmentName: "Production"),
     ];
   }
 }

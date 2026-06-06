@@ -3,22 +3,22 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../widget/nav_bar_widget.dart';
-import 'add_department_viewmodel.dart';
+import 'add_internal_department_viewmodel.dart';
 
-class AddDepartmentView extends StatefulWidget {
-  const AddDepartmentView({super.key});
+class AddInternalDepartmentView extends StatefulWidget {
+  const AddInternalDepartmentView({super.key});
 
   @override
-  State<AddDepartmentView> createState() => _AddDepartmentViewState();
+  State<AddInternalDepartmentView> createState() => _AddInternalDepartmentViewState();
 }
 
-class _AddDepartmentViewState extends State<AddDepartmentView> {
+class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() {
-      Provider.of<AddDepartmentViewmodel>(
+      Provider.of<AddInternalDepartmentViewmodel>(
         context,
         listen: false,
       ).loadData();
@@ -30,7 +30,7 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
     return Scaffold(
       backgroundColor: AppColors.secondBackground,
       appBar: AppNavBar(),
-      body: Consumer<AddDepartmentViewmodel>(
+      body: Consumer<AddInternalDepartmentViewmodel>(
         builder: (context, vModel, child) {
           return Padding(
             padding: const EdgeInsets.all(40),
@@ -74,7 +74,7 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Add Department",
+                                "Add Internal Department",
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
@@ -82,34 +82,34 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              const Text("Select Company"),
+                              const Text("Select Department"),
                               const SizedBox(height: 8),
                               DropdownButtonFormField<String>(
-                                initialValue: vModel.selectedCompany,
+                                initialValue: vModel.selectedDepartment,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                     borderRadius:
                                     BorderRadius.circular(4),
                                   ),
                                 ),
-                                items: vModel.companyList.map((company) {
+                                items: vModel.departmentList.map((company) {
                                   return DropdownMenuItem(
-                                    value: company.companyName,
+                                    value: company.departmentName,
                                     child:
-                                    Text(company.companyName),
+                                    Text(company.departmentName),
                                   );
                                 }).toList(),
-                                onChanged: vModel.setCompany,
+                                onChanged: vModel.setDepartment,
                               ),
                               const SizedBox(height: 20),
-                              const Text("Department Name"),
+                              const Text("Internal Department Name"),
                               const SizedBox(height: 8),
                               TextField(
                                 controller:
-                                vModel.departmentController,
+                                vModel.internalDepartmentController,
                                 decoration: InputDecoration(
                                   hintText:
-                                  "Enter Department Name",
+                                  "Enter Internal Department Name",
                                   border: OutlineInputBorder(
                                     borderRadius:
                                     BorderRadius.circular(4),
@@ -125,10 +125,10 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                   onPressed: vModel.isLoading
                                       ? null
                                       : () async {
-                                    await vModel.addDepartment();
+                                    await vModel.addInternalDepartment();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text("Department Added Successfully"),
+                                        content: Text("Internal Department Added Successfully"),
                                       ),
                                     );
                                   },
@@ -172,7 +172,7 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                         ),
                                       )
                                           : const Text(
-                                        "Add Department",
+                                        "Add Internal Department",
                                         style: TextStyle(
                                           color:
                                           Colors.white,
@@ -206,7 +206,7 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                 padding:
                                 const EdgeInsets.all(24),
                                 child: Text(
-                                  "Department List",
+                                  "Internal Department List",
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight:
@@ -230,11 +230,11 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                            "Company Name"),
+                                            "Department Name"),
                                       ),
                                       Expanded(
                                         child:
-                                        Text("Department Name"),
+                                        Text("Internal Department Name"),
                                       ),
                                     ],
                                   ),
@@ -248,12 +248,12 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                 )
                                     : ListView.builder(
                                   itemCount:
-                                  vModel.departmentList
+                                  vModel.internalDepartmentList
                                       .length,
                                   itemBuilder:
                                       (context, index) {
                                     final e = vModel
-                                        .departmentList[index];
+                                        .internalDepartmentList[index];
                                     return Container(
                                       padding:
                                       const EdgeInsets
@@ -277,13 +277,13 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                                           Expanded(
                                             child: Text(
                                               vModel.getCompanyName(
-                                                e.companyId,
+                                                e.departmentId,
                                               ),
                                             ),
                                           ),
                                           Expanded(
                                             child: Text(
-                                              e.departmentName,
+                                              e.internalDepartmentName,
                                             ),
                                           ),
                                         ],

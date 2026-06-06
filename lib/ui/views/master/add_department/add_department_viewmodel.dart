@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_one/data/models/center_model.dart';
 import 'package:project_one/data/models/department_model.dart';
-import 'package:project_one/data/services/api_services/center_api.dart';
 import 'package:project_one/data/services/api_services/company_api.dart';
 import 'package:project_one/data/services/api_services/department_api.dart';
 
@@ -14,8 +12,7 @@ class AddDepartmentViewmodel extends ChangeNotifier {
 
   AddDepartmentViewmodel(this.companyApi, this.departmentApi);
 
-  final TextEditingController auditDepartmentController = TextEditingController();
-  final TextEditingController internalDepartmentController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
 
   String? selectedCompany;
 
@@ -58,8 +55,7 @@ class AddDepartmentViewmodel extends ChangeNotifier {
   Future<void> addDepartment() async {
 
     if (selectedCompany == null ||
-        auditDepartmentController.text.trim().isEmpty ||
-        internalDepartmentController.text.trim().isEmpty) {
+        departmentController.text.trim().isEmpty) {
       return;
     }
 
@@ -70,15 +66,13 @@ class AddDepartmentViewmodel extends ChangeNotifier {
 
     DepartmentModel department = DepartmentModel(
       companyId: companyId,
-      auditDepartmentName: auditDepartmentController.text,
-      internalDepartmentName: internalDepartmentController.text,
+      departmentName: departmentController.text,
     );
 
     await departmentApi.addDepartment(department);
     departmentList = await departmentApi.getDepartment();
 
-    auditDepartmentController.clear();
-    internalDepartmentController.clear();
+    departmentController.clear();
     selectedCompany = null;
 
     isLoading = false;

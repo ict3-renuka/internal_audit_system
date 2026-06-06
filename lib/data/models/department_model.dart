@@ -1,21 +1,18 @@
 class DepartmentModel {
-  final int? internalDepartmentId;
+  final int? departmentId;
   final int companyId;
-  final String auditDepartmentName;
-  final String internalDepartmentName;
+  final String departmentName;
 
   DepartmentModel({
-    this.internalDepartmentId,
+    this.departmentId,
     required this.companyId,
-    required this.auditDepartmentName,
-    required this.internalDepartmentName,
+    required this.departmentName,
   });
 
   Map<String, dynamic> toJson() {
     return {
       "company_id": companyId,
-      "audit_department_name": auditDepartmentName,
-      "internal_department_name": internalDepartmentName,
+      "department_name": departmentName,
     };
   }
 }

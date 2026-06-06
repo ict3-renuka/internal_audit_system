@@ -28,7 +28,8 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           _buildDropdownMenu(context, "Master", [
             "Add Company",
             "Add Center",
-            "Add Department"
+            "Add Department",
+            "Add Internal Department"
           ]),
 
           _buildDropdownMenu(context, "Audit Requests", [
@@ -89,6 +90,9 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
           }
           if (value == "Add Department") {
             Navigator.pushNamed(context, "/add-department");
+          }
+          if (value == "Add Internal Department") {
+            Navigator.pushNamed(context, "/add-internal-department");
           }
           if (value == "New Audit Request") {
             Navigator.pushNamed(context, "/new-audit-request");
