@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/core/theme/app_colors.dart';
 import 'package:project_one/core/theme/app_text_style.dart';
-import 'package:project_one/ui/widget/build_date_field_widget.dart';
 import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/models/audit_request_model.dart';
+import '../../widget/master_date_field_widget.dart';
+import '../../widget/master_text_field_widget.dart';
 import 'audit_request_view_model.dart';
 
 class AuditRequestView extends StatefulWidget {
@@ -87,25 +88,20 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                   Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Meeting Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Meeting Date",
-                              value: vModel.meetingDate,
-                              onSelect: vModel.setMeetingDate,
-                              disableFutureDates: true,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Meeting Date",
+                          value: vModel.meetingDate,
+                          onSelect: vModel.setMeetingDate,
+                          disableFutureDates: true,
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: MasterDateFieldWidget(
+                          label: "Preliminary Start Date",
+                          value: vModel.preliminaryStartDate,
+                          onSelect: vModel.setPreliminaryStartDate,
+                          disableFutureDates: false,
                         ),
                       ),
                       SizedBox(width: width * 0.01),
@@ -114,59 +110,10 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Preliminary Start Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Preliminary Start Date",
-                              value: vModel.preliminaryStartDate,
-                              onSelect:
-                              vModel.setPreliminaryStartDate,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: width * 0.01),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Audit Department",
-                              style: TextStyle(
-                                fontWeight:
-                                FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              controller:
-                              vModel.departmentController,
-                              keyboardType:
-                              TextInputType.text,
-                              decoration: InputDecoration(
-                                hintText: "Enter Department",
-                                hintStyle: AppTextStyles.hint,
-                                border:
-                                OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      4),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(4),
-                                  borderSide: BorderSide(
-                                    color: AppColors.border,
-                                  ),
-                                ),
-                              ),
+                            MasterTextFieldWidget(
+                              label: "Audit Department",
+                              hintText: "Enter Department",
+                              controller: vModel.departmentController,
                             ),
                           ],
                         ),
@@ -174,33 +121,12 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                     ],
                   ),
                   SizedBox(height: width * 0.01),
-                  const Text(
-                    "Description",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
+                  MasterTextFieldWidget(
+                    label: "Description",
+                    hintText: "Enter detailed scope and context for this audit request...",
                     controller: vModel.descriptionController,
                     maxLines: 2,
                     maxLength: 300,
-                    decoration: InputDecoration(
-                      hintText:
-                      "Enter detailed scope and context for this audit request...",
-                      hintStyle: AppTextStyles.hint,
-                      border: OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius.circular(4),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: AppColors.border,
-                        ),
-                      ),
-                    ),
                   ),
                   SizedBox(height: width * 0.005),
                   Row(
@@ -210,34 +136,20 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Audit Firm Person ID",
-                              style: TextStyle(
-                                fontWeight:
-                                FontWeight.bold,
-                              ),
-                            ),
+                            const Text("Audit Firm"),
                             const SizedBox(height: 8),
-                            TextField(
-                              controller:
-                              vModel.personIdController,
-                              keyboardType:
-                              TextInputType.text,
+                            DropdownButtonFormField<String>(
+                              initialValue: vModel.selectedAuditFirm,
+                              items: vModel.auditFirms
+                                  .map((s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s),
+                              ))
+                                  .toList(),
+                              onChanged: vModel.setAuditFirm,
                               decoration: InputDecoration(
-                                hintText: "Enter Person ID",
-                                hintStyle: AppTextStyles.hint,
-                                border:
-                                OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      4),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(4),
-                                  borderSide: BorderSide(
-                                    color: AppColors.border,
-                                  ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
                               ),
                             ),
@@ -250,35 +162,10 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Audit Firm Person Name",
-                              style: TextStyle(
-                                fontWeight:
-                                FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              controller:
-                              vModel.personNameController,
-                              decoration: InputDecoration(
-                                hintText:
-                                "Enter Name",
-                                hintStyle: AppTextStyles.hint,
-                                border:
-                                OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      4),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(4),
-                                  borderSide: BorderSide(
-                                    color: AppColors.border,
-                                  ),
-                                ),
-                              ),
+                            MasterTextFieldWidget(
+                              label: "Audit Firm Person Name",
+                              hintText: "Enter DepartmentAudit Firm Person Name",
+                              controller: vModel.personNameController,
                             ),
                           ],
                         ),
@@ -318,47 +205,20 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                   Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Information Request Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Information Request Date",
-                              value: vModel.infoReqDate,
-                              onSelect: vModel.setInfoReqDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Info Request Date",
+                          value: vModel.infoReqDate,
+                          onSelect: vModel.setInfoReqDate,
+                          disableFutureDates: false,
                         ),
                       ),
                       SizedBox(width: width * 0.01),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Information Submit Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Information Submit Date",
-                              value: vModel.infoSubmitDate,
-                              onSelect:
-                              vModel.setInfoSubmitDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Information Submit Date",
+                          value: vModel.infoSubmitDate,
+                          onSelect: vModel.setInfoSubmitDate,
+                          disableFutureDates: false,
                         ),
                       ),
                     ],
@@ -367,70 +227,29 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                   Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Field Work Start Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Information Request Date",
-                              value: vModel.fieldWorkStartDate,
-                              onSelect: vModel.setFieldWorkStartDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Field Work Start Date",
+                          value: vModel.fieldWorkStartDate,
+                          onSelect: vModel.setFieldWorkStartDate,
+                          disableFutureDates: false,
                         ),
                       ),
                       SizedBox(width: width * 0.01),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Field Work End Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Field Work End Date",
-                              value: vModel.fieldWorkEndDate,
-                              onSelect:
-                              vModel.setFieldWorkEndDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Field Work End Date",
+                          value: vModel.fieldWorkEndDate,
+                          onSelect: vModel.setFieldWorkEndDate,
+                          disableFutureDates: false,
                         ),
                       ),
                       SizedBox(width: width * 0.01),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Exit Meeting Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Exit Meeting Date",
-                              value: vModel.exitMeetingDate,
-                              onSelect:
-                              vModel.setExitMeetingDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Exit Meeting Date",
+                          value: vModel.exitMeetingDate,
+                          onSelect: vModel.setExitMeetingDate,
+                          disableFutureDates: false,
                         ),
                       ),
                     ],
@@ -468,24 +287,11 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                   Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Management Discussion Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Management Discussion Date",
-                              value: vModel.managementDiscussionDate,
-                              onSelect: vModel.setManagementDiscussionDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Management Discussion Date",
+                          value: vModel.managementDiscussionDate,
+                          onSelect: vModel.setManagementDiscussionDate,
+                          disableFutureDates: false,
                         ),
                       ),
                     ],
@@ -523,70 +329,29 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                   Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Report Issued Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Report Issued Date",
-                              value: vModel.reportIssuedDate,
-                              onSelect: vModel.setReportIssuedDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Report Issued Date",
+                          value: vModel.reportIssuedDate,
+                          onSelect: vModel.setReportIssuedDate,
+                          disableFutureDates: false,
                         ),
                       ),
                       SizedBox(width: width * 0.01),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Shared to Board Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Shared to Board Date",
-                              value: vModel.sharedToBoardDate,
-                              onSelect:
-                              vModel.setSharedToBoardDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Shared to Board Date",
+                          value: vModel.sharedToBoardDate,
+                          onSelect: vModel.setSharedToBoardDate,
+                          disableFutureDates: false,
                         ),
                       ),
                       SizedBox(width: width * 0.01),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Audit Committee Table Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            buildDateField(
-                              context: context,
-                              label: "Audit Committee Table Date",
-                              value: vModel.auditCommitteeTableDate,
-                              onSelect:
-                              vModel.setAuditCommitteeTableDate,
-                            ),
-                          ],
+                        child: MasterDateFieldWidget(
+                          label: "Audit Committee Table Date",
+                          value: vModel.auditCommitteeTableDate,
+                          onSelect: vModel.setAuditCommitteeTableDate,
+                          disableFutureDates: false,
                         ),
                       ),
                     ],

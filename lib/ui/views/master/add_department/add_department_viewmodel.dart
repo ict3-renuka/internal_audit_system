@@ -14,14 +14,15 @@ class AddDepartmentViewmodel extends ChangeNotifier {
 
   final TextEditingController departmentController = TextEditingController();
 
-  String? selectedCompany;
+  CompanyModel? selectedCompany;
 
   bool isLoading = false;
+  bool isSaving = false;
 
   List<CompanyModel> companyList = [];
   List<DepartmentModel> departmentList = [];
 
-  void setCompany(String? value) {
+  void setCompany(CompanyModel? value) {
     selectedCompany = value;
     notifyListeners();
   }
@@ -52,30 +53,36 @@ class AddDepartmentViewmodel extends ChangeNotifier {
         .companyName;
   }
 
-  Future<void> addDepartment() async {
+  Future<bool> addDepartment() async {
 
     if (selectedCompany == null ||
         departmentController.text.trim().isEmpty) {
-      return;
+      return false;
     }
 
-    isLoading = true;
-    notifyListeners();
+    try{
+      isSaving = true;
+      notifyListeners();
 
-    int companyId = selectedCompany == "RDL" ? 1 : 2;
+      DepartmentModel department = DepartmentModel(
+        companyId: selectedCompany!.companyId!,
+        departmentName: departmentController.text,
+      );
 
-    DepartmentModel department = DepartmentModel(
-      companyId: companyId,
-      departmentName: departmentController.text,
-    );
+      await departmentApi.addDepartment(department);
 
-    await departmentApi.addDepartment(department);
-    departmentList = await departmentApi.getDepartment();
+      departmentController.clear();
+      selectedCompany = null;
 
-    departmentController.clear();
-    selectedCompany = null;
+      await loadData();
 
-    isLoading = false;
-    notifyListeners();
+      return true;
+    }catch (e){
+      print("ViewModel Error: $e");
+      return false;
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
   }
 }

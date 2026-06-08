@@ -17,6 +17,7 @@ class AddCenterViewmodel extends ChangeNotifier {
   CompanyModel? selectedCompany;
 
   bool isLoading = false;
+  bool isSaving = false;
 
   List<CenterModel> centerList = [];
   List<CompanyModel> companyList = [];
@@ -58,7 +59,7 @@ class AddCenterViewmodel extends ChangeNotifier {
     }
 
     try {
-      isLoading = true;
+      isSaving = true;
       notifyListeners();
 
       CenterModel center = CenterModel(
@@ -78,7 +79,7 @@ class AddCenterViewmodel extends ChangeNotifier {
       print("ViewModel Error: $e");
       return false;
     } finally {
-      isLoading = false;
+      isSaving = false;
       notifyListeners();
     }
   }

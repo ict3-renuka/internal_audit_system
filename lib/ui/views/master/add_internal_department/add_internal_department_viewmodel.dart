@@ -13,14 +13,15 @@ class AddInternalDepartmentViewmodel extends ChangeNotifier {
 
   final TextEditingController internalDepartmentController = TextEditingController();
 
-  String? selectedDepartment;
+  DepartmentModel? selectedDepartment;
 
   bool isLoading = false;
+  bool isSaving = false;
 
   List<DepartmentModel> departmentList = [];
   List<InternalDepartmentModel> internalDepartmentList = [];
 
-  void setDepartment(String? value) {
+  void setDepartment(DepartmentModel? value) {
     selectedDepartment = value;
     notifyListeners();
   }
@@ -37,7 +38,7 @@ class AddInternalDepartmentViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String getCompanyName(int id) {
+  String getDepartmentName(int id) {
     return departmentList
         .firstWhere(
           (e) => e.departmentId == id,
@@ -50,30 +51,37 @@ class AddInternalDepartmentViewmodel extends ChangeNotifier {
         .departmentName;
   }
 
-  Future<void> addInternalDepartment() async {
+  Future<bool> addInternalDepartment() async {
 
     if (selectedDepartment == null ||
         internalDepartmentController.text.trim().isEmpty) {
-      return;
+      return false;
     }
 
-    isLoading = true;
-    notifyListeners();
+    try{
+      isSaving = true;
+      notifyListeners();
 
-    int departmentId = selectedDepartment == "Production" ? 1 : 2;
+      InternalDepartmentModel internalDepartmentModel = InternalDepartmentModel(
+        departmentId: selectedDepartment!.departmentId!,
+        internalDepartmentName: internalDepartmentController.text,
+      );
 
-    InternalDepartmentModel internalDepartmentModel = InternalDepartmentModel(
-      departmentId: departmentId,
-      internalDepartmentName: internalDepartmentController.text,
-    );
+      await internalDepartmentApi.addInternalDepartment(internalDepartmentModel);
 
-    await internalDepartmentApi.addInternalDepartment(internalDepartmentModel);
-    internalDepartmentList = await internalDepartmentApi.getInternalDepartment();
+      internalDepartmentController.clear();
+      selectedDepartment = null;
 
-    internalDepartmentController.clear();
-    selectedDepartment = null;
+      await loadData();
 
-    isLoading = false;
-    notifyListeners();
+      return true;
+    }catch (e) {
+      print("ViewModel Error: $e");
+      return false;
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
+
   }
 }

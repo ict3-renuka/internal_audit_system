@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project_one/core/theme/app_colors.dart';
 import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +31,7 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
   Widget build(BuildContext context) {
     final vModel = Provider.of<AuditRequestViewmodel>(context);
     double width = MediaQuery.of(context).size.width;
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -145,7 +147,7 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
                                   );
                                 },
                                 cells: [
-                                  DataCell(Text(e.meetingDate)),
+                                  DataCell(Text(e.meetingDate == null ? "" : DateFormat('yyyy-MM-dd').format(e.meetingDate),),),
                                   DataCell(
                                     SizedBox(
                                       width: 200,
@@ -155,19 +157,19 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
                                       ),
                                     ),
                                   ),
-                                  DataCell(Text(e.preliminaryStartDate)),
-                                  DataCell(Text(e.auditFirmPersonId)),
+                                  DataCell(Text(e.preliminaryStartDate == null ? "" : DateFormat('yyyy-MM-dd').format(e.preliminaryStartDate!),),),
+                                  DataCell(Text(e.auditFirm)),
                                   DataCell(Text(e.auditFirmPersonName)),
                                   DataCell(Text(e.auditDepartment)),
-                                  DataCell(Text(e.infoRequestDate == null ? "" : e.infoRequestDate!)),
-                                  DataCell(Text(e.infoSubmitDate == null ? "" : e.infoSubmitDate!)),
-                                  DataCell(Text(e.fieldWorkStartDate == null ? "" : e.fieldWorkStartDate!)),
-                                  DataCell(Text(e.fieldWorkEndDate == null ? "" : e.fieldWorkEndDate!)),
-                                  DataCell(Text(e.exitMeetingDate == null ? "" : e.exitMeetingDate!)),
-                                  DataCell(Text(e.managementDiscussionDate == null ? "" : e.managementDiscussionDate!)),
-                                  DataCell(Text(e.reportIssuedDate == null ? "" : e.reportIssuedDate!)),
-                                  DataCell(Text(e.sharedToBoardDate == null ? "" : e.sharedToBoardDate!)),
-                                  DataCell(Text(e.auditCommitteeTableDate == null ? "" : e.auditCommitteeTableDate!)),
+                                  DataCell(Text(e.infoRequestDate == null ? "" : DateFormat('yyyy-MM-dd').format(e.infoRequestDate!),),),
+                                  DataCell(Text(e.infoSubmitDate == null ? "" : e.infoSubmitDate!.toString())),
+                                  DataCell(Text(e.fieldWorkStartDate == null ? "" : e.fieldWorkStartDate!.toString())),
+                                  DataCell(Text(e.fieldWorkEndDate == null ? "" : e.fieldWorkEndDate!.toString())),
+                                  DataCell(Text(e.exitMeetingDate == null ? "" : e.exitMeetingDate!.toString())),
+                                  DataCell(Text(e.managementDiscussionDate == null ? "" : e.managementDiscussionDate!.toString())),
+                                  DataCell(Text(e.reportIssuedDate == null ? "" : e.reportIssuedDate!.toString())),
+                                  DataCell(Text(e.sharedToBoardDate == null ? "" : e.sharedToBoardDate!.toString())),
+                                  DataCell(Text(e.auditCommitteeTableDate == null ? "" : e.auditCommitteeTableDate!.toString())),
                                 ],
                               );
                             }).toList(),

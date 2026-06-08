@@ -11,6 +11,7 @@ class AddCompanyViewmodel extends ChangeNotifier {
   final TextEditingController companyController = TextEditingController();
   String? selectedSector;
   bool isLoading = false;
+  bool isSaving = false;
 
   List<CompanyModel> companyList = [];
 
@@ -42,7 +43,7 @@ class AddCompanyViewmodel extends ChangeNotifier {
       return false;
     }
 
-    isLoading = true;
+    isSaving = true;
     notifyListeners();
 
     try {
@@ -70,7 +71,7 @@ class AddCompanyViewmodel extends ChangeNotifier {
       return false;
 
     } finally {
-      isLoading = false;
+      isSaving = false;
       notifyListeners();
     }
   }

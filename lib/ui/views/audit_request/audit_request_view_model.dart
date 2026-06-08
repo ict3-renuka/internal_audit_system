@@ -11,7 +11,6 @@ class AuditRequestViewmodel extends ChangeNotifier {
 
   final TextEditingController departmentController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController personIdController = TextEditingController();
   final TextEditingController personNameController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
 
@@ -27,11 +26,20 @@ class AuditRequestViewmodel extends ChangeNotifier {
   DateTime? sharedToBoardDate;
   DateTime? auditCommitteeTableDate;
 
+  String? selectedAuditFirm;
+
   bool isLoading = false;
   bool isEditLoaded = false;
 
   List<AuditRequestModel> auditRequests = [];
   List<AuditRequestModel> filteredList = [];
+
+  final List<String> auditFirms = ["KPMG", "EY", "Deloitte"];
+
+  void setAuditFirm(String? value) {
+    selectedAuditFirm = value;
+    notifyListeners();
+  }
 
   void setMeetingDate(DateTime date) {
     meetingDate = date;
@@ -89,39 +97,72 @@ class AuditRequestViewmodel extends ChangeNotifier {
   }
 
   Future<void> addAuditRequest() async {
-
     if (meetingDate == null ||
-        preliminaryStartDate == null ||
         descriptionController.text.trim().isEmpty ||
-        personIdController.text.trim().isEmpty ||
         personNameController.text.trim().isEmpty ||
-        departmentController.text.trim().isEmpty) {
-
+        departmentController.text.trim().isEmpty ||
+        selectedAuditFirm == null) {
       return;
     }
 
     isLoading = true;
     notifyListeners();
 
-    AuditRequestModel request = AuditRequestModel(
-      meetingDate: meetingDate.toString(),
-      description: descriptionController.text,
-      preliminaryStartDate: preliminaryStartDate.toString(),
-      auditFirmPersonId: personIdController.text,
-      auditFirmPersonName: personNameController.text,
-      auditDepartment: departmentController.text
+    final request = AuditRequestModel(
+      meetingDate: meetingDate!,
+      description: descriptionController.text.trim(),
+      auditFirm: selectedAuditFirm!,
+      auditFirmPersonName: personNameController.text.trim(),
+      auditDepartment: departmentController.text.trim(),
     );
 
     await auditRequestApi.addAuditRequest(request);
 
     clearFields();
+
     isLoading = false;
     notifyListeners();
   }
 
+  Future<void> updateAuditRequest(int requestId) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final request = AuditRequestModel(
+        requestId: requestId,
+
+        meetingDate: meetingDate!,
+        description: descriptionController.text,
+        preliminaryStartDate: preliminaryStartDate!,
+        auditFirm: selectedAuditFirm ?? "",
+        auditFirmPersonName: personNameController.text,
+        auditDepartment: departmentController.text,
+        infoRequestDate: infoReqDate!,
+        infoSubmitDate: infoSubmitDate!,
+        fieldWorkStartDate: fieldWorkStartDate!,
+        fieldWorkEndDate: fieldWorkEndDate!,
+        exitMeetingDate: exitMeetingDate!,
+        managementDiscussionDate: managementDiscussionDate!,
+        reportIssuedDate: reportIssuedDate!,
+        sharedToBoardDate: sharedToBoardDate!,
+        auditCommitteeTableDate: auditCommitteeTableDate!,
+      );
+
+      await auditRequestApi.updateAuditRequest(
+        requestId,
+        request,
+      );
+
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   void clearFields() {
     descriptionController.clear();
-    personIdController.clear();
+    selectedAuditFirm = null;
     personNameController.clear();
     meetingDate = null;
     preliminaryStartDate = null;
@@ -140,7 +181,7 @@ class AuditRequestViewmodel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    auditRequests = await auditRequestApi.getAuditRequests();
+    auditRequests = await auditRequestApi.getAllAuditRequests();
     filteredList = auditRequests;
     isLoading = false;
     notifyListeners();
@@ -159,10 +200,9 @@ class AuditRequestViewmodel extends ChangeNotifier {
 
   void loadAuditRequest(AuditRequestModel request) {
     descriptionController.text = request.description;
-    personIdController.text = request.auditFirmPersonId.toString();
     personNameController.text = request.auditFirmPersonName;
-    meetingDate = DateTime.parse(request.meetingDate);
-    preliminaryStartDate = DateTime.parse(request.preliminaryStartDate);
+    meetingDate = DateTime.parse(request.meetingDate as String);
+    preliminaryStartDate = DateTime.parse(request.preliminaryStartDate as String);
     departmentController.text = request.auditDepartment;
 
     notifyListeners();

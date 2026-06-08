@@ -1,55 +1,81 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+import '../../../core/constant/api_constant.dart';
 import '../../models/audit_request_model.dart';
 
 class AuditRequestApi {
 
-  Future<void> addAuditRequest(
-      AuditRequestModel auditRequest,
-      ) async {
+  Future<void> addAuditRequest(AuditRequestModel auditRequest) async {
+    try {
+      final url = Uri.parse("${ApiConstant.baseUrl}/AuditRequest");
 
-    print(auditRequest.toJson());
+      final body = jsonEncode(auditRequest.toJson());
 
-    await Future.delayed(
-      const Duration(seconds: 1),
-    );
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: body,
+      );
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception("API Failed: ${response.body}");
+      }
+    } catch (e) {
+      print("Error: $e");
+      rethrow;
+    }
   }
 
-  Future<List<AuditRequestModel>> getAuditRequests() async {
+  Future<List<AuditRequestModel>> getAllAuditRequests() async {
+    try {
+      final url = Uri.parse("${ApiConstant.baseUrl}/AuditRequest");
 
-    await Future.delayed(
-      const Duration(seconds: 1),
-    );
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
 
-    return [
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
 
-      AuditRequestModel(
-        requestId: 1,
-        meetingDate: "2026-05-01",
-        description: "Financial Audit",
-        preliminaryStartDate: "2026-05-10",
-        auditFirmPersonId: "100",
-        auditFirmPersonName: "John",
-        auditDepartment: "Production"
-      ),
+        return data
+            .map((item) => AuditRequestModel.fromJson(item))
+            .toList();
+      }
 
-      AuditRequestModel(
-        requestId: 2,
-        meetingDate: "2026-05-02",
-        description: "Inventory Audit",
-        preliminaryStartDate: "2026-05-15",
-        auditFirmPersonId: "101",
-        auditFirmPersonName: "David",
-        auditDepartment: "Finance"
-      ),
+      throw Exception("Failed to load audit requests");
+    } catch (e) {
+      print("Error: $e");
+      rethrow;
+    }
+  }
 
-      AuditRequestModel(
-        requestId: 2,
-        meetingDate: "2026-05-20",
-        description: "Inventory Audit",
-        preliminaryStartDate: "2026-05-25",
-        auditFirmPersonId: "102",
-        auditFirmPersonName: "Krish",
-        auditDepartment: "Production"
-      ),
-    ];
+  Future<void> updateAuditRequest(int requestId, AuditRequestModel auditRequest) async {
+    try {
+      final url = Uri.parse(
+        "${ApiConstant.baseUrl}/AuditRequest/$requestId",
+      );
+
+      final response = await http.put(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(auditRequest.toJson()),
+      );
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception("Update failed: ${response.body}");
+      }
+    } catch (e) {
+      print("Error: $e");
+      rethrow;
+    }
   }
 }

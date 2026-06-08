@@ -42,8 +42,8 @@ class _AddCompanyViewState extends State<AddCompanyView> {
               width: double.infinity,
               child: MasterButtonWidget(
                 text: "Add Company",
-                isLoading: vModel.isLoading,
-                onPressed: vModel.isLoading
+                isLoading: vModel.isSaving,
+                onPressed: vModel.isSaving
                     ? null
                     : () async {
                   if (vModel.selectedSector == null) {

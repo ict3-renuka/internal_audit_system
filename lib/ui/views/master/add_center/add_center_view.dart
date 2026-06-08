@@ -43,8 +43,10 @@ class _AddCenterViewState extends State<AddCenterView> {
             title: "Add Center",
             button: MasterButtonWidget(
               text: "Add Center",
-              isLoading: vModel.isLoading,
-              onPressed: () async {
+              isLoading: vModel.isSaving,
+              onPressed: vModel.isSaving
+                  ? null
+                  : () async {
                 if (vModel.selectedCompany == null) {
                   AppSnackBar.error(
                     context,
