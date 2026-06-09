@@ -1,11 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/core/theme/app_colors.dart';
 
-class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
+import '../../data/services/session_service.dart';
+
+class AppNavBar extends StatefulWidget implements PreferredSizeWidget {
   const AppNavBar({super.key});
 
   @override
+  State<AppNavBar> createState() => _AppNavBarState();
+
+  @override
   Size get preferredSize => const Size.fromHeight(70);
+}
+
+class _AppNavBarState extends State<AppNavBar> {
+
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    final user = await SessionService.getUser();
+
+    setState(() {
+      userName = user?.userName;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +56,7 @@ class AppNavBar extends StatelessWidget implements PreferredSizeWidget {
             "Add Internal Department"
           ]),
 
+          if (userName == "admin")
           _buildDropdownMenu(context, "Audit Requests", [
             "New Audit Request",
             "Edit Audit Request",

@@ -3,13 +3,30 @@ import 'package:project_one/core/theme/app_colors.dart';
 import 'package:project_one/ui/views/login/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constant/utils.dart';
 import '../../../core/theme/app_text_style.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});
 
-  final emailController = TextEditingController();
+  final userNameController = TextEditingController();
   final passwordController = TextEditingController();
+
+  Future<void> _handleLogin(BuildContext context, LoginViewmodel vModel) async {
+    if (vModel.isLoading) return;
+
+    bool success = await vModel.login(
+      userNameController.text,
+      passwordController.text,
+    );
+
+    if (success) {
+      AppSnackBar.success(context, "Login Success.");
+      Navigator.pushReplacementNamed(context, "/home");
+    } else {
+      AppSnackBar.error(context, vModel.errorMsg ?? "Login failed.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +55,16 @@ class LoginView extends StatelessWidget {
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Email Address",
+                  "Username",
                   style: AppTextStyles.label,
                 ),
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: emailController,
+                controller: userNameController,
+                textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  hintText: "e.g. user@gmail.com",
+                  hintText: "Enter Username",
                   border: const OutlineInputBorder(),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -67,6 +85,10 @@ class LoginView extends StatelessWidget {
               TextField(
                 controller: passwordController,
                 obscureText: vModel.obscurePassword,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) async {
+                  await _handleLogin(context, vModel);
+                },
                 decoration: InputDecoration(
                   hintText: "••••••••",
                   border: const OutlineInputBorder(),
@@ -103,40 +125,7 @@ class LoginView extends StatelessWidget {
                     ),
                   ),
                   onPressed: () async {
-                    if (vModel.isLoading) return;
-                    bool success = await vModel.login(
-                      emailController.text,
-                      passwordController.text,
-                    );
-                    if (success) {
-                      if (success) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text(
-                              "Login Success",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: AppColors.successSnackBar,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          Navigator.pushReplacementNamed(context, "/home");
-                        });
-                      }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            vModel.errorMsg ?? "Error",
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          backgroundColor: Colors.redAccent.shade100,
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
+                    await _handleLogin(context, vModel);
                   },
                   child: vModel.isLoading
                       ? const SizedBox(

@@ -16,6 +16,8 @@ import 'package:project_one/ui/views/master/add_department/add_department_view.d
 import 'package:project_one/ui/views/master/add_department/add_department_viewmodel.dart';
 import 'package:project_one/ui/views/master/add_internal_department/add_internal_department_view.dart';
 import 'package:project_one/ui/views/master/add_internal_department/add_internal_department_viewmodel.dart';
+import 'package:project_one/ui/views/splash_screen/splash_view.dart';
+import 'package:project_one/ui/views/splash_screen/splash_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import 'package:project_one/data/services/api_services/login_api.dart';
@@ -48,6 +50,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => SplashViewModel()),
         ChangeNotifierProvider(create: (_) => LoginViewmodel(loginApi)),
         ChangeNotifierProvider(create: (_) => AddCompanyViewmodel(companyApi)),
         ChangeNotifierProvider(create: (_) => AddCenterViewmodel(centerApi,companyApi)),
@@ -59,8 +62,9 @@ class MyApp extends StatelessWidget {
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: "/login",
+        initialRoute: "/splash",
         routes: {
+          "/splash": (_) => SplashView(),
           "/login": (_) => LoginView(),
           "/home": (_) => const HomeView(),
           "/add-company": (_) => const AddCompanyView(),
