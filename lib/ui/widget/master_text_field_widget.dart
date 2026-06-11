@@ -10,6 +10,7 @@ class MasterTextFieldWidget extends StatelessWidget {
   final int? maxLines;
   final int? maxLength;
   final TextInputType keyboardType;
+  final bool readOnly;
 
   const MasterTextFieldWidget({
     super.key,
@@ -19,6 +20,7 @@ class MasterTextFieldWidget extends StatelessWidget {
     this.maxLines = 1,
     this.maxLength,
     this.keyboardType = TextInputType.text,
+    this.readOnly = false
   });
 
   @override
@@ -35,6 +37,7 @@ class MasterTextFieldWidget extends StatelessWidget {
         const SizedBox(height: 8),
         TextField(
           controller: controller,
+          readOnly: readOnly,
           maxLines: maxLines,
           maxLength: maxLength,
           keyboardType: keyboardType,

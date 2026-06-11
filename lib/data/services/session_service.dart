@@ -10,7 +10,7 @@ class SessionService {
     await prefs.setString("name", user.name);
     await prefs.setString("user_name", user.userName);
     await prefs.setString("designation", user.designation);
-    await prefs.setInt("department_id", user.internalDepartmentId);
+    await prefs.setInt("internal_department_id", user.internalDepartmentId);
     await prefs.setBool("is_login", true);
     await prefs.setString("login_time", DateTime.now().toIso8601String(),);
   }
@@ -26,7 +26,7 @@ class SessionService {
       name: prefs.getString("name") ?? "",
       userName: prefs.getString("user_name") ?? "",
       designation: prefs.getString("designation") ?? "",
-      internalDepartmentId: prefs.getInt("department_id") ?? 0,
+      internalDepartmentId: prefs.getInt("internal_department_id") ?? 0,
       isActive: true,
     );
   }

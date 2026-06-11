@@ -1,53 +1,34 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:project_one/data/models/draft_observation_model.dart';
 
+import '../../../core/constant/api_constant.dart';
+
 class DraftObservationApi {
-  Future<void> addDraftObservation(
-    DraftObservationModel draftObservation,
-  ) async {
-    print(draftObservation.toJson());
 
-    await Future.delayed(const Duration(seconds: 1));
-  }
+  Future<int> addDraftObservation(DraftObservationModel draftObservation) async {
+    try {
+      final url = Uri.parse("${ApiConstant.baseUrl}/DraftObservation");
 
-  Future<List<DraftObservationModel>> getDraftObservation() async {
-    await Future.delayed(const Duration(seconds: 1));
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(draftObservation.toJson()),
+      );
 
-    return [
-      DraftObservationModel(
-        observationId: 1,
-        area: "Inventory",
-        subject: "Inventory Audit",
-        details: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        riskAndRootCause: "aaaaaaaaaaaaaaaaaaaaaaaa",
-        recommendation: "ssssssssssssssssssssssssssssss",
-        department: "production",
-        internalDepartment: "Department one",
-        manageResponse: "cccccccccccccccccccccccccccc",
-        correctiveActionPlan: "hhhhhhhhhhhhhhhhhhhhhh",
-        actionTimeLine: 14,
-        responsibleUserId: "R001",
-        status: "close",
-        remark: "rrrrrrrrrrrrrrrrrrrr",
-        remarkedDate: "2026-05-30",
-      ),
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data["observation_id"];
+      } else {
+        throw Exception("API Failed");
+      }
 
-      DraftObservationModel(
-        observationId: 2,
-        area: "Financial",
-        subject: "Financial Audit",
-        details: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        riskAndRootCause: "aaaaaaaaaaaaaaaaaaaaaaaa",
-        recommendation: "ssssssssssssssssssssssssssssss",
-        department: "finance",
-        internalDepartment: "department two",
-        manageResponse: "cccccccccccccccccccccccccccc",
-        correctiveActionPlan: "hhhhhhhhhhhhhhhhhhhhhh",
-        actionTimeLine: 7,
-        responsibleUserId: "R002",
-        status: "close",
-        remark: "rrrrrrrrrrrrrrrrrrrr",
-        remarkedDate: "2026-05-30",
-      ),
-    ];
+    } catch (e) {
+      print("Error: $e");
+      rethrow;
+    }
   }
 }

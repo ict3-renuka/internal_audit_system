@@ -20,7 +20,7 @@ import 'package:project_one/ui/views/splash_screen/splash_view.dart';
 import 'package:project_one/ui/views/splash_screen/splash_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import 'package:project_one/data/services/api_services/login_api.dart';
+import 'package:project_one/data/services/api_services/user_api.dart';
 import 'package:project_one/data/services/api_services/company_api.dart';
 
 import 'package:project_one/ui/views/login/login_view.dart';
@@ -38,7 +38,7 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final LoginApi loginApi = LoginApi();
+  final UserApi userApi = UserApi();
   final CompanyApi companyApi = CompanyApi();
   final CenterApi centerApi = CenterApi();
   final AuditRequestApi auditRequestApi = AuditRequestApi();
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SplashViewModel()),
-        ChangeNotifierProvider(create: (_) => LoginViewmodel(loginApi)),
+        ChangeNotifierProvider(create: (_) => LoginViewmodel(userApi)),
         ChangeNotifierProvider(create: (_) => AddCompanyViewmodel(companyApi)),
         ChangeNotifierProvider(create: (_) => AddCenterViewmodel(centerApi,companyApi)),
         ChangeNotifierProvider(create: (_) => AddDepartmentViewmodel(companyApi,departmentApi)),
