@@ -5,6 +5,7 @@ import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/models/audit_request_model.dart';
+import '../../../data/models/department_model.dart';
 import '../../widget/master_date_field_widget.dart';
 import '../../widget/master_text_field_widget.dart';
 import 'audit_request_view_model.dart';
@@ -23,16 +24,16 @@ class _AuditRequestViewState extends State<AuditRequestView> {
     super.initState();
 
     Future.microtask(() {
+      final vModel = Provider.of<AuditRequestViewmodel>(context, listen: false);
       if (widget.auditRequest != null) {
-        Provider.of<AuditRequestViewmodel>(
-          context,
-          listen: false,
-        ).loadAuditRequest(
-          widget.auditRequest!,
-        );
+        vModel.loadAuditRequest(widget.auditRequest!,);
       }
+      vModel.loadDepartmentData();
     });
   }
+
+  bool get isEditMode => widget.auditRequest != null;
+
   @override
   Widget build(BuildContext context) {
     final vModel = Provider.of<AuditRequestViewmodel>(context);
@@ -50,14 +51,20 @@ class _AuditRequestViewState extends State<AuditRequestView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "New Audit Request",
+              isEditMode ? "Edit Audit Request" : "New Audit Request",
               style: AppTextStyles.title,
             ),
             const SizedBox(height: 8),
             Text(
-              "Initialize a new audit engagement by providing meeting details and firm contact information.",
+                isEditMode
+                    ? "Review and update the audit request details below."
+                    :
+                "Initialize a new audit engagement by providing meeting details and firm contact information.",
               style: AppTextStyles.paragraph
             ),
+            const SizedBox(height: 8),
+            Text("Once you submit the data by clicking the 'Add Audit Request' button, you will not be able to edit or delete it.",
+              style: TextStyle(color: Colors.red,fontSize: 12),),
             SizedBox(height: width * 0.02 ),
             Container(
               padding: EdgeInsets.all(width * 0.02),
@@ -91,7 +98,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Meeting Date",
                           value: vModel.meetingDate,
-                          onSelect: vModel.setMeetingDate,
+                          onSelect: (isEditMode && vModel.meetingDate != null) ? (_) {} : vModel.setMeetingDate,
                           disableFutureDates: true,
                         ),
                       ),
@@ -100,7 +107,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Preliminary Start Date",
                           value: vModel.preliminaryStartDate,
-                          onSelect: vModel.setPreliminaryStartDate,
+                          onSelect: (isEditMode && vModel.preliminaryStartDate  != null) ? (_) {} : vModel.setPreliminaryStartDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -110,10 +117,25 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
                           children: [
-                            MasterTextFieldWidget(
-                              label: "Audit Department",
-                              hintText: "Enter Department",
-                              controller: vModel.departmentController,
+                            const Text("Select Department", style: TextStyle(fontWeight: FontWeight.bold),),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<DepartmentModel>(
+                              value: vModel.departmentList
+                                  .where((d) => d.departmentId == vModel.selectedDepartment?.departmentId)
+                                  .firstOrNull,
+                              disabledHint: Text(vModel.selectedDepartment?.departmentName ?? ""),
+                              items: vModel.departmentList.map((department) {
+                                return DropdownMenuItem(
+                                  value: department,
+                                  child: Text(department.departmentName),
+                                );
+                              }).toList(),
+                              onChanged: (isEditMode && vModel.selectedDepartment != null) ? null : vModel.setDepartment,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -127,6 +149,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                     controller: vModel.descriptionController,
                     maxLines: 2,
                     maxLength: 300,
+                    readOnly: isEditMode && vModel.descriptionController.text.isNotEmpty,
                   ),
                   SizedBox(height: width * 0.005),
                   Row(
@@ -136,7 +159,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
                           children: [
-                            const Text("Audit Firm"),
+                            const Text("Audit Firm", style: TextStyle(fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<String>(
                               initialValue: vModel.selectedAuditFirm,
@@ -146,7 +169,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                                 child: Text(s),
                               ))
                                   .toList(),
-                              onChanged: vModel.setAuditFirm,
+                              onChanged:(isEditMode && vModel.selectedAuditFirm != null) ? null : vModel.setAuditFirm,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(4),
@@ -166,6 +189,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                               label: "Audit Firm Person Name",
                               hintText: "Enter DepartmentAudit Firm Person Name",
                               controller: vModel.personNameController,
+                              readOnly: isEditMode && vModel.personNameController.text.isNotEmpty,
                             ),
                           ],
                         ),
@@ -208,7 +232,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Info Request Date",
                           value: vModel.infoReqDate,
-                          onSelect: vModel.setInfoReqDate,
+                          onSelect: (isEditMode && vModel.infoReqDate != null) ? (_) {} : vModel.setInfoReqDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -217,7 +241,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Information Submit Date",
                           value: vModel.infoSubmitDate,
-                          onSelect: vModel.setInfoSubmitDate,
+                          onSelect: (isEditMode && vModel.infoSubmitDate != null) ? (_) {} : vModel.setInfoSubmitDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -230,7 +254,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Field Work Start Date",
                           value: vModel.fieldWorkStartDate,
-                          onSelect: vModel.setFieldWorkStartDate,
+                          onSelect: (isEditMode && vModel.fieldWorkStartDate != null) ? (_) {} : vModel.setFieldWorkStartDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -239,7 +263,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Field Work End Date",
                           value: vModel.fieldWorkEndDate,
-                          onSelect: vModel.setFieldWorkEndDate,
+                          onSelect: (isEditMode && vModel.fieldWorkEndDate != null) ? (_) {} : vModel.setFieldWorkEndDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -248,7 +272,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Exit Meeting Date",
                           value: vModel.exitMeetingDate,
-                          onSelect: vModel.setExitMeetingDate,
+                          onSelect: (isEditMode && vModel.exitMeetingDate != null) ? (_) {} : vModel.setExitMeetingDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -290,7 +314,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Management Discussion Date",
                           value: vModel.managementDiscussionDate,
-                          onSelect: vModel.setManagementDiscussionDate,
+                          onSelect: (isEditMode && vModel.managementDiscussionDate != null) ? (_) {} : vModel.setManagementDiscussionDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -332,7 +356,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Report Issued Date",
                           value: vModel.reportIssuedDate,
-                          onSelect: vModel.setReportIssuedDate,
+                          onSelect: (isEditMode && vModel.reportIssuedDate != null) ? (_) {} : vModel.setReportIssuedDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -341,7 +365,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Shared to Board Date",
                           value: vModel.sharedToBoardDate,
-                          onSelect: vModel.setSharedToBoardDate,
+                          onSelect: (isEditMode && vModel.sharedToBoardDate != null) ? (_) {} : vModel.setSharedToBoardDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -350,7 +374,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Audit Committee Table Date",
                           value: vModel.auditCommitteeTableDate,
-                          onSelect: vModel.setAuditCommitteeTableDate,
+                          onSelect: (isEditMode && vModel.auditCommitteeTableDate != null) ? (_) {} : vModel.setAuditCommitteeTableDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -363,17 +387,20 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                       onPressed: vModel.isLoading
                           ? null
                           : () async {
-                        await vModel.addAuditRequest();
-
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "Audit Request Added Successfully",
-                            ),
-                          ),
-                        );
+                        if (isEditMode) {
+                          final bool success = await vModel.updateAuditRequest(
+                            context,
+                            widget.auditRequest!.requestId!,
+                          );
+                          if (success && context.mounted) {
+                            Navigator.pop(context, true);
+                          }
+                        } else {
+                          final bool success = await vModel.addAuditRequest(context);
+                          if (success && context.mounted) {
+                            Navigator.pushReplacementNamed(context, "/edit-audit-request");
+                          }
+                        }
                       },
                       icon: vModel.isLoading
                           ? SizedBox(
@@ -390,9 +417,9 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         color: Colors.white,
                         size: 18,
                       ),
-                      label: const Text(
-                        "Add Audit Request",
-                        style: TextStyle(
+                      label: Text(
+                        isEditMode ? "Update Audit Request" : "Add Audit Request",
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight:
                           FontWeight.bold,

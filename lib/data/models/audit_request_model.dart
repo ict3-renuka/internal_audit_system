@@ -5,7 +5,7 @@ class AuditRequestModel {
   final DateTime? preliminaryStartDate;
   final String auditFirm;
   final String auditFirmPersonName;
-  final String auditDepartment;
+  final int auditDepartmentId;
   final DateTime? infoRequestDate;
   final DateTime? infoSubmitDate;
   final DateTime? fieldWorkStartDate;
@@ -23,7 +23,7 @@ class AuditRequestModel {
     this.preliminaryStartDate,
     required this.auditFirm,
     required this.auditFirmPersonName,
-    required this.auditDepartment,
+    required this.auditDepartmentId,
     this.infoRequestDate,
     this.infoSubmitDate,
     this.fieldWorkStartDate,
@@ -45,7 +45,7 @@ class AuditRequestModel {
           : DateTime.parse(json["preliminary_start_date"]),
       auditFirm: json["audit_firm"],
       auditFirmPersonName: json["audit_firm_person_name"],
-      auditDepartment: json["audit_department"],
+      auditDepartmentId: json["audit_department_id"],
       infoRequestDate: json["info_request_date"] == null
           ? null
           : DateTime.parse(json["info_request_date"]),
@@ -86,7 +86,7 @@ class AuditRequestModel {
       "preliminary_start_date": format(preliminaryStartDate),
       "audit_firm": auditFirm,
       "audit_firm_person_name": auditFirmPersonName,
-      "audit_department": auditDepartment,
+      "audit_department_id": auditDepartmentId,
       "info_request_date": format(infoRequestDate),
       "info_submit_date": format(infoSubmitDate),
       "field_work_start_date": format(fieldWorkStartDate),

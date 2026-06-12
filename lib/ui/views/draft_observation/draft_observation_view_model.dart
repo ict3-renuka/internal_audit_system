@@ -271,6 +271,40 @@ class DraftObservationViewmodel extends ChangeNotifier {
       return;
     }
 
+    final savedInternalDeptIds = responsibleUserRows
+        .where((r) => r.isSaved)
+        .map((r) => r.loadedInternalDepartmentId)
+        .whereType<int>()
+        .toSet();
+
+    final duplicateRows = unsavedRows.where((r) =>
+        savedInternalDeptIds.contains(
+          r.selectedInternalDepartment?.internalDepartmentId,
+        )).toList();
+
+    if (duplicateRows.isNotEmpty) {
+      final names = duplicateRows
+          .map((r) => r.selectedInternalDepartment?.internalDepartmentName ?? '')
+          .join(', ');
+      observationDetailsErrorMessage =
+      "Internal department '$names' is already assigned to this observation.";
+      notifyListeners();
+      return;
+    }
+
+    final unsavedIds = unsavedRows
+        .map((r) => r.selectedInternalDepartment?.internalDepartmentId)
+        .whereType<int>()
+        .toList();
+
+    final hasDuplicatesInNewRows = unsavedIds.length != unsavedIds.toSet().length;
+    if (hasDuplicatesInNewRows) {
+      observationDetailsErrorMessage =
+      "You have duplicate internal departments in the new rows.";
+      notifyListeners();
+      return;
+    }
+
     observationDetailsErrorMessage = null;
     isLoading = true;
     notifyListeners();

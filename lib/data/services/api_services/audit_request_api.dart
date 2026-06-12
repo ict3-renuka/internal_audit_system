@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 import '../../../core/constant/api_constant.dart';
 import '../../models/audit_request_model.dart';
+import '../../models/audit_request_paginated_model.dart';
 
 class AuditRequestApi {
 
@@ -30,26 +31,17 @@ class AuditRequestApi {
     }
   }
 
-  Future<List<AuditRequestModel>> getAllAuditRequests() async {
+  Future<AuditRequestPaginatedModel> getAllAuditRequests({int page = 1, int pageSize = 20}) async {
     try {
-      final url = Uri.parse("${ApiConstant.baseUrl}/AuditRequest");
+      final url = Uri.parse("${ApiConstant.baseUrl}/AuditRequest?page=$page&pageSize=$pageSize");
 
-      final response = await http.get(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      );
+      final response = await http.get(url, headers: {"Content-Type": "application/json"});
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-
-        return data
-            .map((item) => AuditRequestModel.fromJson(item))
-            .toList();
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception("API Failed: ${response.body}");
       }
 
-      throw Exception("Failed to load audit requests");
+      return AuditRequestPaginatedModel.fromJson(jsonDecode(response.body));
     } catch (e) {
       print("Error: $e");
       rethrow;

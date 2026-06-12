@@ -58,6 +58,9 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               "Initialize a new audit engagement by providing meeting details and firm contact information.",
               style: AppTextStyles.paragraph,
             ),
+            const SizedBox(height: 8),
+            Text("Once you submit the data by clicking the 'Add' button, you will not be able to edit or delete it.",
+            style: TextStyle(color: Colors.red,fontSize: 12),),
             SizedBox(height: width * 0.02),
             SectionCard(
               icon: Icons.note_alt_outlined,
