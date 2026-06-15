@@ -31,4 +31,21 @@ class DraftObservationApi {
       rethrow;
     }
   }
+
+  Future<void> updateDraftObservation(int id, DraftObservationModel observation) async {
+    try {
+      final url = Uri.parse("${ApiConstant.baseUrl}/DraftObservation/$id");
+      final response = await http.put(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(observation.toJson()),
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception("Update failed: ${response.body}");
+      }
+    } catch (e) {
+      print("Error: $e");
+      rethrow;
+    }
+  }
 }

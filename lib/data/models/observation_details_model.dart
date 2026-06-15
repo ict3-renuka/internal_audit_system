@@ -75,32 +75,4 @@ class ObservationDetailsModel {
         'remarked_date': remarkedDate!.toIso8601String().split('T').first,
     };
   }
-
-  // ObservationDetailsModel copyWith({
-  //   int? observationDetailsId,
-  //   int? observationId,
-  //   int? departmentId,
-  //   int? internalDepartmentId,
-  //   String? responsibleUser,
-  //   String? managementResponse,
-  //   String? correctiveActionPlan,
-  //   DateTime? actionTimeLine,
-  //   String? status,
-  //   String? remark,
-  //   DateTime? remarkedDate,
-  // }) {
-  //   return ObservationDetailsModel(
-  //     observationDetailsId: observationDetailsId ?? this.observationDetailsId,
-  //     observationId: observationId ?? this.observationId,
-  //     departmentId: departmentId ?? this.departmentId,
-  //     internalDepartmentId: internalDepartmentId ?? this.internalDepartmentId,
-  //     responsibleUser: responsibleUser ?? this.responsibleUser,
-  //     managementResponse: managementResponse ?? this.managementResponse,
-  //     correctiveActionPlan: correctiveActionPlan ?? this.correctiveActionPlan,
-  //     actionTimeLine: actionTimeLine ?? this.actionTimeLine,
-  //     status: status ?? this.status,
-  //     remark: remark ?? this.remark,
-  //     remarkedDate: remarkedDate ?? this.remarkedDate,
-  //   );
-  // }
 }

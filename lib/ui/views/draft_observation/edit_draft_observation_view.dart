@@ -13,6 +13,13 @@ class EditDraftObservationView extends StatefulWidget {
 }
 
 class _EditDraftObservationViewState extends State<EditDraftObservationView> {
+  final ScrollController _horizontalScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    super.dispose();
+  }
   @override
   void initState() {
     super.initState();
@@ -100,125 +107,131 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                       padding: EdgeInsets.all(40),
                       child: Center(child: CircularProgressIndicator()),
                     )
-                        : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        showCheckboxColumn: false,
-                        headingRowColor: WidgetStateProperty.all(
-                          AppColors.thirdBackground,
+                        : Scrollbar(
+                          controller: _horizontalScrollController,
+                          thumbVisibility: true,
+                          trackVisibility: true,
+                          child: SingleChildScrollView(
+                            controller: _horizontalScrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                          showCheckboxColumn: false,
+                          headingRowColor: WidgetStateProperty.all(
+                            AppColors.thirdBackground,
+                          ),
+                          columnSpacing: 16,
+                          horizontalMargin: 16,
+                          dataRowMinHeight: 48,
+                          dataRowMaxHeight: double.infinity,
+                          columns: const [
+                            DataColumn(label: _HeaderLabel('Area')),
+                            DataColumn(label: _HeaderLabel('Subject')),
+                            DataColumn(label: _HeaderLabel('Details')),
+                            DataColumn(label: _HeaderLabel('Risk & Root Cause')),
+                            DataColumn(label: _HeaderLabel('Recommendation')),
+                            DataColumn(label: _HeaderLabel('Department')),
+                            DataColumn(label: _HeaderLabel('Internal Department')),
+                            DataColumn(label: _HeaderLabel('Responsible User')),
+                            DataColumn(label: _HeaderLabel('Management Response')),
+                            DataColumn(label: _HeaderLabel('Action Plan')),
+                            DataColumn(label: _HeaderLabel('Action Timeline')),
+                            DataColumn(label: _HeaderLabel('Status')),
+                            DataColumn(label: _HeaderLabel('Remark')),
+                            DataColumn(label: _HeaderLabel('Remarked Date')),
+                          ],
+                          rows: vModel.filteredCombinedList.map((e) {
+                            return DataRow(
+                              onSelectChanged: (_) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => DraftObservationView(
+                                      draftObservation: e.toDraftObservationModel(),
+                                      combined: e,
+                                    ),
+                                  ),
+                                );
+                              },
+                              cells: [
+                                DataCell(Text(e.area)),
+                                DataCell(Text(e.subject)),
+                                DataCell(
+                                  SizedBox(
+                                    width: 200,
+                                    child: Text(
+                                      e.details,
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  SizedBox(
+                                    width: 200,
+                                    child: Text(
+                                      e.riskAndRootCause,
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  SizedBox(
+                                    width: 200,
+                                    child: Text(
+                                      e.recommendation,
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(Text(e.departmentName ?? '—')),
+                                DataCell(Text(e.internalDepartmentName ?? '—')),
+                                DataCell(Text(e.responsibleUser ?? '—')),
+                                DataCell(
+                                  SizedBox(
+                                    width: 200,
+                                    child: Text(
+                                      e.managementResponse ?? '—',
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  SizedBox(
+                                    width: 200,
+                                    child: Text(
+                                      e.correctiveActionPlan ?? '—',
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(Text(
+                                  e.actionTimeLine != null
+                                      ? e.actionTimeLine!
+                                      .toIso8601String()
+                                      .split('T')
+                                      .first
+                                      : '—',
+                                )),
+                                DataCell(Text(e.status ?? '—')),
+                                DataCell(Text(e.remark ?? '—')),
+                                DataCell(Text(
+                                  e.remarkedDate != null
+                                      ? e.remarkedDate!
+                                      .toIso8601String()
+                                      .split('T')
+                                      .first
+                                      : '—',
+                                )),
+                              ],
+                            );
+                          }).toList(),
+                                                  ),
+                                                ),
                         ),
-                        columnSpacing: 16,
-                        horizontalMargin: 16,
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: double.infinity,
-                        columns: const [
-                          DataColumn(label: _HeaderLabel('Area')),
-                          DataColumn(label: _HeaderLabel('Subject')),
-                          DataColumn(label: _HeaderLabel('Details')),
-                          DataColumn(label: _HeaderLabel('Risk & Root Cause')),
-                          DataColumn(label: _HeaderLabel('Recommendation')),
-                          DataColumn(label: _HeaderLabel('Department')),
-                          DataColumn(label: _HeaderLabel('Internal Department')),
-                          DataColumn(label: _HeaderLabel('Responsible User')),
-                          DataColumn(label: _HeaderLabel('Management Response')),
-                          DataColumn(label: _HeaderLabel('Action Plan')),
-                          DataColumn(label: _HeaderLabel('Action Timeline')),
-                          DataColumn(label: _HeaderLabel('Status')),
-                          DataColumn(label: _HeaderLabel('Remark')),
-                          DataColumn(label: _HeaderLabel('Remarked Date')),
-                        ],
-                        rows: vModel.filteredCombinedList.map((e) {
-                          return DataRow(
-                            onSelectChanged: (_) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => DraftObservationView(
-                                    draftObservation: e.toDraftObservationModel(),
-                                    combined: e,
-                                  ),
-                                ),
-                              );
-                            },
-                            cells: [
-                              DataCell(Text(e.area)),
-                              DataCell(Text(e.subject)),
-                              DataCell(
-                                SizedBox(
-                                  width: 200,
-                                  child: Text(
-                                    e.details,
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                SizedBox(
-                                  width: 200,
-                                  child: Text(
-                                    e.riskAndRootCause,
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                SizedBox(
-                                  width: 200,
-                                  child: Text(
-                                    e.recommendation,
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ),
-                              ),
-                              DataCell(Text(e.departmentName ?? '—')),
-                              DataCell(Text(e.internalDepartmentName ?? '—')),
-                              DataCell(Text(e.responsibleUser ?? '—')),
-                              DataCell(
-                                SizedBox(
-                                  width: 200,
-                                  child: Text(
-                                    e.managementResponse ?? '—',
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                SizedBox(
-                                  width: 200,
-                                  child: Text(
-                                    e.correctiveActionPlan ?? '—',
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ),
-                              ),
-                              DataCell(Text(
-                                e.actionTimeLine != null
-                                    ? e.actionTimeLine!
-                                    .toIso8601String()
-                                    .split('T')
-                                    .first
-                                    : '—',
-                              )),
-                              DataCell(Text(e.status ?? '—')),
-                              DataCell(Text(e.remark ?? '—')),
-                              DataCell(Text(
-                                e.remarkedDate != null
-                                    ? e.remarkedDate!
-                                    .toIso8601String()
-                                    .split('T')
-                                    .first
-                                    : '—',
-                              )),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 16),
                   if (!vModel.isLoading)

@@ -16,19 +16,21 @@ import 'draft_observation_view_model.dart';
 class DraftObservationView extends StatefulWidget {
   final DraftObservationModel? draftObservation;
   final CombinedObservationModel? combined;
-  const DraftObservationView({super.key, this.draftObservation, this.combined,});
+  const DraftObservationView({super.key, this.draftObservation, this.combined});
 
   @override
   State<DraftObservationView> createState() => _DraftObservationViewState();
 }
 
 class _DraftObservationViewState extends State<DraftObservationView> {
-
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async{
-      final vModel = Provider.of<DraftObservationViewmodel>(context, listen: false);
+    Future.microtask(() async {
+      final vModel = Provider.of<DraftObservationViewmodel>(
+        context,
+        listen: false,
+      );
       vModel.initView(
         combined: widget.combined,
         draftObservation: widget.draftObservation,
@@ -59,28 +61,32 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               style: AppTextStyles.paragraph,
             ),
             const SizedBox(height: 8),
-            Text("Once you submit the data by clicking the 'Add' button, you will not be able to edit or delete it.",
-            style: TextStyle(color: Colors.red,fontSize: 12),),
+            Text(
+              "Once you submit the data by clicking the 'Add' button, you will not be able to edit or delete it.",
+              style: TextStyle(color: Colors.red, fontSize: 12),
+            ),
             SizedBox(height: width * 0.02),
             SectionCard(
               icon: Icons.note_alt_outlined,
               title: "Observation Details",
               width: width,
               isLoading: vModel.isLoading,
-              onSubmit: vModel.observationId != null ? null : () async {
-                await vModel.addDraftObservation();
-                if (vModel.observationErrorMessage != null) {
-                  AppSnackBar.error(
-                    context,
-                    vModel.observationErrorMessage!,
-                  );
-                } else {
-                  AppSnackBar.success(
-                    context,
-                    "Draft Observation Saved Successfully",
-                  );
-                }
-              },
+              onSubmit: vModel.isResponseFieldsFilled
+                  ? null
+                  : () async {
+                      await vModel.addDraftObservation();
+                      if (vModel.observationErrorMessage != null) {
+                        AppSnackBar.error(
+                          context,
+                          vModel.observationErrorMessage!,
+                        );
+                      } else {
+                        AppSnackBar.success(
+                          context,
+                          "Draft Observation Saved Successfully",
+                        );
+                      }
+                    },
               children: [
                 Row(
                   children: [
@@ -89,7 +95,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Area",
                         controller: vModel.areaController,
                         hintText: "Enter Area",
-                        readOnly: vModel.observationId != null,
+                        readOnly: vModel.isResponseFieldsFilled,
                       ),
                     ),
                     SizedBox(width: width * 0.01),
@@ -98,7 +104,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Subject",
                         controller: vModel.subjectController,
                         hintText: "Enter Subject",
-                        readOnly: vModel.observationId != null,
+                        readOnly: vModel.isResponseFieldsFilled,
                       ),
                     ),
                   ],
@@ -107,10 +113,11 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                 MasterTextFieldWidget(
                   label: "Details",
                   controller: vModel.detailsController,
-                  hintText: "Enter detailed scope and context for this observation...",
-                  readOnly: vModel.observationId != null,
-                  maxLines: 2,
-                  maxLength: 300,
+                  hintText:
+                      "Enter detailed scope and context for this observation...",
+                  readOnly: vModel.isResponseFieldsFilled,
+                  maxLines: 3,
+                  maxLength: 600,
                 ),
                 SizedBox(height: width * 0.005),
                 Row(
@@ -120,9 +127,9 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Risk And Root Cause",
                         controller: vModel.riskAndRootCauseController,
                         hintText: "Enter Risk And Root Cause",
-                        readOnly: vModel.observationId != null,
-                        maxLines: 2,
-                        maxLength: 300,
+                        readOnly: vModel.isResponseFieldsFilled,
+                        maxLines: 3,
+                        maxLength: 600,
                       ),
                     ),
                     SizedBox(width: width * 0.01),
@@ -131,169 +138,197 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Recommendation",
                         controller: vModel.recommendationController,
                         hintText: "Enter Recommendation",
-                        readOnly: vModel.observationId != null,
-                        maxLines: 2,
-                        maxLength: 300,
+                        readOnly: vModel.isResponseFieldsFilled,
+                        maxLines: 3,
+                        maxLength: 600,
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-          if (vModel.observationId != null) ...[
-            SizedBox(height: width * 0.02),
-            SectionCard(
-              icon: Icons.note_alt_outlined,
-              title: "Responsible User Details",
-              width: width,
-              isLoading: vModel.isLoading,
-              onSubmit:
-              !vModel.canEditFollowUpFields ? null :
-                  () async {
-                await vModel.addObservationDetails();
-                if (vModel.observationDetailsErrorMessage != null) {
-                  AppSnackBar.error(context, vModel.observationDetailsErrorMessage!);
-                } else {
-                  AppSnackBar.success(context, "Responsible users saved.");
-                }
-              },
-              children: [
-                _buildResponsibleUserTable(vModel, width),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: !vModel.canEditFollowUpFields ? null : TextButton.icon(
-                    onPressed: vModel.addResponsibleUserRow,
-                    icon: const Icon(Icons.add),
-                    label: const Text("Add Row"),
+            if (vModel.observationId != null) ...[
+              SizedBox(height: width * 0.02),
+              SectionCard(
+                icon: Icons.note_alt_outlined,
+                title: "Responsible User Details",
+                width: width,
+                isLoading: vModel.isLoading,
+                onSubmit: !vModel.canEditFollowUpFields
+                    ? null
+                    : () async {
+                        await vModel.addObservationDetails();
+                        if (vModel.observationDetailsErrorMessage != null) {
+                          AppSnackBar.error(
+                            context,
+                            vModel.observationDetailsErrorMessage!,
+                          );
+                        } else {
+                          AppSnackBar.success(
+                            context,
+                            "Responsible users saved.",
+                          );
+                        }
+                      },
+                children: [
+                  _buildResponsibleUserTable(vModel, width),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: !vModel.canEditFollowUpFields
+                        ? null
+                        : TextButton.icon(
+                            onPressed: vModel.addResponsibleUserRow,
+                            icon: const Icon(Icons.add),
+                            label: const Text("Add Row"),
+                          ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: width * 0.02),
+                ],
+              ),
+              SizedBox(height: width * 0.02),
 
-            SectionCard(
-              icon: Icons.note_alt_outlined,
-              title: "Planned Action Details",
-              width: width,
-              isLoading: vModel.isLoading,
-              onSubmit: (!vModel.canEditActionFields || vModel.isActionSaved)
-                  ? null
-                  : () async {
-                await vModel.updateObservationDetails(section: 'action' );
-                if (vModel.observationDetailsErrorMessage != null) {
-                  AppSnackBar.error(context, vModel.observationDetailsErrorMessage!);
-                } else {
-                  AppSnackBar.success(context, "Updated successfully.");
-                }
-              },
-              children: [
-                MasterDateFieldWidget(
-                  label: "Action Timeline",
-                  value: vModel.actionTimeline,
-                  onSelect: (vModel.canEditActionFields && !vModel.isActionFieldsFilled)
-                      ? vModel.setActionTimeline
-                      : (_) {},
-                  disableFutureDates: false,
-                ),
-                SizedBox(height: width * 0.01),
-                MasterTextFieldWidget(
-                  label: "Corrective Action Plan",
-                  controller: vModel.correctiveActionPlanController,
-                  hintText: "Enter Action Plan",
-                  maxLines: 2,
-                  maxLength: 300,
-                  readOnly: !vModel.canEditActionFields,
-                ),
-              ],
-            ),
-            SizedBox(height: width * 0.02),
-
-            SectionCard(
-              icon: Icons.note_alt_outlined,
-              title: "Response Details",
-              width: width,
-              isLoading: vModel.isLoading,
-              onSubmit:(!vModel.canEditActionFields || vModel.isResponseSaved)
-                  ? null
-                  : () async {
-                await vModel.updateObservationDetails(section: 'response');
-                if (vModel.observationDetailsErrorMessage != null) {
-                  AppSnackBar.error(context, vModel.observationDetailsErrorMessage!);
-                } else {
-                  AppSnackBar.success(context, "Updated successfully.");
-                }
-              },
-              children: [
-                MasterTextFieldWidget(
-                  label: "Management Response",
-                  controller: vModel.manageResponseController,
-                  hintText: "Enter Management Response",
-                  maxLines: 2,
-                  maxLength: 300,
-                  readOnly: !vModel.canEditActionFields,
-                ),
-              ],
-            ),
-            SizedBox(height: width * 0.02),
-
-            SectionCard(
-              icon: Icons.note_alt_outlined,
-              title: "Follow Up Details",
-              width: width,
-              isLoading: vModel.isLoading,
-              onSubmit: (!vModel.canEditFollowUpFields || vModel.isFollowUpSaved)
-                  ? null
-                  :  () async {
-                await vModel.updateObservationDetails(section: 'followup');
-                if (vModel.observationDetailsErrorMessage != null) {
-                  AppSnackBar.error(context, vModel.observationDetailsErrorMessage!);
-                } else {
-                  AppSnackBar.success(context, "Updated successfully.");
-                }
-              },
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: MasterTextFieldWidget(
-                        label: "Status",
-                        controller: vModel.statusController,
-                        hintText: "Enter Status",
-                        readOnly: !vModel.canEditFollowUpFields,
+              SectionCard(
+                icon: Icons.note_alt_outlined,
+                title: "Response Details",
+                width: width,
+                isLoading: vModel.isLoading,
+                onSubmit:
+                (!vModel.canEditActionFields || vModel.isResponseSaved)
+                    ? null
+                    : () async {
+                  await vModel.updateObservationDetails(
+                    section: 'response',
+                  );
+                  if (vModel.observationDetailsErrorMessage != null) {
+                    AppSnackBar.error(
+                      context,
+                      vModel.observationDetailsErrorMessage!,
+                    );
+                  } else {
+                    AppSnackBar.success(context, "Updated successfully.");
+                  }
+                },
+                children: [
+                  MasterTextFieldWidget(
+                    label: "Management Response",
+                    controller: vModel.manageResponseController,
+                    hintText: "Enter Management Response",
+                    maxLines: 3 ,
+                    maxLength: 600,
+                    readOnly: !vModel.canEditActionFields || vModel.isResponseFieldsFilled,
+                  ),
+                ],
+              ),
+              SizedBox(height: width * 0.02),
+              SectionCard(
+                icon: Icons.note_alt_outlined,
+                title: "Planned Action Details",
+                width: width,
+                isLoading: vModel.isLoading,
+                onSubmit: (!vModel.canEditActionFields || vModel.isActionSaved)
+                    ? null
+                    : () async {
+                        await vModel.updateObservationDetails(
+                          section: 'action',
+                        );
+                        if (vModel.observationDetailsErrorMessage != null) {
+                          AppSnackBar.error(
+                            context,
+                            vModel.observationDetailsErrorMessage!,
+                          );
+                        } else {
+                          AppSnackBar.success(context, "Updated successfully.");
+                        }
+                      },
+                children: [
+                  MasterDateFieldWidget(
+                    label: "Action Timeline",
+                    value: vModel.actionTimeline,
+                    onSelect:
+                        (vModel.canEditActionFields &&
+                            !vModel.isActionFieldsFilled)
+                        ? vModel.setActionTimeline
+                        : (_) {},
+                    disableFutureDates: false,
+                  ),
+                  SizedBox(height: width * 0.01),
+                  MasterTextFieldWidget(
+                    label: "Corrective Action Plan",
+                    controller: vModel.correctiveActionPlanController,
+                    hintText: "Enter Action Plan",
+                    maxLines: 3,
+                    maxLength: 600,
+                    readOnly: !vModel.canEditActionFields || vModel.isActionFieldsFilled,
+                  ),
+                ],
+              ),
+              SizedBox(height: width * 0.02),
+              SectionCard(
+                icon: Icons.note_alt_outlined,
+                title: "Follow Up Details",
+                width: width,
+                isLoading: vModel.isLoading,
+                onSubmit:
+                    (!vModel.canEditFollowUpFields || vModel.isFollowUpSaved)
+                    ? null
+                    : () async {
+                        await vModel.updateObservationDetails(
+                          section: 'followup',
+                        );
+                        if (vModel.observationDetailsErrorMessage != null) {
+                          AppSnackBar.error(
+                            context,
+                            vModel.observationDetailsErrorMessage!,
+                          );
+                        } else {
+                          AppSnackBar.success(context, "Updated successfully.");
+                        }
+                      },
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: MasterTextFieldWidget(
+                          label: "Status",
+                          controller: vModel.statusController,
+                          hintText: "Enter Status",
+                          readOnly: !vModel.canEditFollowUpFields || vModel.isFollowUpFieldsFilled,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: width * 0.01),
-                    Expanded(
-                      child: MasterTextFieldWidget(
-                        label: "Remark",
-                        controller: vModel.remarkController,
-                        hintText: "Enter Remark",
-                        readOnly: !vModel.canEditFollowUpFields,
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: MasterTextFieldWidget(
+                          label: "Remark",
+                          controller: vModel.remarkController,
+                          hintText: "Enter Remark",
+                          readOnly: !vModel.canEditFollowUpFields || vModel.isFollowUpFieldsFilled,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: width * 0.01),
-                    Expanded(
-                      child: MasterDateFieldWidget(
-                        label: "Remarked Date",
-                        value: vModel.remarkedDate,
-                        onSelect: vModel.canEditFollowUpFields
-                            ? vModel.setRemarkedDate
-                            : (_) {},
-                        disableFutureDates: true,
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: MasterDateFieldWidget(
+                          label: "Remarked Date",
+                          value: vModel.remarkedDate,
+                          onSelect: (vModel.canEditFollowUpFields && !vModel.isFollowUpFieldsFilled)
+                              ? vModel.setRemarkedDate
+                              : (_) {},
+                          disableFutureDates: true,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-           ]
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildResponsibleUserTable(DraftObservationViewmodel vModel, double width) {
+  Widget _buildResponsibleUserTable(
+    DraftObservationViewmodel vModel,
+    double width,
+  ) {
     const headerStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
     const cellPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 6);
 
@@ -309,9 +344,18 @@ class _DraftObservationViewState extends State<DraftObservationView> {
         TableRow(
           decoration: BoxDecoration(color: AppColors.secondBackground),
           children: [
-            Padding(padding: cellPadding, child: Text("Department", style: headerStyle)),
-            Padding(padding: cellPadding, child: Text("Internal Department", style: headerStyle)),
-            Padding(padding: cellPadding, child: Text("Responsible User", style: headerStyle)),
+            Padding(
+              padding: cellPadding,
+              child: Text("Department", style: headerStyle),
+            ),
+            Padding(
+              padding: cellPadding,
+              child: Text("Internal Department", style: headerStyle),
+            ),
+            Padding(
+              padding: cellPadding,
+              child: Text("Responsible User", style: headerStyle),
+            ),
             const SizedBox.shrink(),
           ],
         ),
@@ -322,75 +366,97 @@ class _DraftObservationViewState extends State<DraftObservationView> {
             children: [
               row.isSaved
                   ? Padding(
-                padding: cellPadding,
-                child: Text(row.displayDepartmentName),
-              ) :
-              Padding(
-                padding: cellPadding,
-                child: DropdownButtonFormField<DepartmentModel>(
-                  value: row.selectedDepartment,
-                  isExpanded: true,
-                  hint: Text("Select", style: AppTextStyles.hint),
-                  decoration: _dropdownDecor(),
-                  items: vModel.allDepartments
-                      .map((d) => DropdownMenuItem(
-                    value: d,
-                    child: Text(d.departmentName, overflow: TextOverflow.ellipsis),
-                  ))
-                      .toList(),
-                  onChanged: (d) => vModel.onDepartmentSelected(i, d),
-                ),
-              ),
+                      padding: cellPadding,
+                      child: Text(row.displayDepartmentName),
+                    )
+                  : Padding(
+                      padding: cellPadding,
+                      child: DropdownButtonFormField<DepartmentModel>(
+                        initialValue: row.selectedDepartment,
+                        isExpanded: true,
+                        hint: Text("Select", style: AppTextStyles.hint),
+                        decoration: _dropdownDecor(),
+                        items: vModel.allDepartments
+                            .map(
+                              (d) => DropdownMenuItem(
+                                value: d,
+                                child: Text(
+                                  d.departmentName,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (d) => vModel.onDepartmentSelected(i, d),
+                      ),
+                    ),
 
               row.isSaved
                   ? Padding(
-                padding: cellPadding,
-                child: Text(row.displayInternalDepartmentName),
-              ) :
-              Padding(
-                padding: cellPadding,
-                child: DropdownButtonFormField<InternalDepartmentModel>(
-                  value: row.selectedInternalDepartment,
-                  isExpanded: true,
-                  hint: Text(
-                    row.selectedDepartment == null ? "Select dept first" : "Select",
-                    style: AppTextStyles.hint,
-                  ),
-                  decoration: _dropdownDecor(),
-                  items: row.selectedDepartment == null
-                      ? null
-                      : row.filteredInternalDepts
-                      .map((id) => DropdownMenuItem(
-                    value: id,
-                    child: Text(id.internalDepartmentName, overflow: TextOverflow.ellipsis),
-                  ))
-                      .toList(),
-                  onChanged: row.selectedDepartment == null
-                      ? null
-                      : (id) => vModel.onInternalDepartmentSelected(i, id),
-                ),
-              ),
+                      padding: cellPadding,
+                      child: Text(row.displayInternalDepartmentName),
+                    )
+                  : Padding(
+                      padding: cellPadding,
+                      child: DropdownButtonFormField<InternalDepartmentModel>(
+                        initialValue: row.selectedInternalDepartment,
+                        isExpanded: true,
+                        hint: Text(
+                          row.selectedDepartment == null
+                              ? "Select dept first"
+                              : "Select",
+                          style: AppTextStyles.hint,
+                        ),
+                        decoration: _dropdownDecor(),
+                        items: row.selectedDepartment == null
+                            ? null
+                            : row.filteredInternalDepts
+                                  .map(
+                                    (id) => DropdownMenuItem(
+                                      value: id,
+                                      child: Text(
+                                        id.internalDepartmentName,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                        onChanged: row.selectedDepartment == null
+                            ? null
+                            : (id) =>
+                                  vModel.onInternalDepartmentSelected(i, id),
+                      ),
+                    ),
 
               Padding(
                 padding: cellPadding,
                 child: row.isLoadingUser
-                    ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-                    :
-                Text(
-                  row.displayUserName,
-                  style: TextStyle(
-                    color: row.isSaved ? Colors.black87 : Colors.grey,
-                  ),
-                ),
+                    ? Center(
+                        child: const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1.5,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        row.displayUserName,
+                        style: TextStyle(
+                          color: row.isSaved ? Colors.black87 : Colors.grey,
+                        ),
+                      ),
               ),
 
               IconButton(
-                icon: Icon(Icons.delete_outline, color: row.isSaved ? Colors.grey : Colors.red),
-                onPressed: row.isSaved ? null : () => vModel.removeResponsibleUserRow(i),
+                icon: Icon(
+                  Icons.delete_outline,
+                  color: row.isSaved ? Colors.grey : Colors.red,
+                ),
+                onPressed: row.isSaved
+                    ? null
+                    : () => vModel.removeResponsibleUserRow(i),
               ),
             ],
           );

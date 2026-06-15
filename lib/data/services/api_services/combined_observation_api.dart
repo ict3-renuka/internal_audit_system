@@ -4,7 +4,7 @@ import '../../../core/constant/api_constant.dart';
 import '../../models/combined_observation_model.dart';
 
 class CombinedObservationApi {
-  Future<PaginatedResult<CombinedObservationModel>> getCombined({int page = 1, int pageSize = 10,}) async {
+  Future<PaginatedResult<CombinedObservationModel>> getCombined({int page = 1, int pageSize = 20,}) async {
    try {
      final url = Uri.parse(
        "${ApiConstant

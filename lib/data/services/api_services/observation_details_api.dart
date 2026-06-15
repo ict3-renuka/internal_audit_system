@@ -46,4 +46,28 @@ class ObservationDetailsApi {
       rethrow;
     }
   }
+
+  Future<List<int>> getSavedInternalDepartmentIds(int observationId) async {
+    try {
+      final url = Uri.parse("${ApiConstant
+          .baseUrl}/ObservationDetails/byObservation/$observationId");
+
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List data = jsonDecode(response.body);
+        return data.map<int>((e) => e as int).toList();
+      } else {
+        throw Exception("API Failed");
+      }
+    } catch (e) {
+      print("Error: $e");
+      rethrow;
+    }
+  }
 }

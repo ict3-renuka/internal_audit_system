@@ -66,6 +66,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
   bool isResponseSaved = false;
   bool isFollowUpSaved = false;
 
+  Set<int> savedInternalDepartmentIds = {};
+
   Future<void> initView({CombinedObservationModel? combined, DraftObservationModel? draftObservation,}) async {
     resetAll();
     await loadSessionUser();
@@ -73,6 +75,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
     if (combined != null) {
       loadFromCombined(combined);
+      await loadAllResponsibleRows(combined.observationId);
     } else if (draftObservation != null) {
       loadDraftObservation(draftObservation);
     }
@@ -185,6 +188,16 @@ class DraftObservationViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loadAllResponsibleRows(int observationId) async {
+    try {
+      final ids = await observationDetailsApi.getSavedInternalDepartmentIds(observationId);
+      savedInternalDepartmentIds = ids.toSet();
+      notifyListeners();
+    } catch (e) {
+      print("Failed to load saved internal dept ids: $e");
+    }
+  }
+
   Future<void> addDraftObservation() async {
     if (areaController.text.trim().isEmpty ||
         subjectController.text.trim().isEmpty ||
@@ -202,6 +215,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
     try {
       final observation = DraftObservationModel(
+        observationId: observationId,
         area: areaController.text.trim(),
         subject: subjectController.text.trim(),
         details: detailsController.text.trim(),
@@ -209,8 +223,12 @@ class DraftObservationViewmodel extends ChangeNotifier {
         recommendation: recommendationController.text.trim(),
       );
 
-      final id = await draftObservationApi.addDraftObservation(observation);
-      observationId = id;
+      if (observationId == null) {
+        final id = await draftObservationApi.addDraftObservation(observation);
+        observationId = id;
+      } else {
+        await draftObservationApi.updateDraftObservation(observationId!, observation);
+      }
     } catch (e) {
       print(e);
       observationErrorMessage = "Failed to save. Please try again.";
@@ -236,6 +254,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
     observationErrorMessage = null;
     observationDetailsErrorMessage = null;
     responsibleUserRows = [ResponsibleUserRowModel()];
+    savedInternalDepartmentIds = {};
     isActionSaved = false;
     isResponseSaved = false;
     isFollowUpSaved = false;
@@ -271,14 +290,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
       return;
     }
 
-    final savedInternalDeptIds = responsibleUserRows
-        .where((r) => r.isSaved)
-        .map((r) => r.loadedInternalDepartmentId)
-        .whereType<int>()
-        .toSet();
-
     final duplicateRows = unsavedRows.where((r) =>
-        savedInternalDeptIds.contains(
+        savedInternalDepartmentIds.contains(
           r.selectedInternalDepartment?.internalDepartmentId,
         )).toList();
 
@@ -327,6 +340,10 @@ class DraftObservationViewmodel extends ChangeNotifier {
             row.copyWith(observationDetailsId: detailsId,
               loadedInternalDepartmentId: row.selectedInternalDepartment!.internalDepartmentId,
             );
+
+        savedInternalDepartmentIds.add(
+          row.selectedInternalDepartment!.internalDepartmentId!,
+        );
       }
     } catch (e) {
       observationDetailsErrorMessage = "Failed to save. Please try again.";

@@ -27,6 +27,8 @@ class _AuditRequestViewState extends State<AuditRequestView> {
       final vModel = Provider.of<AuditRequestViewmodel>(context, listen: false);
       if (widget.auditRequest != null) {
         vModel.loadAuditRequest(widget.auditRequest!,);
+      } else {
+        vModel.clearFields();
       }
       vModel.loadDepartmentData();
     });
@@ -62,9 +64,9 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                 "Initialize a new audit engagement by providing meeting details and firm contact information.",
               style: AppTextStyles.paragraph
             ),
-            const SizedBox(height: 8),
-            Text("Once you submit the data by clicking the 'Add Audit Request' button, you will not be able to edit or delete it.",
-              style: TextStyle(color: Colors.red,fontSize: 12),),
+            // const SizedBox(height: 8),
+            // Text("Once you submit the data by clicking the button, you will not be able to edit or delete it.",
+            //   style: TextStyle(color: Colors.red,fontSize: 12),),
             SizedBox(height: width * 0.02 ),
             Container(
               padding: EdgeInsets.all(width * 0.02),
@@ -98,7 +100,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Meeting Date",
                           value: vModel.meetingDate,
-                          onSelect: (isEditMode && vModel.meetingDate != null) ? (_) {} : vModel.setMeetingDate,
+                          onSelect: /*(isEditMode && vModel.meetingDate != null) ? (_) {} :*/ vModel.setMeetingDate,
                           disableFutureDates: true,
                         ),
                       ),
@@ -107,7 +109,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Preliminary Start Date",
                           value: vModel.preliminaryStartDate,
-                          onSelect: (isEditMode && vModel.preliminaryStartDate  != null) ? (_) {} : vModel.setPreliminaryStartDate,
+                          onSelect: /*(isEditMode && vModel.preliminaryStartDate  != null) ? (_) {} :*/ vModel.setPreliminaryStartDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -130,7 +132,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                                   child: Text(department.departmentName),
                                 );
                               }).toList(),
-                              onChanged: (isEditMode && vModel.selectedDepartment != null) ? null : vModel.setDepartment,
+                              onChanged: /*(isEditMode && vModel.selectedDepartment != null) ? null :*/ vModel.setDepartment,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(4),
@@ -147,9 +149,9 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                     label: "Description",
                     hintText: "Enter detailed scope and context for this audit request...",
                     controller: vModel.descriptionController,
-                    maxLines: 2,
-                    maxLength: 300,
-                    readOnly: isEditMode && vModel.descriptionController.text.isNotEmpty,
+                    maxLines: 3,
+                    maxLength: 600,
+                    // readOnly: isEditMode && vModel.descriptionController.text.isNotEmpty,
                   ),
                   SizedBox(height: width * 0.005),
                   Row(
@@ -169,7 +171,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                                 child: Text(s),
                               ))
                                   .toList(),
-                              onChanged:(isEditMode && vModel.selectedAuditFirm != null) ? null : vModel.setAuditFirm,
+                              onChanged:/*(isEditMode && vModel.selectedAuditFirm != null) ? null :*/ vModel.setAuditFirm,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(4),
@@ -189,7 +191,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                               label: "Audit Firm Person Name",
                               hintText: "Enter DepartmentAudit Firm Person Name",
                               controller: vModel.personNameController,
-                              readOnly: isEditMode && vModel.personNameController.text.isNotEmpty,
+                              // readOnly: isEditMode && vModel.personNameController.text.isNotEmpty,
                             ),
                           ],
                         ),
@@ -232,7 +234,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Info Request Date",
                           value: vModel.infoReqDate,
-                          onSelect: (isEditMode && vModel.infoReqDate != null) ? (_) {} : vModel.setInfoReqDate,
+                          onSelect: /*(isEditMode && vModel.infoReqDate != null) ? (_) {} :*/ vModel.setInfoReqDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -241,7 +243,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Information Submit Date",
                           value: vModel.infoSubmitDate,
-                          onSelect: (isEditMode && vModel.infoSubmitDate != null) ? (_) {} : vModel.setInfoSubmitDate,
+                          onSelect: /*(isEditMode && vModel.infoSubmitDate != null) ? (_) {} :*/ vModel.setInfoSubmitDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -254,7 +256,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Field Work Start Date",
                           value: vModel.fieldWorkStartDate,
-                          onSelect: (isEditMode && vModel.fieldWorkStartDate != null) ? (_) {} : vModel.setFieldWorkStartDate,
+                          onSelect: /*(isEditMode && vModel.fieldWorkStartDate != null) ? (_) {} :*/ vModel.setFieldWorkStartDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -263,7 +265,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Field Work End Date",
                           value: vModel.fieldWorkEndDate,
-                          onSelect: (isEditMode && vModel.fieldWorkEndDate != null) ? (_) {} : vModel.setFieldWorkEndDate,
+                          onSelect: /*(isEditMode && vModel.fieldWorkEndDate != null) ? (_) {} :*/ vModel.setFieldWorkEndDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -272,7 +274,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Exit Meeting Date",
                           value: vModel.exitMeetingDate,
-                          onSelect: (isEditMode && vModel.exitMeetingDate != null) ? (_) {} : vModel.setExitMeetingDate,
+                          onSelect: /*(isEditMode && vModel.exitMeetingDate != null) ? (_) {} :*/ vModel.setExitMeetingDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -314,7 +316,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Management Discussion Date",
                           value: vModel.managementDiscussionDate,
-                          onSelect: (isEditMode && vModel.managementDiscussionDate != null) ? (_) {} : vModel.setManagementDiscussionDate,
+                          onSelect: /*(isEditMode && vModel.managementDiscussionDate != null) ? (_) {} :*/ vModel.setManagementDiscussionDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -356,7 +358,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Report Issued Date",
                           value: vModel.reportIssuedDate,
-                          onSelect: (isEditMode && vModel.reportIssuedDate != null) ? (_) {} : vModel.setReportIssuedDate,
+                          onSelect: /*(isEditMode && vModel.reportIssuedDate != null) ? (_) {} :*/ vModel.setReportIssuedDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -365,7 +367,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Shared to Board Date",
                           value: vModel.sharedToBoardDate,
-                          onSelect: (isEditMode && vModel.sharedToBoardDate != null) ? (_) {} : vModel.setSharedToBoardDate,
+                          onSelect: /*(isEditMode && vModel.sharedToBoardDate != null) ? (_) {} :*/ vModel.setSharedToBoardDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -374,7 +376,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                         child: MasterDateFieldWidget(
                           label: "Audit Committee Table Date",
                           value: vModel.auditCommitteeTableDate,
-                          onSelect: (isEditMode && vModel.auditCommitteeTableDate != null) ? (_) {} : vModel.setAuditCommitteeTableDate,
+                          onSelect: /*(isEditMode && vModel.auditCommitteeTableDate != null) ? (_) {} :*/ vModel.setAuditCommitteeTableDate,
                           disableFutureDates: false,
                         ),
                       ),

@@ -15,6 +15,13 @@ class EditAuditRequestView extends StatefulWidget {
 }
 
 class _EditAuditRequestViewState extends State<EditAuditRequestView> {
+  final ScrollController _horizontalScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    super.dispose();
+  }
   @override
   void initState() {
     super.initState();
@@ -89,67 +96,75 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
                       padding: EdgeInsets.all(40),
                       child: Center(child: CircularProgressIndicator()),
                     )
-                        : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        showCheckboxColumn: false,
-                        headingRowColor: WidgetStateProperty.all(AppColors.thirdBackground),
-                        columnSpacing: 16,
-                        horizontalMargin: 16,
-                        columns: const [
-                          DataColumn(label: _HeaderLabel('Meeting Date')),
-                          DataColumn(label: _HeaderLabel('Description')),
-                          DataColumn(label: _HeaderLabel('Preliminary Start')),
-                          DataColumn(label: _HeaderLabel('Audit Firm')),
-                          DataColumn(label: _HeaderLabel('Person Name')),
-                          DataColumn(label: _HeaderLabel('Department')),
-                          DataColumn(label: _HeaderLabel('Info. Request')),
-                          DataColumn(label: _HeaderLabel('Info. Submit')),
-                          DataColumn(label: _HeaderLabel('Field Work Start')),
-                          DataColumn(label: _HeaderLabel('Field Work End')),
-                          DataColumn(label: _HeaderLabel('Exit Meeting')),
-                          DataColumn(label: _HeaderLabel('Mgmt. Discussion')),
-                          DataColumn(label: _HeaderLabel('Report Issued')),
-                          DataColumn(label: _HeaderLabel('Shared to Board')),
-                          DataColumn(label: _HeaderLabel('Audit Committee')),
-                        ],
-                        rows: vModel.filteredList.map((e) {
-                          return DataRow(
-                            onSelectChanged: (_) async {
-                              final updated = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => AuditRequestView(auditRequest: e),
-                                ),
-                              );
-                              if (updated == true) {
-                                vModel.loadAuditRequests(page: vModel.currentPage);
-                              }
-                            },
-                            cells: [
-                              DataCell(Text(fmtDate(e.meetingDate))),
-                              DataCell(SizedBox(
-                                width: 200,
-                                child: Text(e.description, overflow: TextOverflow.ellipsis),
-                              )),
-                              DataCell(Text(fmtDate(e.preliminaryStartDate))),
-                              DataCell(Text(e.auditFirm)),
-                              DataCell(Text(e.auditFirmPersonName)),
-                              DataCell(Text(vModel.getDepartmentName(e.auditDepartmentId))),
-                              DataCell(Text(fmtDate(e.infoRequestDate))),
-                              DataCell(Text(fmtDate(e.infoSubmitDate))),
-                              DataCell(Text(fmtDate(e.fieldWorkStartDate))),
-                              DataCell(Text(fmtDate(e.fieldWorkEndDate))),
-                              DataCell(Text(fmtDate(e.exitMeetingDate))),
-                              DataCell(Text(fmtDate(e.managementDiscussionDate))),
-                              DataCell(Text(fmtDate(e.reportIssuedDate))),
-                              DataCell(Text(fmtDate(e.sharedToBoardDate))),
-                              DataCell(Text(fmtDate(e.auditCommitteeTableDate))),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
+                        : Scrollbar(
+                          controller: _horizontalScrollController,
+                          thumbVisibility: true,
+                          trackVisibility: true,
+                          child: SingleChildScrollView(
+                            controller: _horizontalScrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                          showCheckboxColumn: false,
+                          headingRowColor: WidgetStateProperty.all(AppColors.thirdBackground),
+                          columnSpacing: 16,
+                          horizontalMargin: 16,
+                          columns: const [
+                            DataColumn(label: _HeaderLabel('Meeting Date')),
+                            DataColumn(label: _HeaderLabel('Description')),
+                            DataColumn(label: _HeaderLabel('Preliminary Start')),
+                            DataColumn(label: _HeaderLabel('Audit Firm')),
+                            DataColumn(label: _HeaderLabel('Person Name')),
+                            DataColumn(label: _HeaderLabel('Department')),
+                            DataColumn(label: _HeaderLabel('Info. Request')),
+                            DataColumn(label: _HeaderLabel('Info. Submit')),
+                            DataColumn(label: _HeaderLabel('Field Work Start')),
+                            DataColumn(label: _HeaderLabel('Field Work End')),
+                            DataColumn(label: _HeaderLabel('Exit Meeting')),
+                            DataColumn(label: _HeaderLabel('Mgmt. Discussion')),
+                            DataColumn(label: _HeaderLabel('Report Issued')),
+                            DataColumn(label: _HeaderLabel('Shared to Board')),
+                            DataColumn(label: _HeaderLabel('Audit Committee')),
+                          ],
+                          rows: vModel.filteredList.map((e) {
+                            return DataRow(
+                              onSelectChanged: (_) async {
+                                final updated = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => AuditRequestView(auditRequest: e),
+                                  ),
+                                );
+                                if (updated == true) {
+                                  vModel.loadAuditRequests(page: vModel.currentPage);
+                                }
+                              },
+                              cells: [
+                                DataCell(Text(fmtDate(e.meetingDate))),
+                                DataCell(SizedBox(
+                                  width: 200,
+                                  child: Text(e.description,
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible),
+                                )),
+                                DataCell(Text(fmtDate(e.preliminaryStartDate))),
+                                DataCell(Text(e.auditFirm)),
+                                DataCell(Text(e.auditFirmPersonName)),
+                                DataCell(Text(vModel.getDepartmentName(e.auditDepartmentId))),
+                                DataCell(Text(fmtDate(e.infoRequestDate))),
+                                DataCell(Text(fmtDate(e.infoSubmitDate))),
+                                DataCell(Text(fmtDate(e.fieldWorkStartDate))),
+                                DataCell(Text(fmtDate(e.fieldWorkEndDate))),
+                                DataCell(Text(fmtDate(e.exitMeetingDate))),
+                                DataCell(Text(fmtDate(e.managementDiscussionDate))),
+                                DataCell(Text(fmtDate(e.reportIssuedDate))),
+                                DataCell(Text(fmtDate(e.sharedToBoardDate))),
+                                DataCell(Text(fmtDate(e.auditCommitteeTableDate))),
+                              ],
+                            );
+                          }).toList(),
+                                                ),
+                                              ),
+                        ),
                   ),
                   const SizedBox(height: 16),
                   if (!vModel.isLoading)

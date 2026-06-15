@@ -16,7 +16,7 @@ class AppNavBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AppNavBarState extends State<AppNavBar> {
-  String? userName;
+  String?   userName;
   String? name;
   String? designation;
   String? email;
@@ -48,6 +48,7 @@ class _AppNavBarState extends State<AppNavBar> {
       userName = user.userName;
       name = user.name;
       designation = user.designation;
+      email = user.email;
       internalDeptName = deptName;
     });
   }
