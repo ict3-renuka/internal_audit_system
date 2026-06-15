@@ -3,6 +3,7 @@ class UserModel {
   final String name;
   final String userName;
   final String designation;
+  final String email;
   final int internalDepartmentId;
   final bool isActive;
 
@@ -11,6 +12,7 @@ class UserModel {
     required this.name,
     required this.userName,
     required this.designation,
+    required this.email,
     required this.internalDepartmentId,
     required this.isActive,
   });
@@ -21,6 +23,7 @@ class UserModel {
       name: json["name"],
       userName: json["user_name"],
       designation: json["designation"],
+      email: json["email"],
       internalDepartmentId: json["internal_department_id"],
       isActive: json["isActive"],
     );
@@ -32,6 +35,7 @@ class UserModel {
       "name": name,
       "user_name": userName,
       "designation": designation,
+      "email": email,
       "internal_department_id": internalDepartmentId,
       "isActive": isActive,
     };
