@@ -23,11 +23,12 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    Future.microtask(() async{
       final vModel = Provider.of<DraftObservationViewmodel>(context, listen: false);
       vModel.searchController.clear();
       vModel.filteredCombinedList = [];
-      vModel.loadCombinedObservations();
+      await vModel.loadSessionUser();
+      await vModel.loadCombinedObservations();
     });
   }
 
@@ -77,23 +78,36 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: width * 0.25,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: AppColors.border),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: TextField(
-                      controller: vModel.searchController,
-                      onChanged: vModel.searchCombined,
-                      decoration: const InputDecoration(
-                        hintText: "Search observations...",
-                        prefixIcon: Icon(Icons.search, size: 20),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  Row(
+                    children: [
+                      Container(
+                        width: width * 0.25,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: AppColors.border),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: TextField(
+                          controller: vModel.searchController,
+                          onChanged: vModel.searchCombined,
+                          decoration: const InputDecoration(
+                            hintText: "Search observations...",
+                            prefixIcon: Icon(Icons.search, size: 20),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
                       ),
-                    ),
+                      const Spacer(),
+                      if (vModel.canEditFollowUpFields) ...[
+                        Checkbox(
+                          value: vModel.includeInactive,
+                          activeColor: AppColors.primary,
+                          onChanged: (_) => vModel.toggleIncludeInactive(),
+                        ),
+                        const Text("Include Inactive", style: TextStyle(fontSize: 13)),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 24),
                   Container(
@@ -140,7 +154,16 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                             DataColumn(label: _HeaderLabel('Remarked Date')),
                           ],
                           rows: vModel.filteredCombinedList.map((e) {
+                            final isInactive = !(e.isActive ?? true);
                             return DataRow(
+                              color: WidgetStateProperty.resolveWith<Color?>(
+                                    (states) {
+                                  if (isInactive) {
+                                    return Colors.grey.shade300;
+                                  }
+                                  return null;
+                                },
+                              ),
                               onSelectChanged: (_) {
                                 Navigator.push(
                                   context,

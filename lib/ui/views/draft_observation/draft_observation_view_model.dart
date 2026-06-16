@@ -68,6 +68,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
   Set<int> savedInternalDepartmentIds = {};
 
+  bool includeInactive = false;
+
   Future<void> initView({CombinedObservationModel? combined, DraftObservationModel? draftObservation,}) async {
     resetAll();
     await loadSessionUser();
@@ -258,6 +260,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
     isActionSaved = false;
     isResponseSaved = false;
     isFollowUpSaved = false;
+    includeInactive = false;
     notifyListeners();
   }
 
@@ -463,9 +466,9 @@ class DraftObservationViewmodel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await combinedApi.getCombined(page: page);
+      final result = await combinedApi.getCombined(page: page, includeInactive: includeInactive,);
       combinedList = result.items;
-      filteredCombinedList = result.items;
+      searchCombined(searchController.text);
       totalPages = result.totalPages;
       totalCount = result.totalCount;
     } catch (e) {
@@ -477,8 +480,10 @@ class DraftObservationViewmodel extends ChangeNotifier {
   }
 
   void searchCombined(String value) {
+    final q = value.toLowerCase();
     filteredCombinedList = combinedList.where((e) {
-      final q = value.toLowerCase();
+      if (q.isEmpty) return true;
+
       return e.area.toLowerCase().contains(q) ||
           e.subject.toLowerCase().contains(q) ||
           e.details.toLowerCase().contains(q);
@@ -514,6 +519,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
           departmentName: combined.departmentName,
           internalDepartmentName: combined.internalDepartmentName,
           loadedInternalDepartmentId: combined.internalDepartmentId,
+          isActive: combined.isActive ?? true,
         ),
       ];
     }else {
@@ -523,4 +529,38 @@ class DraftObservationViewmodel extends ChangeNotifier {
     resetSavedFlags();
     notifyListeners();
   }
+
+  List<ResponsibleUserRowModel> get visibleResponsibleUserRows {
+    return responsibleUserRows;
+  }
+
+  void toggleIncludeInactive() {
+    includeInactive = !includeInactive;
+    loadCombinedObservations(page: 1);
+  }
+
+  Future<void> toggleRowIsActive(ResponsibleUserRowModel row, bool value) async{
+    final index = responsibleUserRows.indexOf(row);
+    if (index == -1) ;
+
+    final oldValue = row.isActive;
+    final newValue = value;
+
+    responsibleUserRows[index] = row.copyWith(isActive: newValue);
+    notifyListeners();
+
+    try {
+      await observationDetailsApi.updateObservationDetails(
+        row.observationDetailsId!,
+        {'is_active': newValue},
+      );
+    } catch (e) {
+      responsibleUserRows[index] =
+          row.copyWith(isActive: oldValue);
+
+      observationDetailsErrorMessage = "Failed to update is_active.";
+      notifyListeners();
+    }
+  }
+
 }

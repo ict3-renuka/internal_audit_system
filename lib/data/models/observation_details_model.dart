@@ -12,6 +12,7 @@ class ObservationDetailsModel {
   final DateTime? remarkedDate;
   final DateTime? creationDate;
   final DateTime? lastModifiedDate;
+  final bool? isActive;
 
   ObservationDetailsModel({
     this.observationDetailsId,
@@ -27,6 +28,7 @@ class ObservationDetailsModel {
     this.remarkedDate,
     this.creationDate,
     this.lastModifiedDate,
+    this.isActive,
   });
 
   factory ObservationDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,7 @@ class ObservationDetailsModel {
       lastModifiedDate: json['last_modified_date'] != null
           ? DateTime.parse(json['last_modified_date'])
           : null,
+      isActive: json['is_active'] != null ? (json['is_active'] == true || json['is_active'] == 1) : null,
     );
   }
 
@@ -73,6 +76,7 @@ class ObservationDetailsModel {
       if (remark != null) 'remark': remark,
       if (remarkedDate != null)
         'remarked_date': remarkedDate!.toIso8601String().split('T').first,
+      if (isActive != null) 'is_active': isActive,
     };
   }
 }

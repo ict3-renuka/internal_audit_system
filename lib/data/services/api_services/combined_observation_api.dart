@@ -4,11 +4,11 @@ import '../../../core/constant/api_constant.dart';
 import '../../models/combined_observation_model.dart';
 
 class CombinedObservationApi {
-  Future<PaginatedResult<CombinedObservationModel>> getCombined({int page = 1, int pageSize = 20,}) async {
+  Future<PaginatedResult<CombinedObservationModel>> getCombined({int page = 1, int pageSize = 20,bool includeInactive = false}) async {
    try {
      final url = Uri.parse(
        "${ApiConstant
-           .baseUrl}/ObservationDetails/combined?page=$page&pageSize=$pageSize",
+           .baseUrl}/ObservationDetails/combined?page=$page&pageSize=$pageSize&includeInactive=$includeInactive",
      );
 
      final response = await http.get(url);

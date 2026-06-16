@@ -19,6 +19,7 @@ class CombinedObservationModel {
   final String? status;
   final String? remark;
   final DateTime? remarkedDate;
+  final bool? isActive;
 
   CombinedObservationModel({
     required this.observationId,
@@ -39,6 +40,7 @@ class CombinedObservationModel {
     this.status,
     this.remark,
     this.remarkedDate,
+    this.isActive,
   });
 
   factory CombinedObservationModel.fromJson(Map<String, dynamic> json) {
@@ -64,6 +66,9 @@ class CombinedObservationModel {
       remark: json['remark'] as String?,
       remarkedDate: json['remarkedDate'] != null
           ? DateTime.parse(json['remarkedDate'])
+          : null,
+      isActive: json['isActive'] != null
+          ? (json['isActive'] == true || json['isActive'] == 1)
           : null,
     );
   }

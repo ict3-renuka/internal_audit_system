@@ -14,6 +14,7 @@ class ResponsibleUserRowModel {
   String? departmentName;
   String? internalDepartmentName;
   int? loadedInternalDepartmentId;
+  final bool isActive;
 
   ResponsibleUserRowModel({
     this.selectedDepartment,
@@ -26,6 +27,7 @@ class ResponsibleUserRowModel {
     this.departmentName,
     this.internalDepartmentName,
     this.loadedInternalDepartmentId,
+    this.isActive = true,
   });
 
   bool get isSaved => observationDetailsId != null;
@@ -51,6 +53,7 @@ class ResponsibleUserRowModel {
     String? departmentName,
     String? internalDepartmentName,
     int? loadedInternalDepartmentId,
+    bool? isActive,
   }) {
     return ResponsibleUserRowModel(
       selectedDepartment: selectedDepartment ?? this.selectedDepartment,
@@ -68,6 +71,7 @@ class ResponsibleUserRowModel {
       internalDepartmentName ?? this.internalDepartmentName,
       loadedInternalDepartmentId:
       loadedInternalDepartmentId ?? this.loadedInternalDepartmentId,
+      isActive: isActive ?? this.isActive,
     );
   }
 }

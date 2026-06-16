@@ -53,6 +53,8 @@ class _AppNavBarState extends State<AppNavBar> {
     });
   }
 
+  bool get isAdmin => userName?.toLowerCase() == "admin";
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -71,6 +73,7 @@ class _AppNavBarState extends State<AppNavBar> {
           ),
           const SizedBox(width: 50),
 
+          if (isAdmin)
           _buildDropdownMenu(context, "Master", [
             "Add Company",
             "Add Center",
@@ -78,16 +81,16 @@ class _AppNavBarState extends State<AppNavBar> {
             "Add Internal Department"
           ]),
 
-          if (userName == "admin")
+          if (isAdmin)
             _buildDropdownMenu(context, "Audit Requests", [
               "New Audit Request",
               "Edit Audit Request",
             ]),
 
           _buildDropdownMenu(context, "Draft Observation", [
-            "New Draft Observation",
-            "Edit Draft Observation",
-          ]),
+              if (isAdmin) "New Draft Observation",
+              "Edit Draft Observation",
+            ],),
 
           const Spacer(),
 

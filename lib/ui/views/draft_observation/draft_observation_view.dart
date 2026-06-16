@@ -71,7 +71,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               title: "Observation Details",
               width: width,
               isLoading: vModel.isLoading,
-              onSubmit: vModel.isResponseFieldsFilled
+              onSubmit: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields)
                   ? null
                   : () async {
                       await vModel.addDraftObservation();
@@ -95,7 +95,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Area",
                         controller: vModel.areaController,
                         hintText: "Enter Area",
-                        readOnly: vModel.isResponseFieldsFilled,
+                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
                       ),
                     ),
                     SizedBox(width: width * 0.01),
@@ -104,7 +104,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Subject",
                         controller: vModel.subjectController,
                         hintText: "Enter Subject",
-                        readOnly: vModel.isResponseFieldsFilled,
+                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
                       ),
                     ),
                   ],
@@ -115,7 +115,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                   controller: vModel.detailsController,
                   hintText:
                       "Enter detailed scope and context for this observation...",
-                  readOnly: vModel.isResponseFieldsFilled,
+                  readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
                   maxLines: 3,
                   maxLength: 600,
                 ),
@@ -127,7 +127,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Risk And Root Cause",
                         controller: vModel.riskAndRootCauseController,
                         hintText: "Enter Risk And Root Cause",
-                        readOnly: vModel.isResponseFieldsFilled,
+                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
                         maxLines: 3,
                         maxLength: 600,
                       ),
@@ -138,7 +138,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Recommendation",
                         controller: vModel.recommendationController,
                         hintText: "Enter Recommendation",
-                        readOnly: vModel.isResponseFieldsFilled,
+                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
                         maxLines: 3,
                         maxLength: 600,
                       ),
@@ -192,7 +192,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                 width: width,
                 isLoading: vModel.isLoading,
                 onSubmit:
-                (!vModel.canEditActionFields || vModel.isResponseSaved)
+                (!vModel.canEditActionFields || vModel.isFollowUpSaved)
                     ? null
                     : () async {
                   await vModel.updateObservationDetails(
@@ -214,7 +214,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                     hintText: "Enter Management Response",
                     maxLines: 3 ,
                     maxLength: 600,
-                    readOnly: !vModel.canEditActionFields || vModel.isResponseFieldsFilled,
+                    readOnly: !vModel.canEditActionFields || vModel.isFollowUpSaved,
                   ),
                 ],
               ),
@@ -224,7 +224,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                 title: "Planned Action Details",
                 width: width,
                 isLoading: vModel.isLoading,
-                onSubmit: (!vModel.canEditActionFields || vModel.isActionSaved)
+                onSubmit: (!vModel.canEditActionFields || vModel.isFollowUpSaved)
                     ? null
                     : () async {
                         await vModel.updateObservationDetails(
@@ -245,7 +245,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                     value: vModel.actionTimeline,
                     onSelect:
                         (vModel.canEditActionFields &&
-                            !vModel.isActionFieldsFilled)
+                            !vModel.isFollowUpSaved)
                         ? vModel.setActionTimeline
                         : (_) {},
                     disableFutureDates: false,
@@ -257,7 +257,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                     hintText: "Enter Action Plan",
                     maxLines: 3,
                     maxLength: 600,
-                    readOnly: !vModel.canEditActionFields || vModel.isActionFieldsFilled,
+                    readOnly: !vModel.canEditActionFields || vModel.isFollowUpSaved,
                   ),
                 ],
               ),
@@ -268,7 +268,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                 width: width,
                 isLoading: vModel.isLoading,
                 onSubmit:
-                    (!vModel.canEditFollowUpFields || vModel.isFollowUpSaved)
+                    !vModel.canEditFollowUpFields
                     ? null
                     : () async {
                         await vModel.updateObservationDetails(
@@ -291,7 +291,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                           label: "Status",
                           controller: vModel.statusController,
                           hintText: "Enter Status",
-                          readOnly: !vModel.canEditFollowUpFields || vModel.isFollowUpFieldsFilled,
+                          readOnly: !vModel.canEditFollowUpFields,
                         ),
                       ),
                       SizedBox(width: width * 0.01),
@@ -300,7 +300,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                           label: "Remark",
                           controller: vModel.remarkController,
                           hintText: "Enter Remark",
-                          readOnly: !vModel.canEditFollowUpFields || vModel.isFollowUpFieldsFilled,
+                          readOnly: !vModel.canEditFollowUpFields,
                         ),
                       ),
                       SizedBox(width: width * 0.01),
@@ -308,7 +308,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         child: MasterDateFieldWidget(
                           label: "Remarked Date",
                           value: vModel.remarkedDate,
-                          onSelect: (vModel.canEditFollowUpFields && !vModel.isFollowUpFieldsFilled)
+                          onSelect: vModel.canEditFollowUpFields
                               ? vModel.setRemarkedDate
                               : (_) {},
                           disableFutureDates: true,
@@ -332,13 +332,18 @@ class _DraftObservationViewState extends State<DraftObservationView> {
     const headerStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
     const cellPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 6);
 
+    final hasSavedRows = vModel.responsibleUserRows.any((r) => r.isSaved);
+    final isAdmin = vModel.canEditFollowUpFields;
+    final rows = vModel.visibleResponsibleUserRows;
+
     return Table(
       border: TableBorder.all(color: AppColors.border, width: 1),
-      columnWidths: const {
-        0: FlexColumnWidth(2),
-        1: FlexColumnWidth(2),
-        2: FlexColumnWidth(2),
-        3: IntrinsicColumnWidth(),
+      columnWidths: {
+        0: const FlexColumnWidth(2),
+        1: const FlexColumnWidth(2),
+        2: const FlexColumnWidth(2),
+        3: const IntrinsicColumnWidth(),
+        if (isAdmin && hasSavedRows) 4: const IntrinsicColumnWidth(),
       },
       children: [
         TableRow(
@@ -357,11 +362,15 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               child: Text("Responsible User", style: headerStyle),
             ),
             const SizedBox.shrink(),
+            Padding(
+              padding: cellPadding,
+              child: Text("Is Active", style: headerStyle),
+            ),
           ],
         ),
 
-        ...List.generate(vModel.responsibleUserRows.length, (i) {
-          final row = vModel.responsibleUserRows[i];
+    ...List.generate(rows.length, (i) {
+    final row = rows[i];
           return TableRow(
             children: [
               row.isSaved
@@ -458,6 +467,17 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                     ? null
                     : () => vModel.removeResponsibleUserRow(i),
               ),
+              if (isAdmin && row.isSaved)
+                Padding(
+                  padding: cellPadding,
+                  child: Checkbox(
+                    value: row.isActive,
+                    activeColor: AppColors.primary,
+                    onChanged: (value) => vModel.toggleRowIsActive(row, value ?? false),
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
             ],
           );
         }),
