@@ -5,6 +5,8 @@ import 'package:project_one/ui/views/draft_observation/draft_observation_view_mo
 import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 
+import '../../../data/services/api_services/observation_attachment_api.dart';
+
 class EditDraftObservationView extends StatefulWidget {
   const EditDraftObservationView({super.key});
 
@@ -152,6 +154,7 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                             DataColumn(label: _HeaderLabel('Status')),
                             DataColumn(label: _HeaderLabel('Remark')),
                             DataColumn(label: _HeaderLabel('Remarked Date')),
+                            DataColumn(label: _HeaderLabel("Attachments"),),
                           ],
                           rows: vModel.filteredCombinedList.map((e) {
                             final isInactive = !(e.isActive ?? true);
@@ -169,7 +172,6 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => DraftObservationView(
-                                      draftObservation: e.toDraftObservationModel(),
                                       combined: e,
                                     ),
                                   ),
@@ -249,6 +251,19 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                                       .first
                                       : '—',
                                 )),
+                                DataCell(
+                                  e.hasPdf
+                                      ? IconButton(
+                                    icon: Icon(
+                                      Icons.picture_as_pdf,
+                                      color: AppColors.primary,
+                                    ),
+                                    onPressed: () async {
+                                      vModel.openPdf(e.observationId);
+                                    },
+                                  )
+                                      : const Text("-"),
+                                ),
                               ],
                             );
                           }).toList(),

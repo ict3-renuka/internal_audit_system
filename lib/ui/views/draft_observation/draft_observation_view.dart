@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:project_one/core/theme/app_colors.dart';
 import 'package:project_one/core/theme/app_text_style.dart';
 import 'package:project_one/data/models/department_model.dart';
-import 'package:project_one/data/models/draft_observation_model.dart';
 import 'package:project_one/data/models/internal_department_model.dart';
 import 'package:project_one/ui/widget/master_date_field_widget.dart';
 import 'package:project_one/ui/widget/master_text_field_widget.dart';
@@ -14,9 +13,8 @@ import '../../../data/models/combined_observation_model.dart';
 import 'draft_observation_view_model.dart';
 
 class DraftObservationView extends StatefulWidget {
-  final DraftObservationModel? draftObservation;
   final CombinedObservationModel? combined;
-  const DraftObservationView({super.key, this.draftObservation, this.combined});
+  const DraftObservationView({super.key, this.combined});
 
   @override
   State<DraftObservationView> createState() => _DraftObservationViewState();
@@ -33,9 +31,34 @@ class _DraftObservationViewState extends State<DraftObservationView> {
       );
       vModel.initView(
         combined: widget.combined,
-        draftObservation: widget.draftObservation,
       );
     });
+  }
+
+  Future<void> _handleRemovePdf(BuildContext context, DraftObservationViewmodel vModel) async {
+    if (vModel.pdfRemovalNeedsConfirmation) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Remove File"),
+          content: const Text(
+            "This will permanently delete the file from the database. Do you want to continue?",
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text("No")),
+            TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text("Yes")),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+
+    await vModel.removePdf();
+
+    if (vModel.observationErrorMessage != null) {
+      AppSnackBar.error(context, vModel.observationErrorMessage!);
+      vModel.observationErrorMessage = null;
+    }
   }
 
   @override
@@ -59,11 +82,6 @@ class _DraftObservationViewState extends State<DraftObservationView> {
             Text(
               "Initialize a new audit engagement by providing meeting details and firm contact information.",
               style: AppTextStyles.paragraph,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Once you submit the data by clicking the 'Add' button, you will not be able to edit or delete it.",
-              style: TextStyle(color: Colors.red, fontSize: 12),
             ),
             SizedBox(height: width * 0.02),
             SectionCard(
@@ -120,6 +138,78 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                   maxLength: 600,
                 ),
                 SizedBox(height: width * 0.005),
+                Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed:
+                      (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields)
+                          ? null
+                          : () async {
+                        await vModel.pickPdf();
+                        if (vModel.observationErrorMessage != null) {
+                          AppSnackBar.error(context, vModel.observationErrorMessage!);
+                          vModel.observationErrorMessage = null;
+                        }
+                      },
+                      icon: Icon(Icons.upload_file,color: AppColors.primary ,),
+                      label: Text("Choose PDF",style: TextStyle(color: AppColors.primary),),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.005,
+                          vertical: width * 0.01,
+                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                      ),
+                    ),
+
+                    const SizedBox(width: 15),
+
+                    if(vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          await vModel.previewPdf();
+                          if (vModel.observationErrorMessage != null) {
+                            AppSnackBar.error(context, vModel.observationErrorMessage!);
+                            vModel.observationErrorMessage = null;
+                          }
+                        },
+                        icon: Icon(Icons.picture_as_pdf,color: AppColors.primary ,),
+                        label: Text("Preview",style: TextStyle(color: AppColors.primary),),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.005,
+                            vertical: width * 0.01,
+                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        ),
+                      ),
+
+                    const SizedBox(width: 15),
+
+                    if(vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
+
+                      ElevatedButton.icon(
+                        onPressed: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields)
+                            ? null
+                            : () async => await _handleRemovePdf(context, vModel),
+                        icon: Icon(Icons.delete,color: AppColors.primary ,),
+                        label: Text("Remove",style: TextStyle(color: AppColors.primary),),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.005,
+                            vertical: width * 0.01,
+                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        ),
+                      ),
+                  ],
+                ),
+                if(vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top:10),
+                    child: Text(vModel.newPdfName ?? vModel.existingFileName ?? "" , style: TextStyle(color: AppColors.textLight),),
+                  ),
+                SizedBox(height: width * 0.01),
                 Row(
                   children: [
                     Expanded(

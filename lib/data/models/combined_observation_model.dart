@@ -20,6 +20,9 @@ class CombinedObservationModel {
   final String? remark;
   final DateTime? remarkedDate;
   final bool? isActive;
+  final bool hasPdf;
+  final int? attachmentId;
+  final String? fileName;
 
   CombinedObservationModel({
     required this.observationId,
@@ -41,6 +44,9 @@ class CombinedObservationModel {
     this.remark,
     this.remarkedDate,
     this.isActive,
+    required this.hasPdf,
+    this.attachmentId,
+    this.fileName,
   });
 
   factory CombinedObservationModel.fromJson(Map<String, dynamic> json) {
@@ -70,6 +76,9 @@ class CombinedObservationModel {
       isActive: json['isActive'] != null
           ? (json['isActive'] == true || json['isActive'] == 1)
           : null,
+      hasPdf: json['hasPdf'] ?? false,
+      attachmentId: json['attachmentId'] as int?,
+      fileName: json['fileName'] as String?,
     );
   }
 

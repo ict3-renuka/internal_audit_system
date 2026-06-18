@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:project_one/data/models/draft_observation_model.dart';
 import 'package:project_one/data/services/api_services/draft_observation_api.dart';
 
+import '../../../core/constant/api_constant.dart';
 import '../../../data/models/combined_observation_model.dart';
 import '../../../data/models/department_model.dart';
 import '../../../data/models/internal_department_model.dart';
@@ -10,15 +14,23 @@ import '../../../data/models/responsible_user_row_model.dart';
 import '../../../data/services/api_services/combined_observation_api.dart';
 import '../../../data/services/api_services/department_api.dart';
 import '../../../data/services/api_services/internal_department_api.dart';
+import '../../../data/services/api_services/observation_attachment_api.dart';
 import '../../../data/services/api_services/observation_details_api.dart';
 import '../../../data/services/api_services/user_api.dart';
 import '../../../data/services/session_service.dart';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:js_interop';
+import 'package:web/web.dart' as html;
 
 class DraftObservationViewmodel extends ChangeNotifier {
 
   final DraftObservationApi draftObservationApi;
   final ObservationDetailsApi observationDetailsApi = ObservationDetailsApi();
   final CombinedObservationApi combinedApi = CombinedObservationApi();
+  final ObservationAttachmentApi observationAttachmentApi = ObservationAttachmentApi();
 
   DraftObservationViewmodel(this.draftObservationApi);
 
@@ -29,20 +41,13 @@ class DraftObservationViewmodel extends ChangeNotifier {
   final TextEditingController recommendationController = TextEditingController();
   final TextEditingController manageResponseController = TextEditingController();
   final TextEditingController correctiveActionPlanController = TextEditingController();
-  final TextEditingController responsibleUserIdController = TextEditingController();
   final TextEditingController statusController = TextEditingController();
   final TextEditingController remarkController = TextEditingController();
-  final TextEditingController departmentController = TextEditingController();
-  final TextEditingController internalDepartmentController = TextEditingController();
 
   final TextEditingController searchController = TextEditingController();
 
   DateTime? remarkedDate;
   bool isLoading = false;
-  bool isEditLoaded = false;
-
-  List<DraftObservationModel> draftObservation = [];
-  List<DraftObservationModel> filteredList = [];
 
   List<DepartmentModel> allDepartments = [];
   List<InternalDepartmentModel> allInternalDepartments = [];
@@ -70,7 +75,13 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
   bool includeInactive = false;
 
-  Future<void> initView({CombinedObservationModel? combined, DraftObservationModel? draftObservation,}) async {
+  int? existingAttachmentId;
+  String? existingFileName;
+
+  Uint8List? newPdfBytes;
+  String? newPdfName;
+
+  Future<void> initView({CombinedObservationModel? combined}) async {
     resetAll();
     await loadSessionUser();
     await loadDropdownData();
@@ -78,8 +89,6 @@ class DraftObservationViewmodel extends ChangeNotifier {
     if (combined != null) {
       loadFromCombined(combined);
       await loadAllResponsibleRows(combined.observationId);
-    } else if (draftObservation != null) {
-      loadDraftObservation(draftObservation);
     }
 
     if (isActionFieldsFilled) isActionSaved = true;
@@ -120,10 +129,6 @@ class DraftObservationViewmodel extends ChangeNotifier {
       statusController.text.trim().isNotEmpty &&
           remarkController.text.trim().isNotEmpty &&
           remarkedDate != null;
-
-  // bool get allRowsSaved =>
-  //     responsibleUserRows.isNotEmpty &&
-  //         responsibleUserRows.every((r) => r.isSaved);
 
   void setActionTimeline(DateTime date) {
     actionTimeline = date;
@@ -231,6 +236,19 @@ class DraftObservationViewmodel extends ChangeNotifier {
       } else {
         await draftObservationApi.updateDraftObservation(observationId!, observation);
       }
+      if (newPdfBytes != null && newPdfName != null) {
+        final attachmentId = await observationAttachmentApi.uploadPdf(
+          observationId: observationId!,
+          bytes: newPdfBytes!,
+          fileName: newPdfName!,
+        );
+
+        existingAttachmentId = attachmentId;
+        existingFileName = newPdfName;
+
+        newPdfBytes = null;
+        newPdfName = null;
+      }
     } catch (e) {
       print(e);
       observationErrorMessage = "Failed to save. Please try again.";
@@ -261,6 +279,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
     isResponseSaved = false;
     isFollowUpSaved = false;
     includeInactive = false;
+    newPdfBytes = null;
+    newPdfName = null;
     notifyListeners();
   }
 
@@ -445,21 +465,6 @@ class DraftObservationViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void loadDraftObservation(DraftObservationModel observation) {
-    areaController.text = observation.area;
-    subjectController.text = observation.subject;
-    detailsController.text = observation.details;
-    riskAndRootCauseController.text = observation.riskAndRootCause;
-    recommendationController.text = observation.recommendation;
-
-    if (observation.observationId != null) {
-      observationId = observation.observationId;
-    }
-
-    resetSavedFlags();
-    notifyListeners();
-  }
-
   Future<void> loadCombinedObservations({int page = 1}) async {
     isLoading = true;
     currentPage = page;
@@ -503,6 +508,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
     riskAndRootCauseController.text = combined.riskAndRootCause;
     recommendationController.text = combined.recommendation;
     observationId = combined.observationId;
+    existingAttachmentId = combined.attachmentId;
+    existingFileName = combined.fileName;
 
     if (combined.observationDetailsId != null) {
       manageResponseController.text = combined.managementResponse ?? '';
@@ -558,9 +565,104 @@ class DraftObservationViewmodel extends ChangeNotifier {
       responsibleUserRows[index] =
           row.copyWith(isActive: oldValue);
 
-      observationDetailsErrorMessage = "Failed to update is_active.";
+      observationDetailsErrorMessage = "Failed to update isActive field.";
       notifyListeners();
     }
   }
+
+  Future<void> pickPdf() async {
+
+    if (newPdfBytes != null || existingAttachmentId != null) {
+      observationErrorMessage = "Only one file can be selected. Please remove the existing file first.";
+      notifyListeners();
+      return;
+    }
+
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+      withData: true,
+    );
+
+    if (result == null || result.files.isEmpty) return;
+
+    newPdfBytes = result.files.first.bytes;
+    newPdfName = result.files.first.name;
+
+    notifyListeners();
+  }
+
+  Future<void> removePdf() async {
+    if (newPdfBytes != null) {
+
+      newPdfBytes = null;
+      newPdfName = null;
+
+      notifyListeners();
+      return;
+    }
+
+    if (existingAttachmentId != null) {
+
+      await observationAttachmentApi.delete(existingAttachmentId!);
+
+      existingAttachmentId = null;
+      existingFileName = null;
+
+      notifyListeners();
+      return;
+    }
+
+    observationErrorMessage = "Please choose a file first.";
+    notifyListeners();
+  }
+
+  Future<void> previewPdf() async {
+    if (newPdfBytes != null) {
+
+      if (kIsWeb) {
+        final blob = html.Blob(
+          <html.BlobPart>[newPdfBytes!.toJS].toJS,
+          html.BlobPropertyBag(type: 'application/pdf'),
+        );
+        final url = html.URL.createObjectURL(blob);
+        html.window.open(url, "_blank");
+
+        Future.delayed(const Duration(minutes: 1), () {
+          html.URL.revokeObjectURL(url);
+        });
+        return;
+      }
+
+      final dir = await getTemporaryDirectory();
+      final file = File("${dir.path}/preview.pdf");
+      await file.writeAsBytes(newPdfBytes!);
+
+      await OpenFilex.open(file.path);
+      return;
+    }
+
+    if (existingAttachmentId != null && observationId != null) {
+      openPdf(observationId!);
+      return;
+    }
+
+    if(!canEditFollowUpFields || isResponseFieldsFilled){
+      observationErrorMessage="No File Chosen.";
+    }else{
+      observationErrorMessage = "Choose a file first.";
+    }
+    notifyListeners();
+  }
+
+  void openPdf(int id) {
+    observationAttachmentApi.openPdfInBrowser(id);
+  }
+
+  bool get pdfRemovalNeedsConfirmation => existingAttachmentId != null;
+
+  bool get isObservationLocked => isResponseFieldsFilled || !canEditFollowUpFields;
+
+  bool get hasPdf => newPdfBytes != null || existingAttachmentId != null;
 
 }
