@@ -281,6 +281,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
     includeInactive = false;
     newPdfBytes = null;
     newPdfName = null;
+    existingAttachmentId = null;
+    existingFileName = null;
     notifyListeners();
   }
 
