@@ -38,10 +38,11 @@ dependencies:
   http: ^1.6.0
   intl: ^0.20.2
   shared_preferences: ^2.5.5
-  file_picker: ^11.0.2
   open_filex: ^4.7.0
   path_provider: ^2.1.6
   web: ^1.1.1
+  syncfusion_flutter_pdfviewer: ^33.2.13+1
+  file_picker: ^3.0.4
 
 dev_dependencies:
   flutter_test:

@@ -10,6 +10,8 @@ class SectionCard extends StatelessWidget {
   final double width;
   final VoidCallback? onSubmit;
   final bool isLoading;
+  final String buttonText;
+  final Widget? actions;
 
   const SectionCard({
     super.key,
@@ -19,6 +21,8 @@ class SectionCard extends StatelessWidget {
     required this.width,
     this.onSubmit,
     this.isLoading = false,
+    required this.buttonText,
+    this.actions,
   });
 
   @override
@@ -43,11 +47,14 @@ class SectionCard extends StatelessWidget {
           const SizedBox(height: 32),
           ...children,
           const SizedBox(height: 40),
-          if (onSubmit != null)
+          if (actions != null)
+            actions!
+          else if (onSubmit != null)
             SubmitButton(
               isLoading: isLoading,
               width: width,
               onSubmit: onSubmit!,
+              buttonText: buttonText,
             ),
         ],
       ),

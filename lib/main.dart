@@ -4,6 +4,7 @@ import 'package:project_one/data/services/api_services/center_api.dart';
 import 'package:project_one/data/services/api_services/department_api.dart';
 import 'package:project_one/data/services/api_services/draft_observation_api.dart';
 import 'package:project_one/data/services/api_services/internal_department_api.dart';
+import 'package:project_one/data/services/api_services/observation_report_api.dart';
 import 'package:project_one/ui/views/audit_request/audit_request_view.dart';
 import 'package:project_one/ui/views/audit_request/audit_request_view_model.dart';
 import 'package:project_one/ui/views/audit_request/edit_audit_request_view.dart';
@@ -16,6 +17,8 @@ import 'package:project_one/ui/views/master/add_department/add_department_view.d
 import 'package:project_one/ui/views/master/add_department/add_department_viewmodel.dart';
 import 'package:project_one/ui/views/master/add_internal_department/add_internal_department_view.dart';
 import 'package:project_one/ui/views/master/add_internal_department/add_internal_department_viewmodel.dart';
+import 'package:project_one/ui/views/report/observation_report_view.dart';
+import 'package:project_one/ui/views/report/observation_report_view_model.dart';
 import 'package:project_one/ui/views/splash_screen/splash_view.dart';
 import 'package:project_one/ui/views/splash_screen/splash_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +48,7 @@ class MyApp extends StatelessWidget {
   final DraftObservationApi draftObservationApi = DraftObservationApi();
   final DepartmentApi departmentApi = DepartmentApi();
   final InternalDepartmentApi internalDepartmentApi = InternalDepartmentApi();
+  final ObservationReportApi observationReportApi = ObservationReportApi();
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +62,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AddInternalDepartmentViewmodel(departmentApi,internalDepartmentApi)),
         ChangeNotifierProvider(create: (_) => AuditRequestViewmodel(auditRequestApi)),
         ChangeNotifierProvider(create: (_) => DraftObservationViewmodel(draftObservationApi)),
+        ChangeNotifierProvider(create: (_) => ObservationReportViewModel()),
       ],
 
       child: MaterialApp(
@@ -75,6 +80,7 @@ class MyApp extends StatelessWidget {
           "/edit-audit-request": (_) => const EditAuditRequestView(),
           "/new-draft-observation": (_) => const DraftObservationView(),
           "/edit-draft-observation": (_) => const EditDraftObservationView(),
+          "/observation-report": (_) => const ObservationReportView()
         },
       ),
     );

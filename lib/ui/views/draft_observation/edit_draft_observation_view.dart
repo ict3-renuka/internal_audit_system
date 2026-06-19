@@ -140,6 +140,7 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                           dataRowMinHeight: 48,
                           dataRowMaxHeight: double.infinity,
                           columns: const [
+                            DataColumn(label: _HeaderLabel('Review Reference')),
                             DataColumn(label: _HeaderLabel('Area')),
                             DataColumn(label: _HeaderLabel('Subject')),
                             DataColumn(label: _HeaderLabel('Details')),
@@ -178,6 +179,7 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                                 );
                               },
                               cells: [
+                                DataCell(Text(e.reviewReference)),
                                 DataCell(Text(e.area)),
                                 DataCell(Text(e.subject)),
                                 DataCell(

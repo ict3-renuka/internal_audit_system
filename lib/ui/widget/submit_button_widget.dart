@@ -5,12 +5,14 @@ class SubmitButton extends StatelessWidget {
   final bool isLoading;
   final double width;
   final VoidCallback onSubmit;
+  final String buttonText;
 
   const SubmitButton({
     super.key,
     required this.isLoading,
     required this.width,
     required this.onSubmit,
+    required this.buttonText,
   });
 
   @override
@@ -29,8 +31,8 @@ class SubmitButton extends StatelessWidget {
           ),
         )
             : const Icon(Icons.send_outlined, color: Colors.white, size: 18),
-        label: const Text(
-          "Add",
+        label: Text(
+          buttonText,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         style: ElevatedButton.styleFrom(

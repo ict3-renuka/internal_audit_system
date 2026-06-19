@@ -87,6 +87,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
             SectionCard(
               icon: Icons.note_alt_outlined,
               title: "Observation Details",
+              buttonText: "Add",
               width: width,
               isLoading: vModel.isLoading,
               onSubmit: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields)
@@ -108,6 +109,15 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               children: [
                 Row(
                   children: [
+                    Expanded(
+                      child: MasterTextFieldWidget(
+                        label: "Review Reference",
+                        controller: vModel.reviewReferenceController,
+                        hintText: "Enter Review Reference",
+                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
+                      ),
+                    ),
+                    SizedBox(width: width * 0.01),
                     Expanded(
                       child: MasterTextFieldWidget(
                         label: "Area",
@@ -242,6 +252,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               SectionCard(
                 icon: Icons.note_alt_outlined,
                 title: "Responsible User Details",
+                buttonText: "Add",
                 width: width,
                 isLoading: vModel.isLoading,
                 onSubmit: !vModel.canEditFollowUpFields
@@ -279,6 +290,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               SectionCard(
                 icon: Icons.note_alt_outlined,
                 title: "Response Details",
+                buttonText: "Add",
                 width: width,
                 isLoading: vModel.isLoading,
                 onSubmit:
@@ -312,6 +324,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               SectionCard(
                 icon: Icons.note_alt_outlined,
                 title: "Planned Action Details",
+                buttonText: "Add",
                 width: width,
                 isLoading: vModel.isLoading,
                 onSubmit: (!vModel.canEditActionFields || vModel.isFollowUpSaved)
@@ -355,6 +368,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               SectionCard(
                 icon: Icons.note_alt_outlined,
                 title: "Follow Up Details",
+                buttonText: "Add",
                 width: width,
                 isLoading: vModel.isLoading,
                 onSubmit:
@@ -377,11 +391,28 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                   Row(
                     children: [
                       Expanded(
-                        child: MasterTextFieldWidget(
-                          label: "Status",
-                          controller: vModel.statusController,
-                          hintText: "Enter Status",
-                          readOnly: !vModel.canEditFollowUpFields,
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text("Status", style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<String>(
+                              initialValue: vModel.selectedStatus,
+                              items: vModel.statusList
+                                  .map((s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s),
+                              ))
+                                  .toList(),
+                              onChanged:!vModel.canEditFollowUpFields ? null : vModel.setStatus,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(width: width * 0.01),

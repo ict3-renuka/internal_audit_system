@@ -5,7 +5,6 @@ import 'package:open_filex/open_filex.dart';
 import 'package:project_one/data/models/draft_observation_model.dart';
 import 'package:project_one/data/services/api_services/draft_observation_api.dart';
 
-import '../../../core/constant/api_constant.dart';
 import '../../../data/models/combined_observation_model.dart';
 import '../../../data/models/department_model.dart';
 import '../../../data/models/internal_department_model.dart';
@@ -34,6 +33,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
   DraftObservationViewmodel(this.draftObservationApi);
 
+  final TextEditingController reviewReferenceController = TextEditingController();
   final TextEditingController areaController = TextEditingController();
   final TextEditingController subjectController = TextEditingController();
   final TextEditingController detailsController = TextEditingController();
@@ -41,10 +41,12 @@ class DraftObservationViewmodel extends ChangeNotifier {
   final TextEditingController recommendationController = TextEditingController();
   final TextEditingController manageResponseController = TextEditingController();
   final TextEditingController correctiveActionPlanController = TextEditingController();
-  final TextEditingController statusController = TextEditingController();
   final TextEditingController remarkController = TextEditingController();
 
   final TextEditingController searchController = TextEditingController();
+
+  String? selectedStatus;
+  final List<String> statusList = ["Open", "Close"];
 
   DateTime? remarkedDate;
   bool isLoading = false;
@@ -98,6 +100,11 @@ class DraftObservationViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setStatus(String? value) {
+    selectedStatus = value;
+    notifyListeners();
+  }
+
   Future<void> loadSessionUser() async {
     final user = await SessionService.getUser();
     sessionInternalDepartmentId = user?.internalDepartmentId;
@@ -126,7 +133,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
   bool get isResponseFieldsFilled => manageResponseController.text.trim().isNotEmpty;
 
   bool get isFollowUpFieldsFilled =>
-      statusController.text.trim().isNotEmpty &&
+          selectedStatus != null  &&
           remarkController.text.trim().isNotEmpty &&
           remarkedDate != null;
 
@@ -206,7 +213,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
   }
 
   Future<void> addDraftObservation() async {
-    if (areaController.text.trim().isEmpty ||
+    if (reviewReferenceController.text.trim().isEmpty ||
+        areaController.text.trim().isEmpty ||
         subjectController.text.trim().isEmpty ||
         detailsController.text.trim().isEmpty ||
         riskAndRootCauseController.text.trim().isEmpty ||
@@ -223,6 +231,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
     try {
       final observation = DraftObservationModel(
         observationId: observationId,
+        reviewReference: reviewReferenceController.text.trim(),
         area: areaController.text.trim(),
         subject: subjectController.text.trim(),
         details: detailsController.text.trim(),
@@ -259,6 +268,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
   }
 
   void resetAll() {
+    reviewReferenceController.clear();
     areaController.clear();
     subjectController.clear();
     detailsController.clear();
@@ -266,7 +276,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
     recommendationController.clear();
     manageResponseController.clear();
     correctiveActionPlanController.clear();
-    statusController.clear();
+    selectedStatus = null;
     remarkController.clear();
     actionTimeline = null;
     remarkedDate = null;
@@ -412,7 +422,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
         return;
       }
 
-      if(section == 'followup' && (statusController.text.trim().isEmpty ||
+      if(section == 'followup' && ( selectedStatus == null ||
           remarkController.text.trim().isEmpty ||
           remarkedDate == null)) {
         observationDetailsErrorMessage =
@@ -432,8 +442,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
       if (manageResponseController.text.trim().isNotEmpty) {
         fields['management_response'] = manageResponseController.text.trim();
       }
-      if (statusController.text.trim().isNotEmpty) {
-        fields['status'] = statusController.text.trim();
+      if (selectedStatus != null) {
+        fields['status'] = selectedStatus;
       }
       if (remarkController.text.trim().isNotEmpty) {
         fields['remark'] = remarkController.text.trim();
@@ -504,6 +514,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
   }
 
   void loadFromCombined(CombinedObservationModel combined) {
+    reviewReferenceController.text = combined.reviewReference;
     areaController.text = combined.area;
     subjectController.text = combined.subject;
     detailsController.text = combined.details;
@@ -517,7 +528,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
       manageResponseController.text = combined.managementResponse ?? '';
       correctiveActionPlanController.text = combined.correctiveActionPlan ?? '';
       actionTimeline = combined.actionTimeLine;
-      statusController.text = combined.status ?? '';
+      selectedStatus = combined.status;
       remarkController.text = combined.remark ?? '';
       remarkedDate = combined.remarkedDate;
 
@@ -580,7 +591,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
       return;
     }
 
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
       withData: true,

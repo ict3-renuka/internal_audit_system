@@ -2,6 +2,7 @@ import 'draft_observation_model.dart';
 
 class CombinedObservationModel {
   final int observationId;
+  final String reviewReference;
   final String area;
   final String subject;
   final String details;
@@ -26,6 +27,7 @@ class CombinedObservationModel {
 
   CombinedObservationModel({
     required this.observationId,
+    required this.reviewReference,
     required this.area,
     required this.subject,
     required this.details,
@@ -52,6 +54,7 @@ class CombinedObservationModel {
   factory CombinedObservationModel.fromJson(Map<String, dynamic> json) {
     return CombinedObservationModel(
       observationId: json['observationId'] ?? 0,
+      reviewReference: json['reviewReference'] ?? '',
       area: json['area'] ?? '',
       subject: json['subject'] ?? '',
       details: json['details'] ?? '',
@@ -85,6 +88,7 @@ class CombinedObservationModel {
   DraftObservationModel toDraftObservationModel() {
     return DraftObservationModel(
       observationId: observationId,
+      reviewReference: reviewReference,
       area: area,
       subject: subject,
       details: details,

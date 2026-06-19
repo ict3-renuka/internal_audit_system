@@ -1,6 +1,7 @@
 class DraftObservationModel {
 
   final int? observationId;
+  final String reviewReference;
   final String area;
   final String subject;
   final String details;
@@ -9,6 +10,7 @@ class DraftObservationModel {
 
   DraftObservationModel({
     this.observationId,
+    required this.reviewReference,
     required this.area,
     required this.subject,
     required this.details,
@@ -19,6 +21,7 @@ class DraftObservationModel {
   factory DraftObservationModel.fromJson(Map<String, dynamic> json) {
     return DraftObservationModel(
       observationId: json["observation_id"],
+      reviewReference: json["review_reference"],
       area: json["area"],
       subject: json["subject"],
       details: json["details"],
@@ -29,6 +32,7 @@ class DraftObservationModel {
 
   Map<String, dynamic> toJson() {
     return {
+      "review_reference": reviewReference,
       "area": area,
       "subject": subject,
       "details": details,
