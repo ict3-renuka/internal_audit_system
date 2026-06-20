@@ -49,10 +49,11 @@ class MasterListWidget extends StatelessWidget {
             ),
           ),
 
-          Expanded(
-            child: ListView(
-              children: rows,
-            ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: rows.length,
+            itemBuilder: (context, index) => rows[index],
           ),
         ],
       ),

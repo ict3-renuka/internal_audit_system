@@ -21,7 +21,7 @@ class MasterPageLayoutWidget extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.secondBackground,
       appBar: AppNavBar(),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,16 +40,14 @@ class MasterPageLayoutWidget extends StatelessWidget {
               style: const TextStyle(color: Colors.black54, fontSize: 16),
             ),
             const SizedBox(height: 30),
-
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: formSection),
-                  const SizedBox(width: 24),
-                  Expanded(child: listSection),
-                ],
-              ),
+        
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: formSection),
+                const SizedBox(width: 24),
+                Expanded(child: listSection),
+              ],
             ),
           ],
         ),

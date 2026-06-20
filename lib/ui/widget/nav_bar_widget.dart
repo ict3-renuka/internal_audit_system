@@ -71,32 +71,40 @@ class _AppNavBarState extends State<AppNavBar> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(width: 50),
+          const SizedBox(width: 40),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  if (isAdmin)
+                    _buildDropdownMenu(context, "Master", [
+                      "Add Company",
+                      "Add Center",
+                      "Add Department",
+                      "Add Internal Department",
+                    ]),
 
-          if (isAdmin)
-          _buildDropdownMenu(context, "Master", [
-            "Add Company",
-            "Add Center",
-            "Add Department",
-            "Add Internal Department"
-          ]),
+                  if (isAdmin)
+                    _buildDropdownMenu(context, "Audit Requests", [
+                      "New Audit Request",
+                      "Edit Audit Request",
+                    ]),
 
-          if (isAdmin)
-            _buildDropdownMenu(context, "Audit Requests", [
-              "New Audit Request",
-              "Edit Audit Request",
-            ]),
+                  _buildDropdownMenu(context, "Draft Observation", [
+                    if (isAdmin) "New Draft Observation",
+                    "Edit Draft Observation",
+                  ]),
 
-          _buildDropdownMenu(context, "Draft Observation", [
-              if (isAdmin) "New Draft Observation",
-              "Edit Draft Observation",
-            ],),
+                  _buildDropdownMenu(context, "Report", [
+                    "Observation Report",
+                  ]),
+                ],
+              ),
+            ),
+          ),
 
-          _buildDropdownMenu(context, "Report", [
-            "Observation Report",
-          ],),
-
-          const Spacer(),
+          const SizedBox(width: 20),
 
           PopupMenuButton(
             offset: const Offset(-160, 50),
@@ -126,7 +134,10 @@ class _AppNavBarState extends State<AppNavBar> {
                 const SizedBox(width: 6),
                 Text(
                   name ?? "",
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
@@ -201,7 +212,7 @@ class _ProfilePopup extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: AppColors.primary.withOpacity(0.12),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
                 child: Icon(Icons.person, color: AppColors.primary, size: 26),
               ),
               const SizedBox(width: 12),
@@ -232,7 +243,7 @@ class _ProfilePopup extends StatelessWidget {
           const Divider(height: 20),
           _InfoRow(icon: Icons.email, label: "Email", value: email),
           const SizedBox(height: 8),
-          _InfoRow(icon: Icons.apartment_outlined, label: "Department", value: internalDeptName),
+          _InfoRow(icon: Icons.apartment_outlined, label: "Internal Department", value: internalDeptName),
         ],
       ),
     );

@@ -10,6 +10,9 @@ class LoginViewmodel extends ChangeNotifier{
 
   LoginViewmodel(this.userApi);
 
+  final userNameController = TextEditingController();
+  final passwordController = TextEditingController();
+
   bool isLoading = false;
   String? errorMsg;
 
@@ -22,13 +25,25 @@ class LoginViewmodel extends ChangeNotifier{
     notifyListeners();
   }
 
-  Future<bool> login(String username, String password) async {
+  Future<bool> login() async {
     isLoading = true;
     errorMsg = null;
     notifyListeners();
 
     try {
-      currentUser = await userApi.login(username, password);
+      if (userNameController.text.trim().isEmpty) {
+        errorMsg = "Username is required";
+        notifyListeners();
+        return false;
+      }
+
+      if (passwordController.text.isEmpty) {
+        errorMsg = "Password is required";
+        notifyListeners();
+        return false;
+      }
+
+      currentUser = await userApi.login(userNameController.text.trim(), passwordController.text);
 
       await SessionService.saveUser(currentUser!);
 
@@ -42,5 +57,12 @@ class LoginViewmodel extends ChangeNotifier{
       notifyListeners();
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+  userNameController.dispose();
+  passwordController.dispose();
+  super.dispose();
   }
 }

@@ -6,23 +6,24 @@ import 'package:provider/provider.dart';
 import '../../../core/constant/utils.dart';
 import '../../../core/theme/app_text_style.dart';
 
-class LoginView extends StatelessWidget {
-  LoginView({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
-  final userNameController = TextEditingController();
-  final passwordController = TextEditingController();
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
 
   Future<void> _handleLogin(BuildContext context, LoginViewmodel vModel) async {
-    if (vModel.isLoading) return;
+    final navigator = Navigator.of(context);
 
-    bool success = await vModel.login(
-      userNameController.text,
-      passwordController.text,
-    );
+    final success = await vModel.login();
+
+    if (!context.mounted) return;
 
     if (success) {
-      AppSnackBar.success(context, "Login Success.");
-      Navigator.pushReplacementNamed(context, "/home");
+      navigator.pushReplacementNamed("/home");
     } else {
       AppSnackBar.error(context, vModel.errorMsg ?? "Login failed.");
     }
@@ -36,142 +37,144 @@ class LoginView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
-        child: Container(
-          width: width * 0.35,
-          padding: const EdgeInsets.all(40),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Welcome Back",
-                style: AppTextStyles.title,
-              ),
-              const SizedBox(height: 30),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Username",
-                  style: AppTextStyles.label,
+        child: SingleChildScrollView(
+          child: Container(
+            width: width * 0.35,
+            padding: const EdgeInsets.all(40),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Welcome Back",
+                  style: AppTextStyles.title,
                 ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: userNameController,
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  hintText: "Enter Username",
-                  border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+                const SizedBox(height: 30),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Username",
+                    style: AppTextStyles.label,
                   ),
-                  hintStyle: AppTextStyles.hint,
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Password",
-                  style: AppTextStyles.label,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: passwordController,
-                obscureText: vModel.obscurePassword,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) async {
-                  await _handleLogin(context, vModel);
-                },
-                decoration: InputDecoration(
-                  hintText: "••••••••",
-                  border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  hintStyle: AppTextStyles.hint,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      vModel.obscurePassword
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
+                const SizedBox(height: 8),
+                TextField(
+                  controller: vModel.userNameController,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    hintText: "Enter Username",
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
                     ),
-                    onPressed: () {
-                      vModel.togglePasswordVisibility();
-                    },
+                    hintStyle: AppTextStyles.hint,
                   ),
                 ),
-              ),
-              const SizedBox(height: 25),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.primary,
-                    disabledForegroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
+                const SizedBox(height: 20),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Password",
+                    style: AppTextStyles.label,
                   ),
-                  onPressed: () async {
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: vModel.passwordController,
+                  obscureText: vModel.obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) async {
                     await _handleLogin(context, vModel);
                   },
-                  child: vModel.isLoading
-                      ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white,
+                  decoration: InputDecoration(
+                    hintText: "••••••••",
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    hintStyle: AppTextStyles.hint,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        vModel.obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                      ),
+                      onPressed: () {
+                        vModel.togglePasswordVisibility();
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 25),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: AppColors.primary,
+                      disabledForegroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
                       ),
                     ),
-                  )
-                      : const Text("Login"),
-                ),
-              ),
-              const SizedBox(height: 10),
-              if (vModel.errorMsg != null)
-                Text(
-                  vModel.errorMsg!,
-                  style: const TextStyle(color: Colors.red),
-                ),
-              const SizedBox(height: 10),
-              Divider(),
-              const SizedBox(height: 10),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Don't have an account? ",
-                      style: TextStyle(
-                        color: AppColors.textLight,
-                        fontSize: 13,
+                    onPressed: () async {
+                      await _handleLogin(context, vModel);
+                    },
+                    child: vModel.isLoading
+                        ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: "Contact Admin",
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                    )
+                        : const Text("Login"),
+                  ),
                 ),
-              )
-            ],
+                const SizedBox(height: 10),
+                if (vModel.errorMsg != null)
+                  Text(
+                    vModel.errorMsg!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                const SizedBox(height: 10),
+                Divider(),
+                const SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Don't have an account? ",
+                        style: TextStyle(
+                          color: AppColors.textLight,
+                          fontSize: 13,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Contact Admin",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
