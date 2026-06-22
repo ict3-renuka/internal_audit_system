@@ -55,6 +55,10 @@ class _DraftObservationViewState extends State<DraftObservationView> {
 
     await vModel.removePdf();
 
+    _showErrorIfAny(vModel);
+  }
+
+  void _showErrorIfAny(DraftObservationViewmodel vModel) {
     if (vModel.observationErrorMessage != null) {
       AppSnackBar.error(context, vModel.observationErrorMessage!);
       vModel.observationErrorMessage = null;
@@ -90,7 +94,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
               buttonText: "Add",
               width: width,
               isLoading: vModel.isLoading,
-              onSubmit: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields)
+              onSubmit: vModel.isObservationLocked
                   ? null
                   : () async {
                       await vModel.addDraftObservation();
@@ -113,8 +117,9 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                       child: MasterTextFieldWidget(
                         label: "Review Reference",
                         controller: vModel.reviewReferenceController,
+                        maxLength: 100,
                         hintText: "Enter Review Reference",
-                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
+                        readOnly: vModel.isObservationLocked,
                       ),
                     ),
                     SizedBox(width: width * 0.01),
@@ -123,7 +128,8 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Area",
                         controller: vModel.areaController,
                         hintText: "Enter Area",
-                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
+                        maxLength: 150,
+                        readOnly: vModel.isObservationLocked,
                       ),
                     ),
                     SizedBox(width: width * 0.01),
@@ -132,7 +138,8 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Subject",
                         controller: vModel.subjectController,
                         hintText: "Enter Subject",
-                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
+                        maxLength: 250,
+                        readOnly: vModel.isObservationLocked,
                       ),
                     ),
                   ],
@@ -143,74 +150,44 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                   controller: vModel.detailsController,
                   hintText:
                       "Enter detailed scope and context for this observation...",
-                  readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
+                  readOnly: vModel.isObservationLocked,
                   maxLines: 3,
                   maxLength: 600,
                 ),
                 SizedBox(height: width * 0.005),
                 Row(
                   children: [
-                    ElevatedButton.icon(
-                      onPressed:
-                      (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields)
+                    _pdfButton(
+                      width: width,
+                      icon: Icons.upload_file,
+                      label: "Choose PDF",
+                      onPressed: vModel.isObservationLocked
                           ? null
                           : () async {
                         await vModel.pickPdf();
-                        if (vModel.observationErrorMessage != null) {
-                          AppSnackBar.error(context, vModel.observationErrorMessage!);
-                          vModel.observationErrorMessage = null;
-                        }
+                        _showErrorIfAny(vModel);
                       },
-                      icon: Icon(Icons.upload_file,color: AppColors.primary ,),
-                      label: Text("Choose PDF",style: TextStyle(color: AppColors.primary),),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: width * 0.005,
-                          vertical: width * 0.01,
-                        ),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                      ),
                     ),
-
                     const SizedBox(width: 15),
-
-                    if(vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
-                      ElevatedButton.icon(
+                    if (vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
+                      _pdfButton(
+                        width: width,
+                        icon: Icons.picture_as_pdf,
+                        label: "Preview",
                         onPressed: () async {
                           await vModel.previewPdf();
-                          if (vModel.observationErrorMessage != null) {
-                            AppSnackBar.error(context, vModel.observationErrorMessage!);
-                            vModel.observationErrorMessage = null;
-                          }
+                          _showErrorIfAny(vModel);
                         },
-                        icon: Icon(Icons.picture_as_pdf,color: AppColors.primary ,),
-                        label: Text("Preview",style: TextStyle(color: AppColors.primary),),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: width * 0.005,
-                            vertical: width * 0.01,
-                          ),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                        ),
                       ),
-
                     const SizedBox(width: 15),
-
-                    if(vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
-
-                      ElevatedButton.icon(
-                        onPressed: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields)
+                    if (vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
+                      _pdfButton(
+                        width: width,
+                        icon: Icons.delete,
+                        label: "Remove",
+                        onPressed: vModel.isObservationLocked
                             ? null
                             : () async => await _handleRemovePdf(context, vModel),
-                        icon: Icon(Icons.delete,color: AppColors.primary ,),
-                        label: Text("Remove",style: TextStyle(color: AppColors.primary),),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: width * 0.005,
-                            vertical: width * 0.01,
-                          ),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                        ),
                       ),
                   ],
                 ),
@@ -227,7 +204,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Risk And Root Cause",
                         controller: vModel.riskAndRootCauseController,
                         hintText: "Enter Risk And Root Cause",
-                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
+                        readOnly: vModel.isObservationLocked,
                         maxLines: 3,
                         maxLength: 600,
                       ),
@@ -238,7 +215,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         label: "Recommendation",
                         controller: vModel.recommendationController,
                         hintText: "Enter Recommendation",
-                        readOnly: (vModel.isResponseFieldsFilled || !vModel.canEditFollowUpFields),
+                        readOnly: vModel.isObservationLocked,
                         maxLines: 3,
                         maxLength: 600,
                       ),
@@ -615,4 +592,24 @@ class _DraftObservationViewState extends State<DraftObservationView> {
       borderSide: BorderSide(color: AppColors.border),
     ),
   );
+
+  Widget _pdfButton({
+    required double width,
+    required IconData icon,
+    required String label,
+    VoidCallback? onPressed,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, color: AppColors.primary),
+      label: Text(label, style: TextStyle(color: AppColors.primary)),
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(
+          horizontal: width * 0.005,
+          vertical: width * 0.01,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      ),
+    );
+  }
 }

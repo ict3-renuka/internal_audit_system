@@ -105,7 +105,7 @@ class _AddCompanyViewState extends State<AddCompanyView> {
               const SizedBox(height: 8),
               TextField(
                 controller: vModel.companyController,
-                maxLength: 100,
+                maxLength: 150,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),

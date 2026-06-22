@@ -109,6 +109,7 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
 
               TextField(
                 controller: vModel.internalDepartmentController,
+                maxLength: 150,
                 decoration: InputDecoration(
                   hintText: "Enter Internal Department Name",
                   border: OutlineInputBorder(

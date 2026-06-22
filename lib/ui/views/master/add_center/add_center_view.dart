@@ -107,6 +107,7 @@ class _AddCenterViewState extends State<AddCenterView> {
 
               TextField(
                 controller: vModel.centerController,
+                maxLength: 150,
                 decoration: InputDecoration(
                   hintText: "Enter Center Name",
                   border: OutlineInputBorder(

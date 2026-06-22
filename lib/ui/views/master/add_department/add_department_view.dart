@@ -109,6 +109,7 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
 
               TextField(
                 controller: vModel.departmentController,
+                maxLength: 150,
                 decoration: InputDecoration(
                   hintText: "Enter Department Name",
                   border: OutlineInputBorder(

@@ -122,7 +122,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                             const Text("Select Department", style: TextStyle(fontWeight: FontWeight.bold),),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<DepartmentModel>(
-                              value: vModel.departmentList
+                              initialValue: vModel.departmentList
                                   .where((d) => d.departmentId == vModel.selectedDepartment?.departmentId)
                                   .firstOrNull,
                               disabledHint: Text(vModel.selectedDepartment?.departmentName ?? ""),
@@ -150,7 +150,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                     hintText: "Enter detailed scope and context for this audit request...",
                     controller: vModel.descriptionController,
                     maxLines: 3,
-                    maxLength: 600,
+                    maxLength: 500,
                     // readOnly: isEditMode && vModel.descriptionController.text.isNotEmpty,
                   ),
                   SizedBox(height: width * 0.005),
@@ -191,6 +191,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                               label: "Audit Firm Person Name",
                               hintText: "Enter DepartmentAudit Firm Person Name",
                               controller: vModel.personNameController,
+                              maxLength: 150,
                               // readOnly: isEditMode && vModel.personNameController.text.isNotEmpty,
                             ),
                           ],

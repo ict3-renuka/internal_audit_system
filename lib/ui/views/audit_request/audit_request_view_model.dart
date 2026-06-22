@@ -13,7 +13,6 @@ class AuditRequestViewmodel extends ChangeNotifier {
 
   AuditRequestViewmodel(this.auditRequestApi);
 
-  final TextEditingController departmentController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController personNameController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
@@ -33,7 +32,6 @@ class AuditRequestViewmodel extends ChangeNotifier {
   String? selectedAuditFirm;
 
   bool isLoading = false;
-  bool isEditLoaded = false;
 
   List<AuditRequestModel> auditRequests = [];
   List<AuditRequestModel> filteredList = [];
