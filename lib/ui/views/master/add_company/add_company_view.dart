@@ -116,9 +116,10 @@ class _AddCompanyViewState extends State<AddCompanyView> {
             ],
           ),
 
-          listSection: MasterListWidget(
+          listSectionBuilder: (fillAvailableSpace) => MasterListWidget(
             title: "Added Companies",
             headers: const ["Sector", "Company"],
+            fillAvailableSpace: fillAvailableSpace,
             rows: vModel.companyList.map((e) {
               return Container(
                 padding: const EdgeInsets.symmetric(

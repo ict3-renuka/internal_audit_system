@@ -83,9 +83,9 @@ class _AddCenterViewState extends State<AddCenterView> {
             children: [
               const Text("Select Company"),
               const SizedBox(height: 8),
-
               DropdownButtonFormField<CompanyModel>(
-                value: vModel.selectedCompany,
+                isExpanded: true,
+                initialValue: vModel.selectedCompany,
                 items: vModel.companyList.map((company) {
                   return DropdownMenuItem(
                     value: company,
@@ -116,84 +116,95 @@ class _AddCenterViewState extends State<AddCenterView> {
               ),
             ],
           ),
-          listSection: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppColors.border),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text(
-                    "Center List",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+          listSectionBuilder: (fillAvailableSpace) {
+            final listBody = vModel.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : fillAvailableSpace
+                ? ListView.builder(
+              itemCount: vModel.centerList.length,
+              itemBuilder: (context, index) {
+                final e = vModel.centerList[index];
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: AppColors.border),
                     ),
                   ),
-                ),
-
-                Container(
-                  color: AppColors.thirdBackground,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Expanded(child: Text("Company Name")),
-                      Expanded(child: Text("Center Name")),
+                      Expanded(child: Text(vModel.getCompanyName(e.companyId))),
+                      Expanded(child: Text(e.centerName)),
                     ],
                   ),
-                ),
-
-                Expanded(
-                  child: vModel.isLoading
-                      ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                      : ListView.builder(
-                    itemCount: vModel.centerList.length,
-                    itemBuilder: (context, index) {
-                      final e = vModel.centerList[index];
-
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: AppColors.border,
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                vModel.getCompanyName(
-                                  e.companyId,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(e.centerName),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                );
+              },
+            )
+                : ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: vModel.centerList.length,
+              itemBuilder: (context, index) {
+                final e = vModel.centerList[index];
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 8,
                   ),
-                ),
-              ],
-            ),
-          ),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: AppColors.border),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(child: Text(vModel.getCompanyName(e.companyId))),
+                      Expanded(child: Text(e.centerName)),
+                    ],
+                  ),
+                );
+              },
+            );
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: AppColors.border),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: fillAvailableSpace ? MainAxisSize.max : MainAxisSize.min,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Text(
+                      "Center List",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    color: AppColors.thirdBackground,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: const Row(
+                      children: [
+                        Expanded(child: Text("Company Name")),
+                        Expanded(child: Text("Center Name")),
+                      ],
+                    ),
+                  ),
+                  fillAvailableSpace ? Expanded(child: listBody) : listBody,
+                ],
+              ),
+            );
+          },
         );
       },
     );

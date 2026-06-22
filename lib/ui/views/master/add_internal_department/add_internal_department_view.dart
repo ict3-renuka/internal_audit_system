@@ -83,11 +83,15 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
               const SizedBox(height: 8),
 
               DropdownButtonFormField<DepartmentModel>(
-                value: vModel.selectedDepartment,
+                isExpanded: true,
+                initialValue: vModel.selectedDepartment,
                 items: vModel.departmentList.map((company) {
                   return DropdownMenuItem(
                     value: company,
-                    child: Text(company.departmentName),
+                    child: Text(
+                      company.departmentName,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   );
                 }).toList(),
                 onChanged: vModel.setDepartment,
@@ -114,84 +118,82 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
               ),
             ],
           ),
-          listSection: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppColors.border),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text(
-                    "Internal Department List",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+          listSectionBuilder: (fillAvailableSpace) {
+            Widget rowBuilder(int index) {
+              final e = vModel.internalDepartmentList[index];
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: AppColors.border),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(vModel.getDepartmentName(e.departmentId))),
+                    Expanded(child: Text(e.internalDepartmentName)),
+                  ],
+                ),
+              );
+            }
+
+            final listBody = vModel.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : fillAvailableSpace
+                ? ListView.builder(
+              itemCount: vModel.internalDepartmentList.length,
+              itemBuilder: (context, index) => rowBuilder(index),
+            )
+                : ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: vModel.internalDepartmentList.length,
+              itemBuilder: (context, index) => rowBuilder(index),
+            );
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: AppColors.border),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize:
+                fillAvailableSpace ? MainAxisSize.max : MainAxisSize.min,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Text(
+                      "Internal Department List",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
-                ),
-
-                Container(
-                  color: AppColors.thirdBackground,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
+                  Container(
+                    color: AppColors.thirdBackground,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: const Row(
+                      children: [
+                        Expanded(child: Text("Department Name")),
+                        Expanded(child: Text("Internal Department Name")),
+                      ],
+                    ),
                   ),
-                  child: const Row(
-                    children: [
-                      Expanded(child: Text("Department Name")),
-                      Expanded(child: Text("Internal Department Name")),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  child: vModel.isLoading
-                      ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                      : ListView.builder(
-                    itemCount: vModel.internalDepartmentList.length,
-                    itemBuilder: (context, index) {
-                      final e = vModel.internalDepartmentList[index];
-
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: AppColors.border,
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                vModel.getDepartmentName(
-                                  e.departmentId,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(e.internalDepartmentName),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+                  fillAvailableSpace ? Expanded(child: listBody) : listBody,
+                ],
+              ),
+            );
+          },
         );
       },
     );

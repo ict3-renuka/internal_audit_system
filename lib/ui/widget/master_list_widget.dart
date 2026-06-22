@@ -5,12 +5,14 @@ class MasterListWidget extends StatelessWidget {
   final String title;
   final List<String> headers;
   final List<Widget> rows;
+  final bool fillAvailableSpace;
 
   const MasterListWidget({
     super.key,
     required this.title,
     required this.headers,
     required this.rows,
+    this.fillAvailableSpace = true,
   });
 
   @override
@@ -23,6 +25,7 @@ class MasterListWidget extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: fillAvailableSpace ? MainAxisSize.max : MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.all(24),
@@ -35,21 +38,21 @@ class MasterListWidget extends StatelessWidget {
               ),
             ),
           ),
-
           Container(
             color: AppColors.thirdBackground,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 10,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
-              children: headers
-                  .map((h) => Expanded(child: Text(h)))
-                  .toList(),
+              children: headers.map((h) => Expanded(child: Text(h))).toList(),
             ),
           ),
-
-          ListView.builder(
+          fillAvailableSpace
+              ? Expanded(
+            child: ListView.builder(
+              itemCount: rows.length,
+              itemBuilder: (context, index) => rows[index],
+            ),
+          )
+              : ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: rows.length,

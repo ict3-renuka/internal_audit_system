@@ -36,124 +36,135 @@ class _ObservationReportViewState extends State<ObservationReportView> {
       backgroundColor: AppColors.secondBackground,
       appBar: AppNavBar(),
 
-      body: Padding(
-        padding: EdgeInsets.all(width * 0.03),
-        child: SectionCard(
-          icon: Icons.picture_as_pdf,
-          title: "Observation Report",
-          buttonText: "View Report",
-          width: width,
-          isLoading: vModel.isLoading,
-          onSubmit: vModel.generateReport,
-          actions: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(width * 0.03),
+          child: SectionCard(
+            icon: Icons.picture_as_pdf,
+            title: "Observation Report",
+            buttonText: "View Report",
+            width: width,
+            isLoading: vModel.isLoading,
+            onSubmit: vModel.generateReport,
+            actions: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: vModel.clearFilters,
+                  icon: Icon(Icons.clear),
+                  label: Text("Clear Filters"),
+                ),
+
+                SubmitButton(
+                  isLoading: vModel.isLoading,
+                  width: width,
+                  onSubmit: vModel.generateReport,
+                  buttonText: "View Report",
+                ),
+              ],
+            ),
             children: [
-              OutlinedButton.icon(
-                onPressed: vModel.clearFilters,
-                icon: Icon(Icons.clear),
-                label: Text("Clear Filters"),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField(
+                      isExpanded: true,
+                      initialValue: vModel.selectedDepartment?.departmentId,
+                      items: vModel.departments
+                          .map(
+                            (d) => DropdownMenuItem(
+                          value: d.departmentId,
+                          child: Text(
+                              d.departmentName,
+                              overflow: TextOverflow.ellipsis,),
+                        ),
+                      )
+                          .toList(),
+                      onChanged: (value) {
+                        final selected = vModel.departments.firstWhere(
+                              (d) => d.departmentId == value,
+                        );
+                        vModel.setDepartment(selected);
+                      },
+                      decoration: _decoration("Department"),
+                    ),
+                  ),
+                  SizedBox(width: width * 0.01),
+                  Expanded(
+                    child: DropdownButtonFormField(
+                      isExpanded: true,
+                      initialValue: vModel.selectedInternalDepartment?.internalDepartmentId,
+                      items: vModel.internalDepartments
+                          .map(
+                            (d) => DropdownMenuItem(
+                          value: d.internalDepartmentId,
+                          child: Text(
+                              d.internalDepartmentName,
+                              overflow: TextOverflow.ellipsis, ),
+                        ),
+                      )
+                          .toList(),
+                      onChanged: (value) {
+                        final selected = vModel.internalDepartments.firstWhere(
+                              (d) => d.internalDepartmentId == value,
+                        );
+                        vModel.setInternalDepartment(selected);
+                      },
+                      decoration: _decoration("Internal Department"),
+                    ),
+                  ),
+                  SizedBox(width: width * 0.01),
+                  Expanded(
+                      child: DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue: vModel.selectedStatus,
+                        items: vModel.statusList
+                            .map((s) => DropdownMenuItem(
+                          value: s,
+                          child: Text(
+                              s,
+                              overflow: TextOverflow.ellipsis,),
+                        ))
+                            .toList(),
+                        onChanged:vModel.setStatus,
+                        decoration: _decoration("Status"),
+                      ),)
+                ],
+              ),
+              SizedBox(height: width * 0.01),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: MasterDateFieldWidget(
+                      label: "From Date",
+                      value: vModel.fromDate,
+                      onSelect: vModel.setFromDate,
+                      disableFutureDates: false,
+                    ),
+                  ),
+                  SizedBox(width: width * 0.01),
+
+                  Expanded(
+                    child: MasterDateFieldWidget(
+                      label: "To Date",
+                      value: vModel.toDate,
+                      onSelect: vModel.setToDate,
+                      disableFutureDates: false,
+                    ),
+                  ),
+                ],
               ),
 
-              SubmitButton(
-                isLoading: vModel.isLoading,
-                width: width,
-                onSubmit: vModel.generateReport,
-                buttonText: "View Report",
-              ),
+              if (vModel.errorMessage != null) ...[
+                SizedBox(height: 10),
+                Text(
+                  vModel.errorMessage!,
+                  style: TextStyle(color: Colors.red),
+                )
+              ],
             ],
           ),
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField(
-                    initialValue: vModel.selectedDepartment?.departmentId,
-                    items: vModel.departments
-                        .map(
-                          (d) => DropdownMenuItem(
-                        value: d.departmentId,
-                        child: Text(d.departmentName),
-                      ),
-                    )
-                        .toList(),
-                    onChanged: (value) {
-                      final selected = vModel.departments.firstWhere(
-                            (d) => d.departmentId == value,
-                      );
-                      vModel.setDepartment(selected);
-                    },
-                    decoration: _decoration("Department"),
-                  ),
-                ),
-                SizedBox(width: width * 0.01),
-                Expanded(
-                  child: DropdownButtonFormField(
-                    initialValue: vModel.selectedInternalDepartment?.internalDepartmentId,
-                    items: vModel.internalDepartments
-                        .map(
-                          (d) => DropdownMenuItem(
-                        value: d.internalDepartmentId,
-                        child: Text(d.internalDepartmentName),
-                      ),
-                    )
-                        .toList(),
-                    onChanged: (value) {
-                      final selected = vModel.internalDepartments.firstWhere(
-                            (d) => d.internalDepartmentId == value,
-                      );
-                      vModel.setInternalDepartment(selected);
-                    },
-                    decoration: _decoration("Internal Department"),
-                  ),
-                ),
-                SizedBox(width: width * 0.01),
-                Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: vModel.selectedStatus,
-                      items: vModel.statusList
-                          .map((s) => DropdownMenuItem(
-                        value: s,
-                        child: Text(s),
-                      ))
-                          .toList(),
-                      onChanged:vModel.setStatus,
-                      decoration: _decoration("Status"),
-                    ),)
-              ],
-            ),
-            SizedBox(height: width * 0.01),
-
-            Row(
-              children: [
-                Expanded(
-                  child: MasterDateFieldWidget(
-                    label: "From Date",
-                    value: vModel.fromDate,
-                    onSelect: vModel.setFromDate,
-                    disableFutureDates: false,
-                  ),
-                ),
-                SizedBox(width: width * 0.01),
-
-                Expanded(
-                  child: MasterDateFieldWidget(
-                    label: "To Date",
-                    value: vModel.toDate,
-                    onSelect: vModel.setToDate,
-                    disableFutureDates: false,
-                  ),
-                ),
-              ],
-            ),
-
-            if (vModel.errorMessage != null) ...[
-              SizedBox(height: 10),
-              Text(
-                vModel.errorMessage!,
-                style: TextStyle(color: Colors.red),
-              )
-            ],
-          ],
         ),
       ),
     );

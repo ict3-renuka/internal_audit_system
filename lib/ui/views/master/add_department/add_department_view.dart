@@ -83,11 +83,15 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
               const SizedBox(height: 8),
 
               DropdownButtonFormField<CompanyModel>(
+                isExpanded: true,
                 value: vModel.selectedCompany,
                 items: vModel.companyList.map((company) {
                   return DropdownMenuItem(
                     value: company,
-                    child: Text(company.companyName),
+                    child: Text(
+                      company.companyName,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   );
                 }).toList(),
                 onChanged: vModel.setCompany,
@@ -114,84 +118,82 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
               ),
             ],
           ),
-          listSection: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppColors.border),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text(
-                    "Department List",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+          listSectionBuilder: (fillAvailableSpace) {
+            Widget rowBuilder(int index) {
+              final e = vModel.departmentList[index];
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: AppColors.border),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(vModel.getCompanyName(e.companyId))),
+                    Expanded(child: Text(e.departmentName)),
+                  ],
+                ),
+              );
+            }
+
+            final listBody = vModel.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : fillAvailableSpace
+                ? ListView.builder(
+              itemCount: vModel.departmentList.length,
+              itemBuilder: (context, index) => rowBuilder(index),
+            )
+                : ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: vModel.departmentList.length,
+              itemBuilder: (context, index) => rowBuilder(index),
+            );
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: AppColors.border),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize:
+                fillAvailableSpace ? MainAxisSize.max : MainAxisSize.min,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Text(
+                      "Department List",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
-                ),
-
-                Container(
-                  color: AppColors.thirdBackground,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
+                  Container(
+                    color: AppColors.thirdBackground,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: const Row(
+                      children: [
+                        Expanded(child: Text("Company Name")),
+                        Expanded(child: Text("Department Name")),
+                      ],
+                    ),
                   ),
-                  child: const Row(
-                    children: [
-                      Expanded(child: Text("Company Name")),
-                      Expanded(child: Text("Department Name")),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  child: vModel.isLoading
-                      ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                      : ListView.builder(
-                    itemCount: vModel.departmentList.length,
-                    itemBuilder: (context, index) {
-                      final e = vModel.departmentList[index];
-
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: AppColors.border,
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                vModel.getCompanyName(
-                                  e.companyId,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(e.departmentName),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+                  fillAvailableSpace ? Expanded(child: listBody) : listBody,
+                ],
+              ),
+            );
+          },
         );
       },
     );

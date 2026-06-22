@@ -5,13 +5,12 @@ import 'package:project_one/ui/views/draft_observation/draft_observation_view_mo
 import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../../data/services/api_services/observation_attachment_api.dart';
-
 class EditDraftObservationView extends StatefulWidget {
   const EditDraftObservationView({super.key});
 
   @override
-  State<EditDraftObservationView> createState() => _EditDraftObservationViewState();
+  State<EditDraftObservationView> createState() =>
+      _EditDraftObservationViewState();
 }
 
 class _EditDraftObservationViewState extends State<EditDraftObservationView> {
@@ -22,11 +21,15 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
     _horizontalScrollController.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async{
-      final vModel = Provider.of<DraftObservationViewmodel>(context, listen: false);
+    Future.microtask(() async {
+      final vModel = Provider.of<DraftObservationViewmodel>(
+        context,
+        listen: false,
+      );
       vModel.searchController.clear();
       vModel.filteredCombinedList = [];
       await vModel.loadSessionUser();
@@ -107,7 +110,10 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                           activeColor: AppColors.primary,
                           onChanged: (_) => vModel.toggleIncludeInactive(),
                         ),
-                        const Text("Include Inactive", style: TextStyle(fontSize: 13)),
+                        const Text(
+                          "Include Inactive",
+                          style: TextStyle(fontSize: 13),
+                        ),
                       ],
                     ],
                   ),
@@ -120,173 +126,203 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                     ),
                     child: vModel.isLoading
                         ? const Padding(
-                      padding: EdgeInsets.all(40),
-                      child: Center(child: CircularProgressIndicator()),
-                    )
+                            padding: EdgeInsets.all(40),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
                         : Scrollbar(
-                          controller: _horizontalScrollController,
-                          thumbVisibility: true,
-                          trackVisibility: true,
-                          child: SingleChildScrollView(
                             controller: _horizontalScrollController,
-                            scrollDirection: Axis.horizontal,
-                            child: DataTable(
-                          showCheckboxColumn: false,
-                          headingRowColor: WidgetStateProperty.all(
-                            AppColors.thirdBackground,
-                          ),
-                          columnSpacing: 16,
-                          horizontalMargin: 16,
-                          dataRowMinHeight: 48,
-                          dataRowMaxHeight: double.infinity,
-                          columns: const [
-                            DataColumn(label: _HeaderLabel('Review Reference')),
-                            DataColumn(label: _HeaderLabel('Area')),
-                            DataColumn(label: _HeaderLabel('Subject')),
-                            DataColumn(label: _HeaderLabel('Details')),
-                            DataColumn(label: _HeaderLabel('Risk & Root Cause')),
-                            DataColumn(label: _HeaderLabel('Recommendation')),
-                            DataColumn(label: _HeaderLabel('Department')),
-                            DataColumn(label: _HeaderLabel('Internal Department')),
-                            DataColumn(label: _HeaderLabel('Responsible User')),
-                            DataColumn(label: _HeaderLabel('Management Response')),
-                            DataColumn(label: _HeaderLabel('Action Plan')),
-                            DataColumn(label: _HeaderLabel('Action Timeline')),
-                            DataColumn(label: _HeaderLabel('Status')),
-                            DataColumn(label: _HeaderLabel('Remark')),
-                            DataColumn(label: _HeaderLabel('Remarked Date')),
-                            DataColumn(label: _HeaderLabel("Attachments"),),
-                          ],
-                          rows: vModel.filteredCombinedList.map((e) {
-                            final isInactive = !(e.isActive ?? true);
-                            return DataRow(
-                              color: WidgetStateProperty.resolveWith<Color?>(
-                                    (states) {
-                                  if (isInactive) {
-                                    return Colors.grey.shade300;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              onSelectChanged: (_) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => DraftObservationView(
-                                      combined: e,
-                                    ),
-                                  ),
-                                );
-                              },
-                              cells: [
-                                DataCell(Text(e.reviewReference)),
-                                DataCell(Text(e.area)),
-                                DataCell(Text(e.subject)),
-                                DataCell(
-                                  SizedBox(
-                                    width: 200,
-                                    child: Text(
-                                      e.details,
-                                      softWrap: true,
-                                      overflow: TextOverflow.visible,
-                                    ),
-                                  ),
+                            thumbVisibility: true,
+                            trackVisibility: true,
+                            child: SingleChildScrollView(
+                              controller: _horizontalScrollController,
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                showCheckboxColumn: false,
+                                headingRowColor: WidgetStateProperty.all(
+                                  AppColors.thirdBackground,
                                 ),
-                                DataCell(
-                                  SizedBox(
-                                    width: 200,
-                                    child: Text(
-                                      e.riskAndRootCause,
-                                      softWrap: true,
-                                      overflow: TextOverflow.visible,
-                                    ),
+                                columnSpacing: 16,
+                                horizontalMargin: 16,
+                                dataRowMinHeight: 48,
+                                dataRowMaxHeight: double.infinity,
+                                columns: const [
+                                  DataColumn(
+                                    label: _HeaderLabel('Review Reference'),
                                   ),
-                                ),
-                                DataCell(
-                                  SizedBox(
-                                    width: 200,
-                                    child: Text(
-                                      e.recommendation,
-                                      softWrap: true,
-                                      overflow: TextOverflow.visible,
-                                    ),
+                                  DataColumn(label: _HeaderLabel('Area')),
+                                  DataColumn(label: _HeaderLabel('Subject')),
+                                  DataColumn(label: _HeaderLabel('Details')),
+                                  DataColumn(
+                                    label: _HeaderLabel('Risk & Root Cause'),
                                   ),
-                                ),
-                                DataCell(Text(e.departmentName ?? '—')),
-                                DataCell(Text(e.internalDepartmentName ?? '—')),
-                                DataCell(Text(e.responsibleUser ?? '—')),
-                                DataCell(
-                                  SizedBox(
-                                    width: 200,
-                                    child: Text(
-                                      e.managementResponse ?? '—',
-                                      softWrap: true,
-                                      overflow: TextOverflow.visible,
-                                    ),
+                                  DataColumn(
+                                    label: _HeaderLabel('Recommendation'),
                                   ),
-                                ),
-                                DataCell(
-                                  SizedBox(
-                                    width: 200,
-                                    child: Text(
-                                      e.correctiveActionPlan ?? '—',
-                                      softWrap: true,
-                                      overflow: TextOverflow.visible,
-                                    ),
+                                  DataColumn(label: _HeaderLabel('Department')),
+                                  DataColumn(
+                                    label: _HeaderLabel('Internal Department'),
                                   ),
-                                ),
-                                DataCell(Text(
-                                  e.actionTimeLine != null
-                                      ? e.actionTimeLine!
-                                      .toIso8601String()
-                                      .split('T')
-                                      .first
-                                      : '—',
-                                )),
-                                DataCell(Text(e.status ?? '—')),
-                                DataCell(Text(e.remark ?? '—')),
-                                DataCell(Text(
-                                  e.remarkedDate != null
-                                      ? e.remarkedDate!
-                                      .toIso8601String()
-                                      .split('T')
-                                      .first
-                                      : '—',
-                                )),
-                                DataCell(
-                                  e.hasPdf
-                                      ? IconButton(
-                                    icon: Icon(
-                                      Icons.picture_as_pdf,
-                                      color: AppColors.primary,
-                                    ),
-                                    onPressed: () async {
-                                      vModel.openPdf(e.observationId);
+                                  DataColumn(
+                                    label: _HeaderLabel('Responsible User'),
+                                  ),
+                                  DataColumn(
+                                    label: _HeaderLabel('Management Response'),
+                                  ),
+                                  DataColumn(
+                                    label: _HeaderLabel('Action Plan'),
+                                  ),
+                                  DataColumn(
+                                    label: _HeaderLabel('Action Timeline'),
+                                  ),
+                                  DataColumn(label: _HeaderLabel('Status')),
+                                  DataColumn(label: _HeaderLabel('Remark')),
+                                  DataColumn(
+                                    label: _HeaderLabel('Remarked Date'),
+                                  ),
+                                  DataColumn(
+                                    label: _HeaderLabel("Attachments"),
+                                  ),
+                                ],
+                                rows: vModel.filteredCombinedList.map((e) {
+                                  final isInactive = !(e.isActive ?? true);
+                                  return DataRow(
+                                    color:
+                                        WidgetStateProperty.resolveWith<Color?>(
+                                          (states) {
+                                            if (isInactive) {
+                                              return Colors.grey.shade300;
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                    onSelectChanged: (_) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              DraftObservationView(combined: e),
+                                        ),
+                                      );
                                     },
-                                  )
-                                      : const Text("-"),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                                                  ),
+                                    cells: [
+                                      DataCell(Text(e.reviewReference)),
+                                      DataCell(Text(e.area)),
+                                      DataCell(Text(e.subject)),
+                                      DataCell(
+                                        SizedBox(
+                                          width: 200,
+                                          child: Text(
+                                            e.details,
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        SizedBox(
+                                          width: 200,
+                                          child: Text(
+                                            e.riskAndRootCause,
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        SizedBox(
+                                          width: 200,
+                                          child: Text(
+                                            e.recommendation,
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(Text(e.departmentName ?? '—')),
+                                      DataCell(
+                                        Text(e.internalDepartmentName ?? '—'),
+                                      ),
+                                      DataCell(Text(e.responsibleUser ?? '—')),
+                                      DataCell(
+                                        SizedBox(
+                                          width: 200,
+                                          child: Text(
+                                            e.managementResponse ?? '—',
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        SizedBox(
+                                          width: 200,
+                                          child: Text(
+                                            e.correctiveActionPlan ?? '—',
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          e.actionTimeLine != null
+                                              ? e.actionTimeLine!
+                                                    .toIso8601String()
+                                                    .split('T')
+                                                    .first
+                                              : '—',
+                                        ),
+                                      ),
+                                      DataCell(Text(e.status ?? '—')),
+                                      DataCell(Text(e.remark ?? '—')),
+                                      DataCell(
+                                        Text(
+                                          e.remarkedDate != null
+                                              ? e.remarkedDate!
+                                                    .toIso8601String()
+                                                    .split('T')
+                                                    .first
+                                              : '—',
+                                        ),
+                                      ),
+                                      DataCell(
+                                        e.hasPdf
+                                            ? IconButton(
+                                                icon: Icon(
+                                                  Icons.picture_as_pdf,
+                                                  color: AppColors.primary,
                                                 ),
-                        ),
+                                                onPressed: () async {
+                                                  vModel.openPdf(
+                                                    e.observationId,
+                                                  );
+                                                },
+                                              )
+                                            : const Text("-"),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
                   ),
                   const SizedBox(height: 16),
                   if (!vModel.isLoading)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
+                    Builder(
+                      builder: (context) {
+                        final summaryText = Text(
                           'Showing page ${vModel.currentPage} of ${vModel.totalPages} '
-                              '(${vModel.totalCount} total)',
+                          '(${vModel.totalCount} total)',
                           style: const TextStyle(
                             color: Colors.black54,
                             fontSize: 13,
                           ),
-                        ),
-                        Row(
+                        );
+
+                        final pagination = Wrap(
+                          alignment: WrapAlignment.end,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             IconButton(
                               icon: const Icon(Icons.first_page),
@@ -297,16 +333,18 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                             IconButton(
                               icon: const Icon(Icons.chevron_left),
                               onPressed: vModel.currentPage > 1
-                                  ? () => vModel.goToPage(vModel.currentPage - 1)
+                                  ? () =>
+                                        vModel.goToPage(vModel.currentPage - 1)
                                   : null,
                             ),
                             ..._pageNumbers(
                               vModel.currentPage,
                               vModel.totalPages,
                             ).map(
-                                  (p) => Padding(
-                                padding:
-                                const EdgeInsets.symmetric(horizontal: 2),
+                              (p) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 2,
+                                ),
                                 child: TextButton(
                                   style: TextButton.styleFrom(
                                     backgroundColor: p == vModel.currentPage
@@ -326,7 +364,8 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                             IconButton(
                               icon: const Icon(Icons.chevron_right),
                               onPressed: vModel.currentPage < vModel.totalPages
-                                  ? () => vModel.goToPage(vModel.currentPage + 1)
+                                  ? () =>
+                                        vModel.goToPage(vModel.currentPage + 1)
                                   : null,
                             ),
                             IconButton(
@@ -336,8 +375,25 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                                   : null,
                             ),
                           ],
-                        ),
-                      ],
+                        );
+                        if (width >= 700) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [summaryText, pagination],
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            summaryText,
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: pagination,
+                            ),
+                          ],
+                        );
+                      },
                     ),
                 ],
               ),

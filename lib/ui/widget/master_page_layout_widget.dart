@@ -6,51 +6,80 @@ class MasterPageLayoutWidget extends StatelessWidget {
   final String title;
   final String subtitle;
   final Widget formSection;
-  final Widget listSection;
+
+  final Widget Function(bool fillAvailableSpace) listSectionBuilder;
 
   const MasterPageLayoutWidget({
     super.key,
     required this.title,
     required this.subtitle,
     required this.formSection,
-    required this.listSection,
+    required this.listSectionBuilder,
   });
+
+  static const double _minHeightForFixedLayout = 640;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.secondBackground,
       appBar: AppNavBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final bool isCompact =
+              constraints.maxHeight < _minHeightForFixedLayout;
+
+          final header = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              subtitle,
-              style: const TextStyle(color: Colors.black54, fontSize: 16),
-            ),
-            const SizedBox(height: 30),
-        
-            Row(
+              const SizedBox(height: 5),
+              Text(
+                subtitle,
+                style: const TextStyle(color: Colors.black54, fontSize: 16),
+              ),
+              const SizedBox(height: 30),
+            ],
+          );
+
+          final row = Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: formSection),
+              const SizedBox(width: 24),
+              Expanded(child: listSectionBuilder(!isCompact)),
+            ],
+          );
+
+          if (isCompact) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [header, row],
+              ),
+            );
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(40),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: formSection),
-                const SizedBox(width: 24),
-                Expanded(child: listSection),
+                header,
+                Expanded(child: row),
               ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
