@@ -312,8 +312,7 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                     Builder(
                       builder: (context) {
                         final summaryText = Text(
-                          'Showing page ${vModel.currentPage} of ${vModel.totalPages} '
-                          '(${vModel.totalCount} total)',
+                          "Showing page ${vModel.currentPage} of ${vModel.totalPages}  •  ${vModel.totalCount} total records",
                           style: const TextStyle(
                             color: Colors.black54,
                             fontSize: 13,
@@ -325,54 +324,65 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             IconButton(
+                              tooltip: "First page",
+                              onPressed: vModel.currentPage > 1
+                                  ? () => vModel.loadCombinedObservations(page: 1)
+                                  : null,
                               icon: const Icon(Icons.first_page),
-                              onPressed: vModel.currentPage > 1
-                                  ? () => vModel.goToPage(1)
-                                  : null,
                             ),
                             IconButton(
+                              tooltip: "Previous page",
+                              onPressed: vModel.currentPage > 1
+                                  ? () => vModel.loadCombinedObservations(
+                                page: vModel.currentPage - 1,
+                              )
+                                  : null,
                               icon: const Icon(Icons.chevron_left),
-                              onPressed: vModel.currentPage > 1
-                                  ? () =>
-                                        vModel.goToPage(vModel.currentPage - 1)
-                                  : null,
                             ),
-                            ..._pageNumbers(
-                              vModel.currentPage,
-                              vModel.totalPages,
-                            ).map(
-                              (p) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 2,
-                                ),
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: p == vModel.currentPage
-                                        ? AppColors.primary
-                                        : Colors.transparent,
-                                    foregroundColor: p == vModel.currentPage
-                                        ? Colors.white
-                                        : Colors.black87,
-                                    minimumSize: const Size(36, 36),
-                                    padding: EdgeInsets.zero,
+                            ...List.generate(vModel.totalPages, (i) => i + 1)
+                                .where(
+                                  (p) =>
+                              p == 1 ||
+                                  p == vModel.totalPages ||
+                                  (p - vModel.currentPage).abs() <= 2,
+                            )
+                                .fold<List<Widget>>([], (acc, p) {
+                              if (acc.isNotEmpty &&
+                                  acc.last is! _PageChip) {
+                                acc.add(
+                                  const Text(
+                                    "...",
+                                    style: TextStyle(color: Colors.black45),
                                   ),
-                                  onPressed: () => vModel.goToPage(p),
-                                  child: Text('$p'),
+                                );
+                              }
+                              acc.add(
+                                _PageChip(
+                                  page: p,
+                                  isSelected: p == vModel.currentPage,
+                                  onTap: () =>
+                                      vModel.loadCombinedObservations(page: p),
                                 ),
-                              ),
-                            ),
+                              );
+                              return acc;
+                            }),
                             IconButton(
+                              tooltip: "Next page",
+                              onPressed: vModel.currentPage < vModel.totalPages
+                                  ? () => vModel.loadCombinedObservations(
+                                page: vModel.currentPage + 1,
+                              )
+                                  : null,
                               icon: const Icon(Icons.chevron_right),
-                              onPressed: vModel.currentPage < vModel.totalPages
-                                  ? () =>
-                                        vModel.goToPage(vModel.currentPage + 1)
-                                  : null,
                             ),
                             IconButton(
-                              icon: const Icon(Icons.last_page),
+                              tooltip: "Last page",
                               onPressed: vModel.currentPage < vModel.totalPages
-                                  ? () => vModel.goToPage(vModel.totalPages)
+                                  ? () => vModel.loadCombinedObservations(
+                                page: vModel.totalPages,
+                              )
                                   : null,
+                              icon: const Icon(Icons.last_page),
                             ),
                           ],
                         );
@@ -403,12 +413,6 @@ class _EditDraftObservationViewState extends State<EditDraftObservationView> {
       ),
     );
   }
-
-  List<int> _pageNumbers(int current, int total) {
-    final start = (current - 2).clamp(1, total);
-    final end = (start + 4).clamp(1, total);
-    return List.generate(end - start + 1, (i) => start + i);
-  }
 }
 
 class _HeaderLabel extends StatelessWidget {
@@ -423,6 +427,42 @@ class _HeaderLabel extends StatelessWidget {
         fontWeight: FontWeight.bold,
         fontSize: 12,
         color: Colors.black87,
+      ),
+    );
+  }
+}
+
+class _PageChip extends StatelessWidget {
+  final int page;
+  final bool isSelected;
+  final VoidCallback onTap;
+  const _PageChip({
+    required this.page,
+    required this.isSelected,
+    required this.onTap,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : Colors.transparent,
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          "$page",
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black87,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontSize: 13,
+          ),
+        ),
       ),
     );
   }

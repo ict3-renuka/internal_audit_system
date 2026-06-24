@@ -104,7 +104,7 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
 
               const SizedBox(height: 20),
 
-              const Text("Center Name"),
+              const Text("Internal Department Name"),
               const SizedBox(height: 8),
 
               TextField(

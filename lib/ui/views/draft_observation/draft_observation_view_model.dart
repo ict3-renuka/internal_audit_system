@@ -508,11 +508,6 @@ class DraftObservationViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void goToPage(int page) {
-    if (page < 1 || page > totalPages) return;
-    loadCombinedObservations(page: page);
-  }
-
   void loadFromCombined(CombinedObservationModel combined) {
     reviewReferenceController.text = combined.reviewReference;
     areaController.text = combined.area;
@@ -617,10 +612,14 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
     if (existingAttachmentId != null) {
 
-      await observationAttachmentApi.delete(existingAttachmentId!);
+      try {
+        await observationAttachmentApi.delete(existingAttachmentId!);
 
-      existingAttachmentId = null;
-      existingFileName = null;
+        existingAttachmentId = null;
+        existingFileName = null;
+      } catch (e) {
+        observationErrorMessage = "Failed to remove file. Please try again.";
+      }
 
       notifyListeners();
       return;
