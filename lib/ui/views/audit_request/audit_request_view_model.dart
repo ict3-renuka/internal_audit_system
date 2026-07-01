@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:project_one/data/models/company_model.dart';
+import 'package:project_one/data/services/api_services/company_api.dart';
 import 'package:project_one/data/services/api_services/department_api.dart';
 
 import '../../../../data/models/audit_request_model.dart';
@@ -10,12 +12,14 @@ class AuditRequestViewmodel extends ChangeNotifier {
 
   final AuditRequestApi auditRequestApi;
   final DepartmentApi departmentApi = DepartmentApi();
+  final CompanyApi companyApi = CompanyApi();
 
   AuditRequestViewmodel(this.auditRequestApi);
 
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController personNameController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
+  final TextEditingController reviewReferenceController = TextEditingController();
 
   DateTime? meetingDate;
   DateTime? preliminaryStartDate;
@@ -28,7 +32,10 @@ class AuditRequestViewmodel extends ChangeNotifier {
   DateTime? reportIssuedDate;
   DateTime? sharedToBoardDate;
   DateTime? auditCommitteeTableDate;
-
+  DateTime? managementResponseReceivedDate;
+  DateTime? draftReportReceivedDate;
+  DateTime? draftReportCirculateDate;
+  String? selectedSector;
   String? selectedAuditFirm;
 
   bool isLoading = false;
@@ -37,9 +44,14 @@ class AuditRequestViewmodel extends ChangeNotifier {
   List<AuditRequestModel> filteredList = [];
 
   DepartmentModel? selectedDepartment;
+  CompanyModel? selectedCompany;
   List<DepartmentModel> departmentList = [];
+  List<CompanyModel> companyList = [];
+  List<CompanyModel> filteredCompanyList = [];
+  List<DepartmentModel> filteredDepartmentList = [];
 
   final List<String> auditFirms = ["KPMG", "EY", "Deloitte"];
+  final List<String> sectors = ["Agri", "FMCG",];
 
   int currentPage = 1;
   int totalPages = 1;
@@ -47,13 +59,16 @@ class AuditRequestViewmodel extends ChangeNotifier {
   final int pageSize = 20;
 
   int? _pendingDepartmentId;
+  int? _pendingCompanyId;
 
   Future<void> loadDepartmentData() async {
     isLoading = true;
     departmentList = [];
+    companyList = [];
     notifyListeners();
 
     departmentList = await departmentApi.getDepartment();
+    companyList = await companyApi.getCompanyList();
 
     if (_pendingDepartmentId != null) {
       selectedDepartment = departmentList.firstWhere(
@@ -63,12 +78,54 @@ class AuditRequestViewmodel extends ChangeNotifier {
       _pendingDepartmentId = null;
     }
 
+    if (_pendingCompanyId != null) {
+      selectedCompany = companyList.firstWhere(
+            (c) => c.companyId == _pendingCompanyId,
+        orElse: () => companyList.first,
+      );
+      _pendingCompanyId = null;
+    }
+
     isLoading = false;
+    notifyListeners();
+  }
+
+  bool get isCompanyEnabled => selectedSector != null;
+  bool get isDepartmentEnabled => selectedCompany != null;
+
+  void setSector(String? value) {
+    selectedSector = value;
+
+    selectedCompany = null;
+    selectedDepartment = null;
+    filteredDepartmentList = [];
+    filteredCompanyList = [];
+
+    if (value != null) {
+      filteredCompanyList = companyList
+          .where((c) => c.sectorName.toString() == value)
+          .toList();
+    }
+
     notifyListeners();
   }
 
   void setDepartment(DepartmentModel? value) {
     selectedDepartment = value;
+    notifyListeners();
+  }
+
+  void setCompany(CompanyModel? value) {
+    selectedCompany = value;
+
+    selectedDepartment = null;
+    filteredDepartmentList = [];
+
+    if (value?.companyId != null) {
+      filteredDepartmentList = departmentList
+          .where((d) => d.companyId == value!.companyId)
+          .toList();
+    }
     notifyListeners();
   }
 
@@ -117,6 +174,21 @@ class AuditRequestViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setManagementResponseReceivedDate(DateTime date) {
+    managementResponseReceivedDate = date;
+    notifyListeners();
+  }
+
+  void setDraftReportReceivedDate(DateTime date) {
+    draftReportReceivedDate = date;
+    notifyListeners();
+  }
+
+  void setDraftReportCirculateDate(DateTime date) {
+    draftReportCirculateDate = date;
+    notifyListeners();
+  }
+
   void setReportIssuedDate(DateTime date) {
     reportIssuedDate = date;
     notifyListeners();
@@ -138,7 +210,10 @@ class AuditRequestViewmodel extends ChangeNotifier {
         descriptionController.text.trim().isEmpty ||
         personNameController.text.trim().isEmpty ||
         selectedDepartment == null ||
-        selectedAuditFirm == null) {
+        selectedAuditFirm == null ||
+        reviewReferenceController.text.trim().isEmpty ||
+        selectedSector == null ||
+        selectedCompany == null) {
       AppSnackBar.error(
         context,
         "Please add at least a Meeting Details section.",
@@ -152,9 +227,9 @@ class AuditRequestViewmodel extends ChangeNotifier {
     try {
       final request = AuditRequestModel(
         meetingDate: meetingDate!,
-        description: descriptionController.text.trim(),
+        auditName: descriptionController.text.trim(),
         auditFirm: selectedAuditFirm!,
-        auditFirmPersonName: personNameController.text.trim(),
+        auditManager: personNameController.text.trim(),
         auditDepartmentId: selectedDepartment!.departmentId!,
         preliminaryStartDate: preliminaryStartDate,
         infoRequestDate: infoReqDate,
@@ -166,6 +241,12 @@ class AuditRequestViewmodel extends ChangeNotifier {
         reportIssuedDate: reportIssuedDate,
         sharedToBoardDate: sharedToBoardDate,
         auditCommitteeTableDate: auditCommitteeTableDate,
+        managementResponseReceivedDate: managementResponseReceivedDate,
+        reviewReference: reviewReferenceController.text.trim(),
+        draftReportReceivedDate: draftReportReceivedDate,
+        draftReportCirculateDate: draftReportCirculateDate,
+        sector: selectedSector!,
+        companyId: selectedCompany!.companyId!,
       );
 
       await auditRequestApi.addAuditRequest(request);
@@ -197,10 +278,10 @@ class AuditRequestViewmodel extends ChangeNotifier {
       final request = AuditRequestModel(
         requestId: requestId,
         meetingDate: meetingDate!,
-        description: descriptionController.text,
+        auditName: descriptionController.text,
         preliminaryStartDate: preliminaryStartDate,
         auditFirm: selectedAuditFirm ?? "",
-        auditFirmPersonName: personNameController.text,
+        auditManager: personNameController.text,
         auditDepartmentId: selectedDepartment!.departmentId!,
         infoRequestDate: infoReqDate,
         infoSubmitDate: infoSubmitDate,
@@ -211,6 +292,12 @@ class AuditRequestViewmodel extends ChangeNotifier {
         reportIssuedDate: reportIssuedDate,
         sharedToBoardDate: sharedToBoardDate,
         auditCommitteeTableDate: auditCommitteeTableDate,
+        managementResponseReceivedDate: managementResponseReceivedDate,
+        reviewReference: reviewReferenceController.text,
+        draftReportReceivedDate: draftReportReceivedDate,
+        draftReportCirculateDate: draftReportCirculateDate,
+        sector: selectedSector!,
+          companyId: selectedCompany!.companyId!
       );
 
       await auditRequestApi.updateAuditRequest(requestId, request);
@@ -243,6 +330,12 @@ class AuditRequestViewmodel extends ChangeNotifier {
     reportIssuedDate = null;
     sharedToBoardDate = null;
     auditCommitteeTableDate = null;
+    managementResponseReceivedDate = null;
+    reviewReferenceController.clear();
+    draftReportReceivedDate = null;
+    draftReportCirculateDate = null;
+    selectedSector = null;
+    selectedCompany = null;
   }
 
   Future<void> loadAuditRequests({int page = 1}) async {
@@ -262,14 +355,14 @@ class AuditRequestViewmodel extends ChangeNotifier {
 
   void search(String value) {
     filteredList = auditRequests.where((e) {
-      return e.description.toLowerCase().contains(value.toLowerCase());
+      return e.auditName.toLowerCase().contains(value.toLowerCase());
     }).toList();
     notifyListeners();
   }
 
   void loadAuditRequest(AuditRequestModel request) {
-    descriptionController.text = request.description;
-    personNameController.text = request.auditFirmPersonName;
+    descriptionController.text = request.auditName;
+    personNameController.text = request.auditManager;
     meetingDate = request.meetingDate;
     selectedAuditFirm = request.auditFirm;
     preliminaryStartDate = request.preliminaryStartDate;
@@ -282,9 +375,16 @@ class AuditRequestViewmodel extends ChangeNotifier {
     reportIssuedDate = request.reportIssuedDate;
     sharedToBoardDate = request.sharedToBoardDate;
     auditCommitteeTableDate = request.auditCommitteeTableDate;
+    managementResponseReceivedDate = request.managementResponseReceivedDate;
+    reviewReferenceController.text = request.reviewReference;
+    draftReportReceivedDate = request.draftReportReceivedDate;
+    draftReportCirculateDate = request.draftReportCirculateDate;
+    selectedSector = request.sector;
 
     _pendingDepartmentId = request.auditDepartmentId;
+    _pendingCompanyId = request.companyId;
     selectedDepartment = null;
+    selectedCompany = null;
 
     notifyListeners();
   }
@@ -300,5 +400,19 @@ class AuditRequestViewmodel extends ChangeNotifier {
       ),
     )
         .departmentName;
+  }
+
+  String getCompanyName(int id) {
+    return companyList
+        .firstWhere(
+          (e) => e.companyId == id,
+      orElse: () => CompanyModel(
+          sectorId: 0,
+          sectorName: "",
+          companyId: 1,
+          companyName: "",
+      ),
+    )
+        .companyName;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project_one/core/theme/app_colors.dart';
 import 'package:project_one/core/theme/app_text_style.dart';
 import 'package:project_one/data/models/department_model.dart';
@@ -9,7 +10,9 @@ import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:project_one/ui/widget/section_card_widget.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constant/utils.dart';
+import '../../../data/models/audit_request_model.dart';
 import '../../../data/models/combined_observation_model.dart';
+import '../../../data/models/company_model.dart';
 import 'draft_observation_view_model.dart';
 
 class DraftObservationView extends StatefulWidget {
@@ -114,114 +117,215 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                 Row(
                   children: [
                     Expanded(
-                      child: MasterTextFieldWidget(
-                        label: "Review Reference",
-                        controller: vModel.reviewReferenceController,
-                        maxLength: 100,
-                        hintText: "Enter Review Reference",
-                        readOnly: vModel.isObservationLocked,
-                      ),
-                    ),
-                    SizedBox(width: width * 0.01),
-                    Expanded(
-                      child: MasterTextFieldWidget(
-                        label: "Area",
-                        controller: vModel.areaController,
-                        hintText: "Enter Area",
-                        maxLength: 150,
-                        readOnly: vModel.isObservationLocked,
-                      ),
-                    ),
-                    SizedBox(width: width * 0.01),
-                    Expanded(
-                      child: MasterTextFieldWidget(
-                        label: "Subject",
-                        controller: vModel.subjectController,
-                        hintText: "Enter Subject",
-                        maxLength: 250,
-                        readOnly: vModel.isObservationLocked,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: width * 0.01),
-                MasterTextFieldWidget(
-                  label: "Details",
-                  controller: vModel.detailsController,
-                  hintText:
-                      "Enter detailed scope and context for this observation...",
-                  readOnly: vModel.isObservationLocked,
-                  maxLines: 3,
-                  maxLength: 600,
-                ),
-                SizedBox(height: width * 0.005),
-                Row(
-                  children: [
-                    _pdfButton(
-                      width: width,
-                      icon: Icons.upload_file,
-                      label: "Choose PDF",
-                      onPressed: vModel.isObservationLocked
+                        child:DropdownButtonFormField<String>(
+                          initialValue: vModel.selectedSector,
+                          decoration: _dropdownDecor(),
+                          hint: const Text("Select Sector"),
+                          items: vModel.sectors.map((e) {
+                            return DropdownMenuItem(
+                              value: e,
+                              child: Text(e),
+                            );
+                          }).toList(),
+                          onChanged: vModel.lockAuditSelection
                           ? null
-                          : () async {
-                        await vModel.pickPdf();
-                        _showErrorIfAny(vModel);
-                      },
+                          : vModel.selectSector,
+                        )
                     ),
-                    const SizedBox(width: 15),
-                    if (vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
-                      _pdfButton(
-                        width: width,
-                        icon: Icons.picture_as_pdf,
-                        label: "Preview",
-                        onPressed: () async {
-                          await vModel.previewPdf();
-                          _showErrorIfAny(vModel);
-                        },
-                      ),
-                    const SizedBox(width: 15),
-                    if (vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
-                      _pdfButton(
-                        width: width,
-                        icon: Icons.delete,
-                        label: "Remove",
-                        onPressed: vModel.isObservationLocked
-                            ? null
-                            : () async => await _handleRemovePdf(context, vModel),
-                      ),
+                    SizedBox(width: width * 0.01),
+                    Expanded(
+                        child: DropdownButtonFormField<CompanyModel>(
+                          initialValue: vModel.selectedCompany,
+                          decoration: _dropdownDecor(),
+                          hint: const Text("Select Company"),
+                          items: vModel.companies.map((e) {
+                            return DropdownMenuItem(
+                              value: e,
+                              child: Text(e.companyName),
+                            );
+                          }).toList(),
+                          onChanged: vModel.lockAuditSelection
+                              ? null
+                              : vModel.selectedSector == null
+                              ? null
+                              : vModel.selectCompany,
+                        )
+                    )
                   ],
                 ),
-                if(vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top:10),
-                    child: Text(vModel.newPdfName ?? vModel.existingFileName ?? "" , style: TextStyle(color: AppColors.textLight),),
-                  ),
                 SizedBox(height: width * 0.01),
                 Row(
                   children: [
                     Expanded(
-                      child: MasterTextFieldWidget(
-                        label: "Risk And Root Cause",
-                        controller: vModel.riskAndRootCauseController,
-                        hintText: "Enter Risk And Root Cause",
-                        readOnly: vModel.isObservationLocked,
-                        maxLines: 3,
-                        maxLength: 600,
-                      ),
+                        child: DropdownButtonFormField<int>(
+                          initialValue: vModel.selectedAuditRequest?.requestId,
+                          decoration: _dropdownDecor(),
+                          hint: const Text("Select Audit Name"),
+                          items: vModel.auditRequests.map((e) {
+                            return DropdownMenuItem(
+                              value: e.requestId,
+                              child: Text(
+                                "${DateFormat('dd/MM/yyyy').format(e.meetingDate)} - ${e.auditName}",
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: vModel.lockAuditSelection
+                              ? null
+                              : (id) {
+                            final selected = vModel.auditRequests.firstWhere(
+                                  (e) => e.requestId == id,
+                            );
+                            vModel.selectAuditRequest(selected);
+                          },
+                        )
                     ),
                     SizedBox(width: width * 0.01),
                     Expanded(
-                      child: MasterTextFieldWidget(
-                        label: "Recommendation",
-                        controller: vModel.recommendationController,
-                        hintText: "Enter Recommendation",
-                        readOnly: vModel.isObservationLocked,
-                        maxLines: 3,
-                        maxLength: 600,
-                      ),
+                        child: DropdownButtonFormField<String>(
+                          initialValue: vModel.selectedReviewReference,
+                          decoration: _dropdownDecor(),
+                          hint: const Text("Select Review Reference"),
+                          items: vModel.reviewReferences.map((e) {
+                            return DropdownMenuItem(
+                              value: e,
+                              child: Text(e),
+                            );
+                          }).toList(),
+                          onChanged: vModel.lockAuditSelection
+                              ? null
+                              : vModel.selectedAuditRequest == null
+                              ? null
+                              : vModel.selectReviewReference,
+                        )
                     ),
                   ],
                 ),
+                SizedBox(height: width * 0.01),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    if (!vModel.isAuditRequestSelected) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Please complete the upper dropdown selections first.",
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: AbsorbPointer(
+                    absorbing: !vModel.isAuditRequestSelected,
+                    child: Opacity(
+                      opacity: vModel.isAuditRequestSelected ? 1 : 0.5,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: MasterTextFieldWidget(
+                                  label: "Area",
+                                  controller: vModel.areaController,
+                                  hintText: "Enter Area",
+                                  maxLength: 150,
+                                  readOnly: vModel.isObservationLocked,
+                                ),
+                              ),
+                              SizedBox(width: width * 0.01),
+                              Expanded(
+                                child: MasterTextFieldWidget(
+                                  label: "Subject",
+                                  controller: vModel.subjectController,
+                                  hintText: "Enter Subject",
+                                  maxLength: 250,
+                                  readOnly: vModel.isObservationLocked,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: width * 0.01),
+                          MasterTextFieldWidget(
+                            label: "Details",
+                            controller: vModel.detailsController,
+                            hintText:
+                            "Enter detailed scope and context for this observation...",
+                            readOnly: vModel.isObservationLocked,
+                            maxLines: 3,
+                            maxLength: 600,
+                          ),
+                          SizedBox(height: width * 0.005),
+                          Row(
+                            children: [
+                              _pdfButton(
+                                width: width,
+                                icon: Icons.upload_file,
+                                label: "Choose PDF",
+                                onPressed: vModel.isObservationLocked
+                                    ? null
+                                    : () async {
+                                  await vModel.pickPdf();
+                                  _showErrorIfAny(vModel);
+                                },
+                              ),
+                              const SizedBox(width: 15),
+                              if (vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
+                                _pdfButton(
+                                  width: width,
+                                  icon: Icons.picture_as_pdf,
+                                  label: "Preview",
+                                  onPressed: () async {
+                                    await vModel.previewPdf();
+                                    _showErrorIfAny(vModel);
+                                  },
+                                ),
+                              const SizedBox(width: 15),
+                              if (vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
+                                _pdfButton(
+                                  width: width,
+                                  icon: Icons.delete,
+                                  label: "Remove",
+                                  onPressed: vModel.isObservationLocked
+                                      ? null
+                                      : () async => await _handleRemovePdf(context, vModel),
+                                ),
+                            ],
+                          ),
+                          if(vModel.newPdfBytes != null || vModel.existingAttachmentId != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top:10),
+                              child: Text(vModel.newPdfName ?? vModel.existingFileName ?? "" , style: TextStyle(color: AppColors.textLight),),
+                            ),
+                          SizedBox(height: width * 0.01),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: MasterTextFieldWidget(
+                                  label: "Risk And Root Cause",
+                                  controller: vModel.riskAndRootCauseController,
+                                  hintText: "Enter Risk And Root Cause",
+                                  readOnly: vModel.isObservationLocked,
+                                  maxLines: 3,
+                                  maxLength: 600,
+                                ),
+                              ),
+                              SizedBox(width: width * 0.01),
+                              Expanded(
+                                child: MasterTextFieldWidget(
+                                  label: "Recommendation",
+                                  controller: vModel.recommendationController,
+                                  hintText: "Enter Recommendation",
+                                  readOnly: vModel.isObservationLocked,
+                                  maxLines: 3,
+                                  maxLength: 600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
             if (vModel.observationId != null) ...[
@@ -271,7 +375,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                 width: width,
                 isLoading: vModel.isLoading,
                 onSubmit:
-                (!vModel.canEditActionFields || vModel.isFollowUpSaved)
+                (!vModel.canEditActionFields || !vModel.canEditFollowUpFields)
                     ? null
                     : () async {
                   await vModel.updateObservationDetails(
@@ -293,7 +397,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                     hintText: "Enter Management Response",
                     maxLines: 3 ,
                     maxLength: 600,
-                    readOnly: !vModel.canEditActionFields || vModel.isFollowUpSaved,
+                    readOnly: !vModel.canEditActionFields || !vModel.canEditFollowUpFields,
                   ),
                 ],
               ),
@@ -304,7 +408,7 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                 buttonText: "Add",
                 width: width,
                 isLoading: vModel.isLoading,
-                onSubmit: (!vModel.canEditActionFields || vModel.isFollowUpSaved)
+                onSubmit: (!vModel.canEditActionFields || !vModel.canEditFollowUpFields)
                     ? null
                     : () async {
                         await vModel.updateObservationDetails(
@@ -320,24 +424,24 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         }
                       },
                 children: [
-                  MasterDateFieldWidget(
-                    label: "Action Timeline",
-                    value: vModel.actionTimeline,
-                    onSelect:
-                        (vModel.canEditActionFields &&
-                            !vModel.isFollowUpSaved)
-                        ? vModel.setActionTimeline
-                        : (_) {},
-                    disableFutureDates: false,
-                  ),
-                  SizedBox(height: width * 0.01),
                   MasterTextFieldWidget(
                     label: "Corrective Action Plan",
                     controller: vModel.correctiveActionPlanController,
                     hintText: "Enter Action Plan",
                     maxLines: 3,
                     maxLength: 600,
-                    readOnly: !vModel.canEditActionFields || vModel.isFollowUpSaved,
+                    readOnly: !vModel.canEditActionFields || !vModel.canEditFollowUpFields,
+                  ),
+                  SizedBox(height: width * 0.01),
+                  MasterDateFieldWidget(
+                    label: "Action Timeline",
+                    value: vModel.actionTimeline,
+                    onSelect:
+                    (vModel.canEditActionFields ||
+                        vModel.canEditFollowUpFields)
+                        ? vModel.setActionTimeline
+                        : (_) {},
+                    disableFutureDates: false,
                   ),
                 ],
               ),
@@ -413,6 +517,15 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                         ),
                       ),
                     ],
+                  ),
+                  SizedBox(height: width * 0.01),
+                  MasterTextFieldWidget(
+                    label: "Amendment Management Response",
+                    controller: vModel.amendmentManagementResponseController,
+                    hintText: "Enter Amendment Management Response",
+                    maxLines: 3,
+                    maxLength: 600,
+                    readOnly: !vModel.canEditFollowUpFields,
                   ),
                 ],
               ),

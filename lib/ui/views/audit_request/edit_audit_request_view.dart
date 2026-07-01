@@ -129,18 +129,23 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
                                 horizontalMargin: 16,
                                 columns: const [
                                   DataColumn(
-                                    label: _HeaderLabel('Meeting Date'),
+                                    label: _HeaderLabel('Review Reference'),
                                   ),
                                   DataColumn(
-                                    label: _HeaderLabel('Description'),
+                                    label: _HeaderLabel('Kick of Meeting Date'),
                                   ),
                                   DataColumn(
-                                    label: _HeaderLabel('Preliminary Start'),
+                                    label: _HeaderLabel('Audit Name'),
+                                  ),
+                                  DataColumn(
+                                    label: _HeaderLabel('Preliminary Information Request Date'),
                                   ),
                                   DataColumn(label: _HeaderLabel('Audit Firm')),
                                   DataColumn(
-                                    label: _HeaderLabel('Person Name'),
+                                    label: _HeaderLabel('Audit Manager'),
                                   ),
+                                  DataColumn(label: _HeaderLabel('Sector')),
+                                  DataColumn(label: _HeaderLabel('Company')),
                                   DataColumn(label: _HeaderLabel('Department')),
                                   DataColumn(
                                     label: _HeaderLabel('Info. Request'),
@@ -161,13 +166,22 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
                                     label: _HeaderLabel('Mgmt. Discussion'),
                                   ),
                                   DataColumn(
-                                    label: _HeaderLabel('Report Issued'),
+                                    label: _HeaderLabel('Mgmt. Response Received'),
                                   ),
                                   DataColumn(
-                                    label: _HeaderLabel('Shared to Board'),
+                                    label: _HeaderLabel('Draft Report Received'),
                                   ),
                                   DataColumn(
-                                    label: _HeaderLabel('Audit Committee'),
+                                    label: _HeaderLabel('Draft Report Circulate'),
+                                  ),
+                                  DataColumn(
+                                    label: _HeaderLabel('Final Report Issued'),
+                                  ),
+                                  DataColumn(
+                                    label: _HeaderLabel('Shared to Board of Directors'),
+                                  ),
+                                  DataColumn(
+                                    label: _HeaderLabel('Audit Committee Table Date'),
                                   ),
                                 ],
                                 rows: vModel.filteredList.map((e) {
@@ -187,12 +201,13 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
                                       }
                                     },
                                     cells: [
+                                      DataCell(Text(e.reviewReference)),
                                       DataCell(Text(fmtDate(e.meetingDate))),
                                       DataCell(
                                         SizedBox(
                                           width: 200,
                                           child: Text(
-                                            e.description,
+                                            e.auditName,
                                             softWrap: true,
                                             overflow: TextOverflow.visible,
                                           ),
@@ -202,7 +217,15 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
                                         Text(fmtDate(e.preliminaryStartDate)),
                                       ),
                                       DataCell(Text(e.auditFirm)),
-                                      DataCell(Text(e.auditFirmPersonName)),
+                                      DataCell(Text(e.auditManager)),
+                                      DataCell(Text(e.sector)),
+                                      DataCell(
+                                        Text(
+                                          vModel.getCompanyName(
+                                            e.companyId,
+                                          ),
+                                        ),
+                                      ),
                                       DataCell(
                                         Text(
                                           vModel.getDepartmentName(
@@ -226,6 +249,21 @@ class _EditAuditRequestViewState extends State<EditAuditRequestView> {
                                       DataCell(
                                         Text(
                                           fmtDate(e.managementDiscussionDate),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          fmtDate(e.managementResponseReceivedDate),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          fmtDate(e.draftReportReceivedDate),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          fmtDate(e.draftReportCirculateDate),
                                         ),
                                       ),
                                       DataCell(

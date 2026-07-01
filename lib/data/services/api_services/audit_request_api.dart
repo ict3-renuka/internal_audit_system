@@ -70,4 +70,20 @@ class AuditRequestApi {
       rethrow;
     }
   }
+
+  Future<AuditRequestModel> getAuditRequestById(int id) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstant.baseUrl}/AuditRequest/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      return AuditRequestModel.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw Exception("Audit request not found");
+    } else {
+      throw Exception("Failed to load audit request");
+    }
+  }
 }

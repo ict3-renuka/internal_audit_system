@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/core/theme/app_colors.dart';
 import 'package:project_one/core/theme/app_text_style.dart';
+import 'package:project_one/data/models/company_model.dart';
 import 'package:project_one/ui/widget/nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -64,9 +65,6 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                 "Initialize a new audit engagement by providing meeting details and firm contact information.",
               style: AppTextStyles.paragraph
             ),
-            // const SizedBox(height: 8),
-            // Text("Once you submit the data by clicking the button, you will not be able to edit or delete it.",
-            //   style: TextStyle(color: Colors.red,fontSize: 12),),
             SizedBox(height: width * 0.02 ),
             Container(
               padding: EdgeInsets.all(width * 0.02),
@@ -97,8 +95,22 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                   Row(
                     children: [
                       Expanded(
+                        child: Column(
+                          children: [
+                            MasterTextFieldWidget(
+                              label: "Review Reference",
+                              hintText: "Review Reference",
+                              controller: vModel.reviewReferenceController,
+                              maxLength: 150,
+                              // readOnly: isEditMode && vModel.personNameController.text.isNotEmpty,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
                         child: MasterDateFieldWidget(
-                          label: "Meeting Date",
+                          label: "Kick of Meeting Date",
                           value: vModel.meetingDate,
                           onSelect: /*(isEditMode && vModel.meetingDate != null) ? (_) {} :*/ vModel.setMeetingDate,
                           disableFutureDates: true,
@@ -107,47 +119,18 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                       SizedBox(width: width * 0.01),
                       Expanded(
                         child: MasterDateFieldWidget(
-                          label: "Preliminary Start Date",
+                          label: "Preliminary Information Request Date",
                           value: vModel.preliminaryStartDate,
                           onSelect: /*(isEditMode && vModel.preliminaryStartDate  != null) ? (_) {} :*/ vModel.setPreliminaryStartDate,
                           disableFutureDates: false,
-                        ),
-                      ),
-                      SizedBox(width: width * 0.01),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text("Select Department", style: TextStyle(fontWeight: FontWeight.bold),),
-                            const SizedBox(height: 8),
-                            DropdownButtonFormField<DepartmentModel>(
-                              initialValue: vModel.departmentList
-                                  .where((d) => d.departmentId == vModel.selectedDepartment?.departmentId)
-                                  .firstOrNull,
-                              disabledHint: Text(vModel.selectedDepartment?.departmentName ?? ""),
-                              items: vModel.departmentList.map((department) {
-                                return DropdownMenuItem(
-                                  value: department,
-                                  child: Text(department.departmentName),
-                                );
-                              }).toList(),
-                              onChanged: /*(isEditMode && vModel.selectedDepartment != null) ? null :*/ vModel.setDepartment,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: width * 0.01),
                   MasterTextFieldWidget(
-                    label: "Description",
-                    hintText: "Enter detailed scope and context for this audit request...",
+                    label: "Audit Name",
+                    hintText: "Enter Audit Name",
                     controller: vModel.descriptionController,
                     maxLines: 3,
                     maxLength: 500,
@@ -161,7 +144,98 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
                           children: [
-                            const Text("Audit Firm", style: TextStyle(fontWeight: FontWeight.bold)),
+                            const Text("Select Sector", style: TextStyle(fontWeight: FontWeight.bold),),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<String>(
+                              initialValue: vModel.selectedSector,
+                              disabledHint: Text(vModel.selectedSector ?? ""),
+                              items: vModel.sectors
+                                  .map((s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s),
+                              ))
+                                  .toList(),
+                              onChanged: /*(isEditMode && vModel.selectedDepartment != null) ? null :*/ vModel.setSector,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                helperText: " ",
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text("Select Company", style: TextStyle(fontWeight: FontWeight.bold),),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<CompanyModel>(
+                              initialValue: vModel.filteredCompanyList
+                                  .where((c) => c.companyId == vModel.selectedCompany?.companyId)
+                                  .firstOrNull,
+                              disabledHint: Text(vModel.selectedCompany?.companyName ?? ""),
+                              items: vModel.filteredCompanyList.map((company) {
+                                return DropdownMenuItem(
+                                  value: company,
+                                  child: Text(company.companyName),
+                                );
+                              }).toList(),
+                              onChanged: /*(isEditMode && vModel.selectedDepartment != null) ? null :*/ vModel.isCompanyEnabled ? vModel.setCompany : null,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                helperText: " ",
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text("Select Department", style: TextStyle(fontWeight: FontWeight.bold),),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<DepartmentModel>(
+                              initialValue: vModel.filteredDepartmentList
+                                  .where((d) => d.departmentId == vModel.selectedDepartment?.departmentId)
+                                  .firstOrNull,
+                              disabledHint: Text(vModel.selectedDepartment?.departmentName ?? ""),
+                              items: vModel.filteredDepartmentList.map((department) {
+                                return DropdownMenuItem(
+                                  value: department,
+                                  child: Text(department.departmentName),
+                                );
+                              }).toList(),
+                              onChanged: /*(isEditMode && vModel.selectedDepartment != null) ? null :*/ vModel.isDepartmentEnabled ? vModel.setDepartment : null,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                helperText: " ",
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text("Select Audit Firm", style: TextStyle(fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<String>(
                               initialValue: vModel.selectedAuditFirm,
@@ -176,6 +250,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(4),
                                 ),
+                                helperText: " ",
                               ),
                             ),
                           ],
@@ -188,8 +263,8 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           CrossAxisAlignment.start,
                           children: [
                             MasterTextFieldWidget(
-                              label: "Audit Firm Person Name",
-                              hintText: "Enter DepartmentAudit Firm Person Name",
+                              label: "Audit Manager",
+                              hintText: "Enter Audit Manager",
                               controller: vModel.personNameController,
                               maxLength: 150,
                               // readOnly: isEditMode && vModel.personNameController.text.isNotEmpty,
@@ -305,7 +380,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                       ),
                       SizedBox(width: 12),
                       Text(
-                          "Management Discussion Details",
+                          "Management Details",
                           style: AppTextStyles.subTitle
                       ),
                     ],
@@ -318,6 +393,66 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                           label: "Management Discussion Date",
                           value: vModel.managementDiscussionDate,
                           onSelect: /*(isEditMode && vModel.managementDiscussionDate != null) ? (_) {} :*/ vModel.setManagementDiscussionDate,
+                          disableFutureDates: false,
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: MasterDateFieldWidget(
+                          label: "Management Response Received Date",
+                          value: vModel.managementResponseReceivedDate,
+                          onSelect: /*(isEditMode && vModel.managementDiscussionDate != null) ? (_) {} :*/ vModel.setManagementResponseReceivedDate,
+                          disableFutureDates: false,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: width * 0.02),
+            Container(
+              padding: EdgeInsets.all(width * 0.02),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: AppColors.border,
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        color: AppColors.primary,
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                          "Draft Report Details",
+                          style: AppTextStyles.subTitle
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: width * 0.02),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: MasterDateFieldWidget(
+                          label: "Draft Report Received Date",
+                          value: vModel.draftReportReceivedDate,
+                          onSelect: /*(isEditMode && vModel.managementDiscussionDate != null) ? (_) {} :*/ vModel.setDraftReportReceivedDate,
+                          disableFutureDates: false,
+                        ),
+                      ),
+                      SizedBox(width: width * 0.01),
+                      Expanded(
+                        child: MasterDateFieldWidget(
+                          label: "Draft Report Circulate Date",
+                          value: vModel.draftReportCirculateDate,
+                          onSelect: /*(isEditMode && vModel.managementDiscussionDate != null) ? (_) {} :*/ vModel.setDraftReportCirculateDate,
                           disableFutureDates: false,
                         ),
                       ),
@@ -357,7 +492,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                     children: [
                       Expanded(
                         child: MasterDateFieldWidget(
-                          label: "Report Issued Date",
+                          label: "Final Report Issued Date",
                           value: vModel.reportIssuedDate,
                           onSelect: /*(isEditMode && vModel.reportIssuedDate != null) ? (_) {} :*/ vModel.setReportIssuedDate,
                           disableFutureDates: false,
@@ -366,7 +501,7 @@ class _AuditRequestViewState extends State<AuditRequestView> {
                       SizedBox(width: width * 0.01),
                       Expanded(
                         child: MasterDateFieldWidget(
-                          label: "Shared to Board Date",
+                          label: "Shared to Board of Directors Date",
                           value: vModel.sharedToBoardDate,
                           onSelect: /*(isEditMode && vModel.sharedToBoardDate != null) ? (_) {} :*/ vModel.setSharedToBoardDate,
                           disableFutureDates: false,

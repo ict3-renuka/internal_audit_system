@@ -1,8 +1,8 @@
 import 'draft_observation_model.dart';
 
 class CombinedObservationModel {
+  final int auditRequestId;
   final int observationId;
-  final String reviewReference;
   final String area;
   final String subject;
   final String details;
@@ -24,10 +24,11 @@ class CombinedObservationModel {
   final bool hasPdf;
   final int? attachmentId;
   final String? fileName;
+  final String? amendmentManagementResponse;
 
   CombinedObservationModel({
+    required this.auditRequestId,
     required this.observationId,
-    required this.reviewReference,
     required this.area,
     required this.subject,
     required this.details,
@@ -49,12 +50,13 @@ class CombinedObservationModel {
     required this.hasPdf,
     this.attachmentId,
     this.fileName,
+    this.amendmentManagementResponse,
   });
 
   factory CombinedObservationModel.fromJson(Map<String, dynamic> json) {
     return CombinedObservationModel(
+      auditRequestId: json['auditRequestId'] ?? 0,
       observationId: json['observationId'] ?? 0,
-      reviewReference: json['reviewReference'] ?? '',
       area: json['area'] ?? '',
       subject: json['subject'] ?? '',
       details: json['details'] ?? '',
@@ -82,13 +84,14 @@ class CombinedObservationModel {
       hasPdf: json['hasPdf'] ?? false,
       attachmentId: json['attachmentId'] as int?,
       fileName: json['fileName'] as String?,
+      amendmentManagementResponse: json['amendmentManagementResponse'] as String?,
     );
   }
 
   DraftObservationModel toDraftObservationModel() {
     return DraftObservationModel(
+      auditRequestID: auditRequestId,
       observationId: observationId,
-      reviewReference: reviewReference,
       area: area,
       subject: subject,
       details: details,

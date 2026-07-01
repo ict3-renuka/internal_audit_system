@@ -5,12 +5,16 @@ import 'package:open_filex/open_filex.dart';
 import 'package:project_one/data/models/draft_observation_model.dart';
 import 'package:project_one/data/services/api_services/draft_observation_api.dart';
 
+import '../../../data/models/audit_request_model.dart';
 import '../../../data/models/combined_observation_model.dart';
+import '../../../data/models/company_model.dart';
 import '../../../data/models/department_model.dart';
 import '../../../data/models/internal_department_model.dart';
 import '../../../data/models/observation_details_model.dart';
 import '../../../data/models/responsible_user_row_model.dart';
+import '../../../data/services/api_services/audit_request_api.dart';
 import '../../../data/services/api_services/combined_observation_api.dart';
+import '../../../data/services/api_services/company_api.dart';
 import '../../../data/services/api_services/department_api.dart';
 import '../../../data/services/api_services/internal_department_api.dart';
 import '../../../data/services/api_services/observation_attachment_api.dart';
@@ -30,10 +34,11 @@ class DraftObservationViewmodel extends ChangeNotifier {
   final ObservationDetailsApi observationDetailsApi = ObservationDetailsApi();
   final CombinedObservationApi combinedApi = CombinedObservationApi();
   final ObservationAttachmentApi observationAttachmentApi = ObservationAttachmentApi();
+  final CompanyApi _companyApi = CompanyApi();
+  final AuditRequestApi _auditRequestApi = AuditRequestApi();
 
   DraftObservationViewmodel(this.draftObservationApi);
 
-  final TextEditingController reviewReferenceController = TextEditingController();
   final TextEditingController areaController = TextEditingController();
   final TextEditingController subjectController = TextEditingController();
   final TextEditingController detailsController = TextEditingController();
@@ -42,6 +47,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
   final TextEditingController manageResponseController = TextEditingController();
   final TextEditingController correctiveActionPlanController = TextEditingController();
   final TextEditingController remarkController = TextEditingController();
+  final TextEditingController amendmentManagementResponseController = TextEditingController();
 
   final TextEditingController searchController = TextEditingController();
 
@@ -59,6 +65,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
   int? observationId;
   String? observationDetailsErrorMessage;
   DateTime? actionTimeline;
+  int? auditRequestId;
 
   List<CombinedObservationModel> combinedList = [];
   List<CombinedObservationModel> filteredCombinedList = [];
@@ -82,6 +89,19 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
   Uint8List? newPdfBytes;
   String? newPdfName;
+
+  final List<String> sectors = [
+    "Agri",
+    "FMCG",
+  ];
+
+  String? selectedSector;
+  CompanyModel? selectedCompany;
+  AuditRequestModel? selectedAuditRequest;
+  String? selectedReviewReference;
+  List<CompanyModel> companies = [];
+  List<AuditRequestModel> auditRequests = [];
+  List<String> reviewReferences = [];
 
   Future<void> initView({CombinedObservationModel? combined}) async {
     resetAll();
@@ -213,8 +233,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
   }
 
   Future<void> addDraftObservation() async {
-    if (reviewReferenceController.text.trim().isEmpty ||
-        areaController.text.trim().isEmpty ||
+    if (areaController.text.trim().isEmpty ||
         subjectController.text.trim().isEmpty ||
         detailsController.text.trim().isEmpty ||
         riskAndRootCauseController.text.trim().isEmpty ||
@@ -230,8 +249,8 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
     try {
       final observation = DraftObservationModel(
+        auditRequestID: auditRequestId!,
         observationId: observationId,
-        reviewReference: reviewReferenceController.text.trim(),
         area: areaController.text.trim(),
         subject: subjectController.text.trim(),
         details: detailsController.text.trim(),
@@ -268,7 +287,6 @@ class DraftObservationViewmodel extends ChangeNotifier {
   }
 
   void resetAll() {
-    reviewReferenceController.clear();
     areaController.clear();
     subjectController.clear();
     detailsController.clear();
@@ -278,6 +296,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
     correctiveActionPlanController.clear();
     selectedStatus = null;
     remarkController.clear();
+    amendmentManagementResponseController.clear();
     actionTimeline = null;
     remarkedDate = null;
     observationId = null;
@@ -293,6 +312,14 @@ class DraftObservationViewmodel extends ChangeNotifier {
     newPdfName = null;
     existingAttachmentId = null;
     existingFileName = null;
+    auditRequestId = null;
+    selectedSector = null;
+    selectedCompany = null;
+    selectedAuditRequest = null;
+    selectedReviewReference = null;
+    companies = [];
+    auditRequests = [];
+    reviewReferences = [];
     notifyListeners();
   }
 
@@ -452,6 +479,9 @@ class DraftObservationViewmodel extends ChangeNotifier {
         fields['remarked_date'] =
             remarkedDate!.toIso8601String().split('T').first;
       }
+      if (amendmentManagementResponseController.text.trim().isNotEmpty) {
+        fields['amendment_management_response'] = amendmentManagementResponseController.text.trim();
+      }
 
       for (final row in savedRows) {
         await observationDetailsApi.updateObservationDetails(
@@ -508,8 +538,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void loadFromCombined(CombinedObservationModel combined) {
-    reviewReferenceController.text = combined.reviewReference;
+  Future<void> loadFromCombined(CombinedObservationModel combined) async {
     areaController.text = combined.area;
     subjectController.text = combined.subject;
     detailsController.text = combined.details;
@@ -518,6 +547,11 @@ class DraftObservationViewmodel extends ChangeNotifier {
     observationId = combined.observationId;
     existingAttachmentId = combined.attachmentId;
     existingFileName = combined.fileName;
+    auditRequestId = combined.auditRequestId;
+
+    if (auditRequestId != null) {
+      await loadAuditSelection(auditRequestId!);
+    }
 
     if (combined.observationDetailsId != null) {
       manageResponseController.text = combined.managementResponse ?? '';
@@ -526,6 +560,7 @@ class DraftObservationViewmodel extends ChangeNotifier {
       selectedStatus = combined.status;
       remarkController.text = combined.remark ?? '';
       remarkedDate = combined.remarkedDate;
+      amendmentManagementResponseController.text = combined.amendmentManagementResponse ?? '';
 
       responsibleUserRows = [
         ResponsibleUserRowModel(
@@ -677,4 +712,103 @@ class DraftObservationViewmodel extends ChangeNotifier {
 
   bool get hasPdf => newPdfBytes != null || existingAttachmentId != null;
 
+  Future<void> selectSector(String? sector) async {
+    selectedSector = sector;
+
+    selectedCompany = null;
+    selectedAuditRequest = null;
+    selectedReviewReference = null;
+
+    auditRequests.clear();
+    reviewReferences.clear();
+    companies = [];
+    notifyListeners();
+
+    if (sector == null) return;
+
+    final allCompanies = await _companyApi.getCompanyList();
+
+    companies = allCompanies
+        .where((e) => e.sectorName == sector)
+        .toList();
+
+    notifyListeners();
+  }
+
+  Future<void> selectCompany(CompanyModel? company) async {
+    selectedCompany = company;
+
+    selectedAuditRequest = null;
+    selectedReviewReference = null;
+
+    auditRequests.clear();
+    reviewReferences.clear();
+    notifyListeners();
+
+    if (company == null) return;
+
+    final response =
+    await _auditRequestApi.getAllAuditRequests(page: 1, pageSize: 500);
+
+    auditRequests = response.data
+        .where((e) => e.companyId == company.companyId)
+        .toList();
+
+    notifyListeners();
+  }
+
+  void selectAuditRequest(AuditRequestModel? audit) {
+    selectedAuditRequest = audit;
+
+    selectedReviewReference = null;
+
+    reviewReferences.clear();
+
+    if (audit != null) {
+      reviewReferences.add(audit.reviewReference);
+    }
+    notifyListeners();
+  }
+
+  void selectReviewReference(String? value) {
+    selectedReviewReference = value;
+
+    if (selectedAuditRequest != null) {
+      auditRequestId = selectedAuditRequest!.requestId;
+    }
+    notifyListeners();
+  }
+
+  bool get isAuditRequestSelected => auditRequestId != null;
+
+  bool get lockAuditSelection => observationId != null && auditRequestId != null;
+
+  Future<void> loadAuditSelection(int auditRequestId) async {
+    final companyList = await _companyApi.getCompanyList();
+
+    final audit = await _auditRequestApi.getAuditRequestById(auditRequestId);
+
+    selectedAuditRequest = audit;
+    selectedReviewReference = audit.reviewReference;
+
+    selectedCompany = companyList.firstWhere(
+          (e) => e.companyId == audit.companyId,
+    );
+
+    selectedSector = selectedCompany!.sectorName;
+
+    companies = companyList
+        .where((e) => e.sectorName == selectedSector)
+        .toList();
+
+    auditRequests = await _auditRequestApi
+        .getAllAuditRequests(page: 1, pageSize: 500)
+        .then((res) => res.data
+        .where((e) => e.companyId == selectedCompany!.companyId)
+        .toList());
+
+    reviewReferences = [audit.reviewReference];
+
+    notifyListeners();
+  }
 }
