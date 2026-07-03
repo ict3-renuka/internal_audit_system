@@ -98,6 +98,7 @@ class _AppNavBarState extends State<AppNavBar> {
 
                   _buildDropdownMenu(context, "Report", [
                     "Observation Report",
+                    "Audit Request Report"
                   ]),
                 ],
               ),
@@ -167,6 +168,7 @@ class _AppNavBarState extends State<AppNavBar> {
           if (value == "New Draft Observation") Navigator.pushNamed(context, "/new-draft-observation");
           if (value == "Edit Draft Observation") Navigator.pushNamed(context, "/edit-draft-observation");
           if (value == "Observation Report") Navigator.pushNamed(context, "/observation-report");
+          if (value == "Audit Request Report") Navigator.pushNamed(context, "/audit-request-report");
         },
         itemBuilder: (context) => items
             .map((e) => PopupMenuItem<String>(

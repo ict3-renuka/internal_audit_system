@@ -73,10 +73,11 @@ class _AddCenterViewState extends State<AddCenterView> {
                     "Center Added Successfully.",
                   );
                 } else {
-                  AppSnackBar.error(
-                    context,
-                    "Failed to add center.",
-                  );
+                  if (vModel.isDuplicate) {
+                    AppSnackBar.error(context, "This center is already added.");
+                  } else {
+                    AppSnackBar.error(context, "Failed to add center.");
+                  }
                 }
               },
             ),

@@ -12,6 +12,7 @@ class AddCompanyViewmodel extends ChangeNotifier {
   String? selectedSector;
   bool isLoading = false;
   bool isSaving = false;
+  bool isDuplicate = false;
 
   List<CompanyModel> companyList = [];
 
@@ -50,6 +51,16 @@ class AddCompanyViewmodel extends ChangeNotifier {
       final sectorId = sectorMap[selectedSector!];
 
       if (sectorId == null) return false;
+
+      final newCompanyName = companyController.text.trim().toLowerCase();
+
+      isDuplicate = companyList.any((c) =>
+      c.companyName.trim().toLowerCase() == newCompanyName &&
+          c.sectorName == selectedSector);
+
+      if (isDuplicate) {
+        return false;
+      }
 
       CompanyModel company = CompanyModel(
         sectorId: sectorId,

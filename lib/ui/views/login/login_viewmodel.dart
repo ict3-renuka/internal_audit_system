@@ -33,12 +33,14 @@ class LoginViewmodel extends ChangeNotifier{
     try {
       if (userNameController.text.trim().isEmpty) {
         errorMsg = "Username is required";
+        isLoading = false;
         notifyListeners();
         return false;
       }
 
       if (passwordController.text.isEmpty) {
         errorMsg = "Password is required";
+        isLoading = false;
         notifyListeners();
         return false;
       }

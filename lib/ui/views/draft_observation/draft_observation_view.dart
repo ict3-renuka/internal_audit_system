@@ -205,12 +205,8 @@ class _DraftObservationViewState extends State<DraftObservationView> {
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
                     if (!vModel.isAuditRequestSelected) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            "Please complete the upper dropdown selections first.",
-                          ),
-                        ),
+                      AppSnackBar.error(
+                            context,"Please complete the upper dropdown selections first.",
                       );
                     }
                   },

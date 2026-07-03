@@ -71,10 +71,11 @@ class _AddDepartmentViewState extends State<AddDepartmentView> {
                     "Department Added Successfully.",
                   );
                 } else {
-                  AppSnackBar.error(
-                    context,
-                    "Failed to add department.",
-                  );
+                  if (vModel.isDuplicate) {
+                    AppSnackBar.error(context, "This department is already added.");
+                  } else {
+                    AppSnackBar.error(context, "Failed to add department.");
+                  }
                 }
               },
             ),

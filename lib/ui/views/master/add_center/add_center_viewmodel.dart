@@ -18,6 +18,7 @@ class AddCenterViewmodel extends ChangeNotifier {
 
   bool isLoading = false;
   bool isSaving = false;
+  bool isDuplicate = false;
 
   List<CenterModel> centerList = [];
   List<CompanyModel> companyList = [];
@@ -61,6 +62,16 @@ class AddCenterViewmodel extends ChangeNotifier {
     try {
       isSaving = true;
       notifyListeners();
+
+      final newCenterName = centerController.text.trim().toLowerCase();
+
+      isDuplicate = centerList.any((c) =>
+      c.centerName.trim().toLowerCase() == newCenterName &&
+          c.companyId == selectedCompany!.companyId!);
+
+      if (isDuplicate) {
+        return false;
+      }
 
       CenterModel center = CenterModel(
         companyId: selectedCompany!.companyId!,

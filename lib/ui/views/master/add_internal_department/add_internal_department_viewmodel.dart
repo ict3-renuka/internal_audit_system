@@ -17,6 +17,7 @@ class AddInternalDepartmentViewmodel extends ChangeNotifier {
 
   bool isLoading = false;
   bool isSaving = false;
+  bool isDuplicate = false;
 
   List<DepartmentModel> departmentList = [];
   List<InternalDepartmentModel> internalDepartmentList = [];
@@ -61,6 +62,16 @@ class AddInternalDepartmentViewmodel extends ChangeNotifier {
     try{
       isSaving = true;
       notifyListeners();
+
+      final newInternalDepartmentName = internalDepartmentController.text.trim().toLowerCase();
+
+      isDuplicate = internalDepartmentList.any((c) =>
+      c.internalDepartmentName.trim().toLowerCase() == newInternalDepartmentName &&
+          c.departmentId == selectedDepartment!.departmentId!);
+
+      if (isDuplicate) {
+        return false;
+      }
 
       InternalDepartmentModel internalDepartmentModel = InternalDepartmentModel(
         departmentId: selectedDepartment!.departmentId!,

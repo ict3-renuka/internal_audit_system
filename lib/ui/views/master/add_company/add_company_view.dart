@@ -72,10 +72,11 @@ class _AddCompanyViewState extends State<AddCompanyView> {
                       "Company Added Successfully.",
                     );
                   } else {
-                    AppSnackBar.error(
-                      context,
-                      "Failed to add company.",
-                    );
+                    if (vModel.isDuplicate) {
+                      AppSnackBar.error(context, "This company is already added.");
+                    } else {
+                      AppSnackBar.error(context, "Failed to add company.");
+                    }
                   }
                 },
               ),

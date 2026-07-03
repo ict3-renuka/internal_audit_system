@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
-import '../../../data/models/department_model.dart';
-import '../../../data/models/internal_department_model.dart';
-import '../../../data/services/api_services/department_api.dart';
-import '../../../data/services/api_services/internal_department_api.dart';
-import '../../../data/services/api_services/observation_report_api.dart';
+import '../../../../data/models/department_model.dart';
+import '../../../../data/models/internal_department_model.dart';
+import '../../../../data/services/api_services/department_api.dart';
+import '../../../../data/services/api_services/internal_department_api.dart';
+import '../../../../data/services/api_services/observation_report_api.dart';
 
 class ObservationReportViewModel extends ChangeNotifier {
   final ObservationReportApi reportApi = ObservationReportApi();

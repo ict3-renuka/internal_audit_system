@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../widget/nav_bar_widget.dart';
-import '../../widget/master_date_field_widget.dart';
-import '../../widget/section_card_widget.dart';
-import '../../widget/submit_button_widget.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../widget/nav_bar_widget.dart';
+import '../../../widget/master_date_field_widget.dart';
+import '../../../widget/section_card_widget.dart';
+import '../../../widget/submit_button_widget.dart';
 import 'observation_report_view_model.dart';
 
 class ObservationReportView extends StatefulWidget {
@@ -20,10 +20,9 @@ class _ObservationReportViewState extends State<ObservationReportView> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<ObservationReportViewModel>(
-        context,
-        listen: false,
-      ).init();
+      final vm = Provider.of<ObservationReportViewModel>(context, listen: false,);
+      vm.init();
+      vm.clearFilters();
     });
   }
 

@@ -18,6 +18,7 @@ class AddDepartmentViewmodel extends ChangeNotifier {
 
   bool isLoading = false;
   bool isSaving = false;
+  bool isDuplicate = false;
 
   List<CompanyModel> companyList = [];
   List<DepartmentModel> departmentList = [];
@@ -63,6 +64,16 @@ class AddDepartmentViewmodel extends ChangeNotifier {
     try{
       isSaving = true;
       notifyListeners();
+
+      final newDepartmentName = departmentController.text.trim().toLowerCase();
+
+      isDuplicate = departmentList.any((c) =>
+      c.departmentName.trim().toLowerCase() == newDepartmentName &&
+          c.companyId == selectedCompany!.companyId!);
+
+      if (isDuplicate) {
+        return false;
+      }
 
       DepartmentModel department = DepartmentModel(
         companyId: selectedCompany!.companyId!,

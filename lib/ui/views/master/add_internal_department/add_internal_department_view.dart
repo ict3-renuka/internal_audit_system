@@ -71,10 +71,11 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
                     "Internal Department Added Successfully.",
                   );
                 } else {
-                  AppSnackBar.error(
-                    context,
-                    "Failed to add internal department.",
-                  );
+                  if (vModel.isDuplicate) {
+                    AppSnackBar.error(context, "This internal department is already added.");
+                  } else {
+                    AppSnackBar.error(context, "Failed to add internal department.");
+                  }
                 }
               },
             ),
