@@ -38,9 +38,9 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
           subtitle:
           "Manage organizational units structures for group-wide audits.",
           formSection: MasterFormCardWidget(
-            title: "Add Internal Department",
+            title: "Add Internal Department/Center",
             button: MasterButtonWidget(
-              text: "Add Internal Department",
+              text: "Add Internal Department/Center",
               isLoading: vModel.isSaving,
               onPressed: vModel.isSaving
                   ? null
@@ -56,7 +56,7 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
                 if (vModel.internalDepartmentController.text.trim().isEmpty) {
                   AppSnackBar.error(
                     context,
-                    "Internal department name is required.",
+                    "Internal department/Center name is required.",
                   );
                   return;
                 }
@@ -68,13 +68,13 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
                 if (success) {
                   AppSnackBar.success(
                     context,
-                    "Internal Department Added Successfully.",
+                    "Internal Department/Center Added Successfully.",
                   );
                 } else {
                   if (vModel.isDuplicate) {
-                    AppSnackBar.error(context, "This internal department is already added.");
+                    AppSnackBar.error(context, "This internal department/Center is already added.");
                   } else {
-                    AppSnackBar.error(context, "Failed to add internal department.");
+                    AppSnackBar.error(context, "Failed to add internal department/Center.");
                   }
                 }
               },
@@ -105,14 +105,14 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
 
               const SizedBox(height: 20),
 
-              const Text("Internal Department Name"),
+              const Text("Internal Department/Center Name"),
               const SizedBox(height: 8),
 
               TextField(
                 controller: vModel.internalDepartmentController,
                 maxLength: 150,
                 decoration: InputDecoration(
-                  hintText: "Enter Internal Department Name",
+                  hintText: "Enter Internal Department/Center Name",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -170,7 +170,7 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
                   const Padding(
                     padding: EdgeInsets.all(24),
                     child: Text(
-                      "Internal Department List",
+                      "Internal Department/Center List",
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -187,7 +187,7 @@ class _AddInternalDepartmentViewState extends State<AddInternalDepartmentView> {
                     child: const Row(
                       children: [
                         Expanded(child: Text("Department Name")),
-                        Expanded(child: Text("Internal Department Name")),
+                        Expanded(child: Text("Internal Department/Center Name")),
                       ],
                     ),
                   ),

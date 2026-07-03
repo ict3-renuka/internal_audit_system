@@ -80,9 +80,9 @@ class _AppNavBarState extends State<AppNavBar> {
                   if (isAdmin)
                     _buildDropdownMenu(context, "Master", [
                       "Add Company",
-                      "Add Center",
+                      // "Add Center",
                       "Add Department",
-                      "Add Internal Department",
+                      "Add Internal Department/Center",
                     ]),
 
                   if (isAdmin)
@@ -160,9 +160,9 @@ class _AppNavBarState extends State<AppNavBar> {
         color: AppColors.textLight,
         onSelected: (value) {
           if (value == "Add Company") Navigator.pushNamed(context, "/add-company");
-          if (value == "Add Center") Navigator.pushNamed(context, "/add-center");
+          // if (value == "Add Center") Navigator.pushNamed(context, "/add-center");
           if (value == "Add Department") Navigator.pushNamed(context, "/add-department");
-          if (value == "Add Internal Department") Navigator.pushNamed(context, "/add-internal-department");
+          if (value == "Add Internal Department/Center") Navigator.pushNamed(context, "/add-internal-department");
           if (value == "New Audit Request") Navigator.pushNamed(context, "/new-audit-request");
           if (value == "Edit Audit Request") Navigator.pushNamed(context, "/edit-audit-request");
           if (value == "New Draft Observation") Navigator.pushNamed(context, "/new-draft-observation");
@@ -245,7 +245,7 @@ class _ProfilePopup extends StatelessWidget {
           const Divider(height: 20),
           _InfoRow(icon: Icons.email, label: "Email", value: email),
           const SizedBox(height: 8),
-          _InfoRow(icon: Icons.apartment_outlined, label: "Internal Department", value: internalDeptName),
+          _InfoRow(icon: Icons.apartment_outlined, label: "Internal Department/Center", value: internalDeptName),
         ],
       ),
     );
